@@ -14,6 +14,7 @@ namespace starsub
 		public FormMain()
 		{
 			InitializeComponent();
+			SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
 		}
 
 		private void FormMain_Load(object sender, EventArgs e)

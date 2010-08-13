@@ -63,7 +63,7 @@
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
 			this.menuStrip1.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
-			this.menuStrip1.Size = new System.Drawing.Size(567, 24);
+			this.menuStrip1.Size = new System.Drawing.Size(784, 24);
 			this.menuStrip1.TabIndex = 3;
 			this.menuStrip1.Text = "menuStrip1";
 			// 
@@ -91,6 +91,7 @@
 			// splitContainer1
 			// 
 			this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
 			this.splitContainer1.Location = new System.Drawing.Point(0, 24);
 			this.splitContainer1.Name = "splitContainer1";
 			this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
@@ -98,12 +99,13 @@
 			// splitContainer1.Panel1
 			// 
 			this.splitContainer1.Panel1.Controls.Add(this.audioPanel1);
+			this.splitContainer1.Panel1MinSize = 200;
 			// 
 			// splitContainer1.Panel2
 			// 
 			this.splitContainer1.Panel2.Controls.Add(this.listView1);
-			this.splitContainer1.Size = new System.Drawing.Size(567, 291);
-			this.splitContainer1.SplitterDistance = 184;
+			this.splitContainer1.Size = new System.Drawing.Size(784, 538);
+			this.splitContainer1.SplitterDistance = 200;
 			this.splitContainer1.TabIndex = 4;
 			// 
 			// listView1
@@ -115,7 +117,7 @@
 			this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.listView1.Location = new System.Drawing.Point(0, 0);
 			this.listView1.Name = "listView1";
-			this.listView1.Size = new System.Drawing.Size(567, 103);
+			this.listView1.Size = new System.Drawing.Size(784, 334);
 			this.listView1.TabIndex = 0;
 			this.listView1.UseCompatibleStateImageBehavior = false;
 			this.listView1.View = System.Windows.Forms.View.Details;
@@ -137,14 +139,14 @@
 			this.audioPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.audioPanel1.Location = new System.Drawing.Point(0, 0);
 			this.audioPanel1.Name = "audioPanel1";
-			this.audioPanel1.Size = new System.Drawing.Size(567, 184);
+			this.audioPanel1.Size = new System.Drawing.Size(784, 200);
 			this.audioPanel1.TabIndex = 0;
 			// 
 			// FormMain
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 14F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(567, 315);
+			this.ClientSize = new System.Drawing.Size(784, 562);
 			this.Controls.Add(this.button2);
 			this.Controls.Add(this.splitContainer1);
 			this.Controls.Add(this.menuStrip1);

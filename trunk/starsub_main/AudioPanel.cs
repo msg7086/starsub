@@ -13,6 +13,7 @@ namespace starsub
 		{
 			InitializeComponent();
 			DoubleBuffered = true;
+			SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
 			
 		}
 
@@ -35,6 +36,7 @@ namespace starsub
 		private const string mainver = "1.0";
 		private uint svnver;
 		private uint SlicePerSecond { get { return 1000 / SliceSizeMS; } }
+		private uint AudioLengthMS { get { return SliceSizeMS * SliceCount; } }
 
 		#endregion
 
@@ -65,6 +67,11 @@ namespace starsub
 			}
 			else
 			{
+				if (MousePointMS >= AudioLengthMS - 1000)
+				{
+					return;
+				}
+
 				PlayPointMS = MousePointMS;
 				//sound.seekData((uint)(playpos * samplerate));
 				channel.setPosition(PlayPointMS, FMOD.TIMEUNIT.MS);
@@ -101,20 +108,40 @@ namespace starsub
 			svnver = Convert.ToUInt32("$Rev: 40 $".Split(' ')[1], 10);
 		}
 
+		bool SmoothMoving = false;
+
 		private void WaveDisplay_Paint(object sender, PaintEventArgs e)
 		{
 			if (peakdata == null)
 				return;
-			WaveDisplay.SuspendLayout();
-			Graphics g = e.Graphics;
-			int i, j;
-
-			// Draw Background WaveForm
-			for (i = Convert.ToInt32(SecondBar.Value * SlicePerSecond), j = 0; i < SliceCount && j < WaveDisplay.Width; i++, j++)
-				g.DrawLine(WaveFormPen, j, Convert.ToSingle(WaveDisplay.Height / 2 + peakdata[i] / YScale), j, Convert.ToSingle(WaveDisplay.Height / 2 + weakdata[i] / YScale));
 
 			int LeftTimeMS = SecondBar.Value * 1000;
 			int RightTimeMS = LeftTimeMS + Convert.ToInt32(WaveDisplay.Width * 1000 / XScale / SlicePerSecond);
+
+			if (SmoothMoving)
+			{
+				if (PlayPointMS - LeftTimeMS < 3000 || RightTimeMS > AudioLengthMS)
+					SmoothMoving = false;
+				else
+					SecondBar.Value++;
+			}
+
+			Graphics g = e.Graphics;
+
+			int i;
+
+				// Draw Background WaveForm
+			var halfheight = WaveDisplay.Height / 2;
+			var LeftOffset = Convert.ToInt32(SecondBar.Value * SlicePerSecond);
+			for (i = 0; i < WaveDisplay.Width; i++)
+			{
+				var offset = LeftOffset + Convert.ToInt32(i / XScale);
+				if(offset >= SliceCount)
+					break;
+				g.DrawLine(WaveFormPen, i, halfheight + Convert.ToSingle(peakdata[offset] / YScale), i, halfheight + Convert.ToSingle(weakdata[offset] / YScale));
+			}
+
+
 			if (MousePointMS >= LeftTimeMS || MousePointMS < RightTimeMS)
 			{
 				float x = (MousePointMS - LeftTimeMS) * XScale * SlicePerSecond / 1000;
@@ -122,15 +149,16 @@ namespace starsub
 			}
 			if (PlayingTimer.Enabled)
 			{
-				if (PlayPointMS >= LeftTimeMS && PlayPointMS < RightTimeMS)
+				if (PlayPointMS >= LeftTimeMS && PlayPointMS < RightTimeMS - 1000)
 				{
 					float x = (PlayPointMS - LeftTimeMS) * XScale * SlicePerSecond / 1000;
 					g.DrawLine(WritePen, x, WaveDisplay.Height / 5, x, WaveDisplay.Height * 4 / 5);
 				}
 				else if (PlayPointMS < SecondBar.Value * 1000)
 					SecondBar.Value--;
-				else
-					SecondBar.Value += 5;
+				else if(RightTimeMS < AudioLengthMS)
+					//SecondBar.Value += 5;
+					SmoothMoving = true;
 			}
 			// find crlf forward and backward in txtsub
 			/*
@@ -151,7 +179,6 @@ namespace starsub
 			g.DrawString(GetTimeText(postodraw), new Font("Tahoma", 16), Brushes.White, xx, WaveDisplay.Height - 60);
 			postodraw = Convert.ToUInt32(RightTimeMS);
 			g.DrawString(GetTimeText(postodraw), new Font("Tahoma", 16), Brushes.White, WaveDisplay.Width - 100, WaveDisplay.Height - 30);
-			WaveDisplay.ResumeLayout();
 		}
 
 		private string GetTimeText(uint MS)
@@ -182,7 +209,7 @@ namespace starsub
 				PlayPointMS = i;
 				//if(this.WindowState != FormWindowState.Minimized)
 				WaveDisplay.Refresh();
-				if (i >= SliceCount - 10)
+				if (i >= AudioLengthMS - 1000)
 				{
 					channel.setPaused(true);
 					PlayingTimer.Stop();
@@ -356,7 +383,8 @@ namespace starsub
 
 		private void SecondBar_ValueChanged(object sender, EventArgs e)
 		{
-			WaveDisplay.Refresh();
+			if(!SmoothMoving)
+				WaveDisplay.Refresh();
 		}
 
 		private void WaveDisplay_Resize(object sender, EventArgs e)
@@ -364,6 +392,17 @@ namespace starsub
 			if (MyYScale > 0)
 				YScale = Convert.ToInt32(MaxPeakValue / (WaveDisplay.Height - 30) * 2 / MyYScale);
 
+		}
+
+		private void YTrackBar_ValueChanged(object sender, EventArgs e)
+		{
+			MyYScale = YTrackBar.Value * YTrackBar.Value * YTrackBar.Value / 1000f;
+			YScale = Convert.ToInt32(MaxPeakValue / (WaveDisplay.Height - 30) * 2 / MyYScale);
+		}
+
+		private void XTrackBar_ValueChanged(object sender, EventArgs e)
+		{
+			XScale = XTrackBar.Value * XTrackBar.Value * XTrackBar.Value / 1000f;
 		}
 
 	}

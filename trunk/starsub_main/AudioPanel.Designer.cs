@@ -47,38 +47,48 @@
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			this.splitter1 = new System.Windows.Forms.Splitter();
 			this.SecondBar = new System.Windows.Forms.HScrollBar();
 			this.PlayingTimer = new System.Windows.Forms.Timer(this.components);
-			this.WaveDisplay = new System.Windows.Forms.Panel();
 			this.progressBar1 = new System.Windows.Forms.ProgressBar();
+			this.WaveDisplay = new System.Windows.Forms.PictureBox();
+			this.panel1 = new System.Windows.Forms.Panel();
+			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.XTrackBar = new System.Windows.Forms.TrackBar();
+			this.YTrackBar = new System.Windows.Forms.TrackBar();
+			((System.ComponentModel.ISupportInitialize)(this.WaveDisplay)).BeginInit();
+			this.panel1.SuspendLayout();
+			this.groupBox1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.XTrackBar)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.YTrackBar)).BeginInit();
 			this.SuspendLayout();
-			// 
-			// splitter1
-			// 
-			this.splitter1.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.splitter1.Location = new System.Drawing.Point(0, 375);
-			this.splitter1.Name = "splitter1";
-			this.splitter1.Size = new System.Drawing.Size(534, 3);
-			this.splitter1.TabIndex = 13;
-			this.splitter1.TabStop = false;
 			// 
 			// SecondBar
 			// 
 			this.SecondBar.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.SecondBar.LargeChange = 5;
-			this.SecondBar.Location = new System.Drawing.Point(0, 378);
+			this.SecondBar.Location = new System.Drawing.Point(0, 257);
 			this.SecondBar.Maximum = 4;
 			this.SecondBar.Name = "SecondBar";
-			this.SecondBar.Size = new System.Drawing.Size(534, 20);
+			this.SecondBar.Size = new System.Drawing.Size(450, 20);
 			this.SecondBar.TabIndex = 9;
 			this.SecondBar.ValueChanged += new System.EventHandler(this.SecondBar_ValueChanged);
 			this.SecondBar.Scroll += new System.Windows.Forms.ScrollEventHandler(this.SecondBar_Scroll);
 			// 
 			// PlayingTimer
 			// 
-			this.PlayingTimer.Interval = 40;
+			this.PlayingTimer.Interval = 50;
 			this.PlayingTimer.Tick += new System.EventHandler(this.PlayingTimer_Tick);
+			// 
+			// progressBar1
+			// 
+			this.progressBar1.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.progressBar1.Location = new System.Drawing.Point(0, 277);
+			this.progressBar1.Maximum = 0;
+			this.progressBar1.Name = "progressBar1";
+			this.progressBar1.Size = new System.Drawing.Size(450, 23);
+			this.progressBar1.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+			this.progressBar1.TabIndex = 0;
+			this.progressBar1.Visible = false;
 			// 
 			// WaveDisplay
 			// 
@@ -86,45 +96,93 @@
 			this.WaveDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.WaveDisplay.Location = new System.Drawing.Point(0, 0);
 			this.WaveDisplay.Name = "WaveDisplay";
-			this.WaveDisplay.Size = new System.Drawing.Size(534, 375);
+			this.WaveDisplay.Size = new System.Drawing.Size(450, 257);
 			this.WaveDisplay.TabIndex = 14;
+			this.WaveDisplay.TabStop = false;
 			this.WaveDisplay.MouseLeave += new System.EventHandler(this.WaveDisplay_MouseLeave);
-			this.WaveDisplay.Paint += new System.Windows.Forms.PaintEventHandler(this.WaveDisplay_Paint);
 			this.WaveDisplay.Resize += new System.EventHandler(this.WaveDisplay_Resize);
+			this.WaveDisplay.Paint += new System.Windows.Forms.PaintEventHandler(this.WaveDisplay_Paint);
 			this.WaveDisplay.MouseUp += new System.Windows.Forms.MouseEventHandler(this.WaveDisplay_MouseUp);
 			this.WaveDisplay.MouseEnter += new System.EventHandler(this.WaveDisplay_MouseEnter);
 			// 
-			// progressBar1
+			// panel1
 			// 
-			this.progressBar1.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.progressBar1.Location = new System.Drawing.Point(0, 398);
-			this.progressBar1.Maximum = 0;
-			this.progressBar1.Name = "progressBar1";
-			this.progressBar1.Size = new System.Drawing.Size(534, 20);
-			this.progressBar1.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-			this.progressBar1.TabIndex = 0;
-			this.progressBar1.Visible = false;
+			this.panel1.Controls.Add(this.WaveDisplay);
+			this.panel1.Controls.Add(this.SecondBar);
+			this.panel1.Controls.Add(this.progressBar1);
+			this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panel1.Location = new System.Drawing.Point(0, 0);
+			this.panel1.Name = "panel1";
+			this.panel1.Size = new System.Drawing.Size(450, 300);
+			this.panel1.TabIndex = 15;
+			// 
+			// groupBox1
+			// 
+			this.groupBox1.Controls.Add(this.YTrackBar);
+			this.groupBox1.Controls.Add(this.XTrackBar);
+			this.groupBox1.Dock = System.Windows.Forms.DockStyle.Right;
+			this.groupBox1.Location = new System.Drawing.Point(450, 0);
+			this.groupBox1.Name = "groupBox1";
+			this.groupBox1.Size = new System.Drawing.Size(150, 300);
+			this.groupBox1.TabIndex = 16;
+			this.groupBox1.TabStop = false;
+			this.groupBox1.Text = "比例调整";
+			// 
+			// XTrackBar
+			// 
+			this.XTrackBar.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.XTrackBar.Location = new System.Drawing.Point(3, 252);
+			this.XTrackBar.Maximum = 15;
+			this.XTrackBar.Minimum = 5;
+			this.XTrackBar.Name = "XTrackBar";
+			this.XTrackBar.Size = new System.Drawing.Size(144, 45);
+			this.XTrackBar.TabIndex = 1;
+			this.XTrackBar.TickStyle = System.Windows.Forms.TickStyle.Both;
+			this.XTrackBar.Value = 10;
+			this.XTrackBar.ValueChanged += new System.EventHandler(this.XTrackBar_ValueChanged);
+			// 
+			// YTrackBar
+			// 
+			this.YTrackBar.Dock = System.Windows.Forms.DockStyle.Left;
+			this.YTrackBar.Location = new System.Drawing.Point(3, 18);
+			this.YTrackBar.Maximum = 15;
+			this.YTrackBar.Minimum = 5;
+			this.YTrackBar.Name = "YTrackBar";
+			this.YTrackBar.Orientation = System.Windows.Forms.Orientation.Vertical;
+			this.YTrackBar.Size = new System.Drawing.Size(45, 234);
+			this.YTrackBar.TabIndex = 0;
+			this.YTrackBar.TickStyle = System.Windows.Forms.TickStyle.Both;
+			this.YTrackBar.Value = 10;
+			this.YTrackBar.ValueChanged += new System.EventHandler(this.YTrackBar_ValueChanged);
 			// 
 			// AudioPanel
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 14F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.Controls.Add(this.WaveDisplay);
-			this.Controls.Add(this.splitter1);
-			this.Controls.Add(this.SecondBar);
-			this.Controls.Add(this.progressBar1);
+			this.Controls.Add(this.panel1);
+			this.Controls.Add(this.groupBox1);
+			this.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
 			this.Name = "AudioPanel";
-			this.Size = new System.Drawing.Size(534, 418);
+			this.Size = new System.Drawing.Size(600, 300);
+			((System.ComponentModel.ISupportInitialize)(this.WaveDisplay)).EndInit();
+			this.panel1.ResumeLayout(false);
+			this.groupBox1.ResumeLayout(false);
+			this.groupBox1.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.XTrackBar)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.YTrackBar)).EndInit();
 			this.ResumeLayout(false);
 
 		}
 
 		#endregion
 
-		private System.Windows.Forms.Splitter splitter1;
 		private System.Windows.Forms.HScrollBar SecondBar;
 		private System.Windows.Forms.Timer PlayingTimer;
-		private System.Windows.Forms.Panel WaveDisplay;
 		private System.Windows.Forms.ProgressBar progressBar1;
+		private System.Windows.Forms.PictureBox WaveDisplay;
+		private System.Windows.Forms.Panel panel1;
+		private System.Windows.Forms.GroupBox groupBox1;
+		private System.Windows.Forms.TrackBar XTrackBar;
+		private System.Windows.Forms.TrackBar YTrackBar;
 	}
 }
