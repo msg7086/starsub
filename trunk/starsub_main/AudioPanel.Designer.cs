@@ -51,12 +51,13 @@
 			this.SecondBar = new System.Windows.Forms.HScrollBar();
 			this.PlayingTimer = new System.Windows.Forms.Timer(this.components);
 			this.WaveDisplay = new System.Windows.Forms.Panel();
+			this.progressBar1 = new System.Windows.Forms.ProgressBar();
 			this.SuspendLayout();
 			// 
 			// splitter1
 			// 
 			this.splitter1.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.splitter1.Location = new System.Drawing.Point(0, 395);
+			this.splitter1.Location = new System.Drawing.Point(0, 375);
 			this.splitter1.Name = "splitter1";
 			this.splitter1.Size = new System.Drawing.Size(534, 3);
 			this.splitter1.TabIndex = 13;
@@ -65,17 +66,19 @@
 			// SecondBar
 			// 
 			this.SecondBar.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.SecondBar.LargeChange = 7;
-			this.SecondBar.Location = new System.Drawing.Point(0, 398);
-			this.SecondBar.Maximum = 50;
+			this.SecondBar.LargeChange = 5;
+			this.SecondBar.Location = new System.Drawing.Point(0, 378);
+			this.SecondBar.Maximum = 4;
 			this.SecondBar.Name = "SecondBar";
 			this.SecondBar.Size = new System.Drawing.Size(534, 20);
 			this.SecondBar.TabIndex = 9;
+			this.SecondBar.ValueChanged += new System.EventHandler(this.SecondBar_ValueChanged);
+			this.SecondBar.Scroll += new System.Windows.Forms.ScrollEventHandler(this.SecondBar_Scroll);
 			// 
 			// PlayingTimer
 			// 
 			this.PlayingTimer.Interval = 40;
-			this.PlayingTimer.Tick += new System.EventHandler(this.timer_Tick);
+			this.PlayingTimer.Tick += new System.EventHandler(this.PlayingTimer_Tick);
 			// 
 			// WaveDisplay
 			// 
@@ -83,12 +86,24 @@
 			this.WaveDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.WaveDisplay.Location = new System.Drawing.Point(0, 0);
 			this.WaveDisplay.Name = "WaveDisplay";
-			this.WaveDisplay.Size = new System.Drawing.Size(534, 395);
+			this.WaveDisplay.Size = new System.Drawing.Size(534, 375);
 			this.WaveDisplay.TabIndex = 14;
 			this.WaveDisplay.MouseLeave += new System.EventHandler(this.WaveDisplay_MouseLeave);
 			this.WaveDisplay.Paint += new System.Windows.Forms.PaintEventHandler(this.WaveDisplay_Paint);
+			this.WaveDisplay.Resize += new System.EventHandler(this.WaveDisplay_Resize);
 			this.WaveDisplay.MouseUp += new System.Windows.Forms.MouseEventHandler(this.WaveDisplay_MouseUp);
 			this.WaveDisplay.MouseEnter += new System.EventHandler(this.WaveDisplay_MouseEnter);
+			// 
+			// progressBar1
+			// 
+			this.progressBar1.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.progressBar1.Location = new System.Drawing.Point(0, 398);
+			this.progressBar1.Maximum = 0;
+			this.progressBar1.Name = "progressBar1";
+			this.progressBar1.Size = new System.Drawing.Size(534, 20);
+			this.progressBar1.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+			this.progressBar1.TabIndex = 0;
+			this.progressBar1.Visible = false;
 			// 
 			// AudioPanel
 			// 
@@ -97,6 +112,7 @@
 			this.Controls.Add(this.WaveDisplay);
 			this.Controls.Add(this.splitter1);
 			this.Controls.Add(this.SecondBar);
+			this.Controls.Add(this.progressBar1);
 			this.Name = "AudioPanel";
 			this.Size = new System.Drawing.Size(534, 418);
 			this.ResumeLayout(false);
@@ -109,5 +125,6 @@
 		private System.Windows.Forms.HScrollBar SecondBar;
 		private System.Windows.Forms.Timer PlayingTimer;
 		private System.Windows.Forms.Panel WaveDisplay;
+		private System.Windows.Forms.ProgressBar progressBar1;
 	}
 }

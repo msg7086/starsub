@@ -3,6 +3,7 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using System.Text;
+using System.Runtime.InteropServices;
 
 namespace starsub
 {
@@ -11,6 +12,8 @@ namespace starsub
 		public AudioPanel()
 		{
 			InitializeComponent();
+			DoubleBuffered = true;
+			
 		}
 
 		#region uservar
@@ -24,7 +27,7 @@ namespace starsub
 		private int MaxPeakValue = 0;
 		//private uint samplerate = 48000;
 		private const uint SliceSizeMS = 10; // ms
-		private float WScale = 1, HScale = 1;
+		private float MyYScale = 1, XScale = 1, YScale;
 
 		private bool MouseInArea = false;
 
@@ -64,14 +67,14 @@ namespace starsub
 			{
 				PlayPointMS = MousePointMS;
 				//sound.seekData((uint)(playpos * samplerate));
-				channel.setPosition(PlayPointMS * 1000 / SliceSizeMS, FMOD.TIMEUNIT.MS);
+				channel.setPosition(PlayPointMS, FMOD.TIMEUNIT.MS);
 				//Application.DoEvents();
 				channel.setPaused(false);
 				PlayingTimer.Start();
 			}
 		}
 
-		private void Initialize()
+		public void Initialize()
 		{
 			#region fmodinit
 			uint version = 0;
@@ -102,25 +105,26 @@ namespace starsub
 		{
 			if (peakdata == null)
 				return;
+			WaveDisplay.SuspendLayout();
 			Graphics g = e.Graphics;
 			int i, j;
 
 			// Draw Background WaveForm
 			for (i = Convert.ToInt32(SecondBar.Value * SlicePerSecond), j = 0; i < SliceCount && j < WaveDisplay.Width; i++, j++)
-				g.DrawLine(WaveFormPen, j, Convert.ToSingle(WaveDisplay.Height / 2 + peakdata[i] / WScale), j, Convert.ToSingle(WaveDisplay.Height / 2 + weakdata[i] / WScale));
+				g.DrawLine(WaveFormPen, j, Convert.ToSingle(WaveDisplay.Height / 2 + peakdata[i] / YScale), j, Convert.ToSingle(WaveDisplay.Height / 2 + weakdata[i] / YScale));
 
 			int LeftTimeMS = SecondBar.Value * 1000;
-			int RightTimeMS = LeftTimeMS + Convert.ToInt32(WaveDisplay.Width * 1000 / HScale / SlicePerSecond);
+			int RightTimeMS = LeftTimeMS + Convert.ToInt32(WaveDisplay.Width * 1000 / XScale / SlicePerSecond);
 			if (MousePointMS >= LeftTimeMS || MousePointMS < RightTimeMS)
 			{
-				float x = (MousePointMS - LeftTimeMS) * HScale * SlicePerSecond;
+				float x = (MousePointMS - LeftTimeMS) * XScale * SlicePerSecond / 1000;
 				g.DrawLine(WritePen, x, 0, x, WaveDisplay.Height);
 			}
 			if (PlayingTimer.Enabled)
 			{
 				if (PlayPointMS >= LeftTimeMS && PlayPointMS < RightTimeMS)
 				{
-					float x = (PlayPointMS - LeftTimeMS) * HScale * SlicePerSecond;
+					float x = (PlayPointMS - LeftTimeMS) * XScale * SlicePerSecond / 1000;
 					g.DrawLine(WritePen, x, WaveDisplay.Height / 5, x, WaveDisplay.Height * 4 / 5);
 				}
 				else if (PlayPointMS < SecondBar.Value * 1000)
@@ -140,12 +144,14 @@ namespace starsub
 				g.DrawString(txtsub.Text.Substring(bwpos, fwpos - bwpos).Trim(), new Font(lang._("misc", "drawfont"), 18), Brushes.White, panel1.Width / 3, 0);
 			 */
 			// print current time position
-			uint postodraw = (uint)SecondBar.Value * 1000;
+			uint postodraw = Convert.ToUInt32(LeftTimeMS);
 			g.DrawString(GetTimeText(postodraw), new Font("Tahoma", 16), Brushes.White, 0, WaveDisplay.Height - 30);
 			postodraw = MousePointMS;
-			g.DrawString(GetTimeText(postodraw), new Font("Tahoma", 16), Brushes.White, MousePointMS - SecondBar.Value * 100, WaveDisplay.Height - 60);
-			postodraw = (uint)(SecondBar.Value * 100 + WaveDisplay.Width - 5);
+			float xx = (MousePointMS - LeftTimeMS) * XScale * SlicePerSecond / 1000;
+			g.DrawString(GetTimeText(postodraw), new Font("Tahoma", 16), Brushes.White, xx, WaveDisplay.Height - 60);
+			postodraw = Convert.ToUInt32(RightTimeMS);
 			g.DrawString(GetTimeText(postodraw), new Font("Tahoma", 16), Brushes.White, WaveDisplay.Width - 100, WaveDisplay.Height - 30);
+			WaveDisplay.ResumeLayout();
 		}
 
 		private string GetTimeText(uint MS)
@@ -155,7 +161,7 @@ namespace starsub
 
 		private void WaveDisplay_MouseUp(object sender, MouseEventArgs e)
 		{
-			MousePointMS = Convert.ToUInt32(SecondBar.Value + e.X / HScale / SlicePerSecond); // downscale by HScale, and divide by SliceSize, from e.X to millisecond
+			MousePointMS = Convert.ToUInt32(SecondBar.Value * 1000 + e.X / XScale / SlicePerSecond * 1000); // downscale by HScale, and divide by SliceSize, from e.X to millisecond
 			WaveDisplay.Refresh();
 		}
 		private void WaveDisplay_MouseEnter(object sender, EventArgs e)
@@ -167,11 +173,10 @@ namespace starsub
 			MouseInArea = false;
 		}
 
-		private void timer_Tick(object sender, EventArgs e)
+		private void PlayingTimer_Tick(object sender, EventArgs e)
 		{
 			uint i = 0;
 			channel.getPosition(ref i, FMOD.TIMEUNIT.MS);
-			i = i * SliceSizeMS / 1000;
 			if (i != PlayPointMS)
 			{
 				PlayPointMS = i;
@@ -188,7 +193,7 @@ namespace starsub
 
 		private void SecondBar_Scroll(object sender, ScrollEventArgs e)
 		{
-			WaveDisplay.Refresh();
+			//WaveDisplay.Refresh();
 		}
 
 		private void ERRCHECK(FMOD.RESULT result)
@@ -204,10 +209,14 @@ namespace starsub
 		private void calcscrollbar()
 		{
 			if (peakdata != null)
-				SecondBar.Maximum = Convert.ToInt32(SliceCount - WaveDisplay.Width) / 100 + 10;
+				Invoke(new MethodInvoker(() => SecondBar.Maximum = Convert.ToInt32(SliceCount / SlicePerSecond) + 10));
 		}
 
-		private void loadaudio(string Filename)
+		public void OpenAudio(string Filename)
+		{
+			OpenAudio(Filename, null);
+		}
+		public void OpenAudio(string Filename, Delegate callback)
 		{
 			if (AudioFileName != "")
 			{
@@ -269,17 +278,23 @@ namespace starsub
 				sound.getLength(ref AudioLength, FMOD.TIMEUNIT.MS);
 				uint SampleCountPerSlice = (uint)((ulong)SampleCount * 1000 / AudioLength) / SlicePerSecond;
 				SliceCount = AudioLength / SliceSizeMS;
+				Invoke(new MethodInvoker(() =>
+				{
+					progressBar1.Maximum = Convert.ToInt32(SliceCount);
+					progressBar1.Value = 0;
+					progressBar1.Visible = true;
+				}));
 				short peak, weak;
 				uint pos = 0, i;
 				short[] buffer = new short[SampleCountPerSlice * 2];
 				peakdata = new short[SliceCount + 5];
 				weakdata = new short[SliceCount + 5];
 				uint BytePerSlice = SampleCountPerSlice * 4;
-				IntPtr buff = System.Runtime.InteropServices.Marshal.AllocHGlobal((int)BytePerSlice);
+				IntPtr buff = Marshal.AllocHGlobal((int)BytePerSlice);
 				do
 				{
 					sound.readData(buff, BytePerSlice, ref SampleCount);
-					System.Runtime.InteropServices.Marshal.Copy(buff, buffer, 0, (int)BytePerSlice / 2);
+					Marshal.Copy(buff, buffer, 0, (int)BytePerSlice / 2);
 					peak = weak = 0;
 					for (i = 0; i < SampleCount / 4; i++)
 					{
@@ -291,11 +306,13 @@ namespace starsub
 					peakdata[pos] = peak;
 					weakdata[pos] = weak;
 					pos++;
-					//if (pos < (SliceCount + 5) && pos % 500 == 0)
+					if (pos < (SliceCount + 5) && pos % 500 == 0)
+						Invoke(new MethodInvoker(() => progressBar1.Value = Convert.ToInt32(pos)));
 					//	statusBar1.Text = string.Format(lang._("message", "openfile"), curraudio) + "  " + (pos * 100 / (SliceCount + 5)) + "%";
 				} while (SampleCount == BytePerSlice);
 				SliceCount = pos;
-				System.Runtime.InteropServices.Marshal.FreeHGlobal(buff);
+				Invoke(new MethodInvoker(() => progressBar1.Visible = false));
+				Marshal.FreeHGlobal(buff);
 				peak = 0;
 				//statusBar1.Text = lang._("message", "normalize");
 				for (i = 0; i < SliceCount; i++)
@@ -310,7 +327,7 @@ namespace starsub
 				// creating peak cache file
 				FileStream fs = new FileStream(AudioFileName + ".peak", FileMode.CreateNew);
 				BinaryWriter w = new BinaryWriter(fs, Encoding.ASCII);
-				w.Write("STSB");
+				w.Write(0x7890abcd);
 				w.Write((uint)2);
 				w.Write(SliceCount);
 				w.Write(MaxPeakValue);
@@ -325,13 +342,28 @@ namespace starsub
 				fs = null;
 			}
 			//statusBar1.Text += " Done";
-			WScale = MaxPeakValue / (WaveDisplay.Height - 30) * 2;
+			YScale = Convert.ToInt32(MaxPeakValue / (WaveDisplay.Height - 30) * 2 / MyYScale);
 			calcscrollbar();
-			WaveDisplay.Refresh();
+			Invoke(new MethodInvoker(() => WaveDisplay.Refresh()));
 			sound.release();
 
 			system.createStream(AudioFileName, FMOD.MODE.ACCURATETIME, ref sound);
 			system.playSound(FMOD.CHANNELINDEX.FREE, sound, true, ref channel);
+
+			if (callback != null)
+				callback.DynamicInvoke();
+		}
+
+		private void SecondBar_ValueChanged(object sender, EventArgs e)
+		{
+			WaveDisplay.Refresh();
+		}
+
+		private void WaveDisplay_Resize(object sender, EventArgs e)
+		{
+			if (MyYScale > 0)
+				YScale = Convert.ToInt32(MaxPeakValue / (WaveDisplay.Height - 30) * 2 / MyYScale);
+
 		}
 
 	}
