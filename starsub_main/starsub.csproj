@@ -108,6 +108,15 @@
     <Compile Include="AudioPanel.Designer.cs">
       <DependentUpon>AudioPanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="AudioPanel.fmod.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="AudioPanel.interface.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="AudioPanel.misc.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="fmod.cs">
       <SubType>Code</SubType>
     </Compile>

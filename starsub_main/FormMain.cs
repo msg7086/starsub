@@ -71,13 +71,16 @@ namespace starsub
 			{
 				// test if it's ass
 				var m = Regex.Match(line, @"(\d+:\d+:\d+\.\d+).*?(\d+:\d+:\d+\.\d+),.*?,.*?,.*?,.*?,.*?,.*?,(.*)$");
-				if (m.Success)
+				if (!m.Success)
 				{
-					var lvi = listView1.Items.Add(new ListViewItem(m.Groups[3].Value));
-					lvi.SubItems.Add(m.Groups[1].Value);
-					lvi.SubItems.Add(m.Groups[2].Value);
-
+					var lvix = listView1.Items.Add(new ListViewItem(line));
+					lvix.SubItems.Add("META");
+					lvix.SubItems.Add("META");
+					continue;
 				}
+				var lvi = listView1.Items.Add(new ListViewItem(m.Groups[3].Value));
+				lvi.SubItems.Add(m.Groups[1].Value);
+				lvi.SubItems.Add(m.Groups[2].Value);
 			}
 			SubtitleModified = false;
 		}
@@ -91,6 +94,8 @@ namespace starsub
 			if (listView1.SelectedItems.Count != 1)
 				return;
 			var line = listView1.SelectedItems[0];
+			if (line.SubItems[1].Text == "META")
+				return;
 			StartTimeBox.Text = line.SubItems[1].Text;
 			EndTimeBox.Text = line.SubItems[2].Text;
 			DialogTextBox.Text = line.Text;
