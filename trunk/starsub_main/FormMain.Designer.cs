@@ -38,6 +38,8 @@
 			this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
 			this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
 			this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
+			this.controlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.playPauseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.audioPanel1 = new starsub.AudioPanel();
 			this.menuStrip1.SuspendLayout();
 			this.splitContainer1.Panel1.SuspendLayout();
@@ -59,7 +61,8 @@
 			// 
 			this.menuStrip1.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
+            this.fileToolStripMenuItem,
+            this.controlToolStripMenuItem});
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
 			this.menuStrip1.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
@@ -115,12 +118,17 @@
             this.columnHeader2,
             this.columnHeader3});
 			this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.listView1.FullRowSelect = true;
+			this.listView1.GridLines = true;
+			this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+			this.listView1.HideSelection = false;
 			this.listView1.Location = new System.Drawing.Point(0, 0);
 			this.listView1.Name = "listView1";
 			this.listView1.Size = new System.Drawing.Size(784, 334);
 			this.listView1.TabIndex = 0;
 			this.listView1.UseCompatibleStateImageBehavior = false;
 			this.listView1.View = System.Windows.Forms.View.Details;
+			this.listView1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FormMain_KeyPress);
 			// 
 			// columnHeader1
 			// 
@@ -134,13 +142,29 @@
 			// 
 			this.columnHeader3.Width = 320;
 			// 
+			// controlToolStripMenuItem
+			// 
+			this.controlToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.playPauseToolStripMenuItem});
+			this.controlToolStripMenuItem.Name = "controlToolStripMenuItem";
+			this.controlToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
+			this.controlToolStripMenuItem.Text = "&Control";
+			// 
+			// playPauseToolStripMenuItem
+			// 
+			this.playPauseToolStripMenuItem.Name = "playPauseToolStripMenuItem";
+			this.playPauseToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
+			this.playPauseToolStripMenuItem.Text = "&Play/Pause";
+			// 
 			// audioPanel1
 			// 
 			this.audioPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.audioPanel1.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
 			this.audioPanel1.Location = new System.Drawing.Point(0, 0);
 			this.audioPanel1.Name = "audioPanel1";
 			this.audioPanel1.Size = new System.Drawing.Size(784, 200);
 			this.audioPanel1.TabIndex = 0;
+			this.audioPanel1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FormMain_KeyPress);
 			// 
 			// FormMain
 			// 
@@ -155,6 +179,7 @@
 			this.Name = "FormMain";
 			this.Text = "FormMain";
 			this.Load += new System.EventHandler(this.FormMain_Load);
+			this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FormMain_KeyPress);
 			this.menuStrip1.ResumeLayout(false);
 			this.menuStrip1.PerformLayout();
 			this.splitContainer1.Panel1.ResumeLayout(false);
@@ -178,5 +203,7 @@
 		private System.Windows.Forms.ColumnHeader columnHeader1;
 		private System.Windows.Forms.ColumnHeader columnHeader2;
 		private System.Windows.Forms.ColumnHeader columnHeader3;
+		private System.Windows.Forms.ToolStripMenuItem controlToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem playPauseToolStripMenuItem;
 	}
 }
