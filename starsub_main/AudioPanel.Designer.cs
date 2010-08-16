@@ -53,13 +53,14 @@
 			this.WaveDisplay = new System.Windows.Forms.PictureBox();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this.XTrackBar = new System.Windows.Forms.TrackBar();
 			this.YTrackBar = new System.Windows.Forms.TrackBar();
+			this.XTrackBar = new System.Windows.Forms.TrackBar();
+			this.label1 = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.WaveDisplay)).BeginInit();
 			this.panel1.SuspendLayout();
 			this.groupBox1.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.XTrackBar)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.YTrackBar)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.XTrackBar)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// SecondBar
@@ -118,6 +119,7 @@
 			// 
 			// groupBox1
 			// 
+			this.groupBox1.Controls.Add(this.label1);
 			this.groupBox1.Controls.Add(this.YTrackBar);
 			this.groupBox1.Controls.Add(this.XTrackBar);
 			this.groupBox1.Dock = System.Windows.Forms.DockStyle.Right;
@@ -128,22 +130,10 @@
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "比例调整";
 			// 
-			// XTrackBar
-			// 
-			this.XTrackBar.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.XTrackBar.Location = new System.Drawing.Point(3, 252);
-			this.XTrackBar.Maximum = 15;
-			this.XTrackBar.Minimum = 5;
-			this.XTrackBar.Name = "XTrackBar";
-			this.XTrackBar.Size = new System.Drawing.Size(144, 45);
-			this.XTrackBar.TabIndex = 1;
-			this.XTrackBar.TickStyle = System.Windows.Forms.TickStyle.Both;
-			this.XTrackBar.Value = 10;
-			this.XTrackBar.ValueChanged += new System.EventHandler(this.XTrackBar_ValueChanged);
-			// 
 			// YTrackBar
 			// 
 			this.YTrackBar.Dock = System.Windows.Forms.DockStyle.Left;
+			this.YTrackBar.LargeChange = 1;
 			this.YTrackBar.Location = new System.Drawing.Point(3, 18);
 			this.YTrackBar.Maximum = 15;
 			this.YTrackBar.Minimum = 5;
@@ -154,6 +144,30 @@
 			this.YTrackBar.TickStyle = System.Windows.Forms.TickStyle.Both;
 			this.YTrackBar.Value = 10;
 			this.YTrackBar.ValueChanged += new System.EventHandler(this.YTrackBar_ValueChanged);
+			this.YTrackBar.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.All_KeyPress);
+			// 
+			// XTrackBar
+			// 
+			this.XTrackBar.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.XTrackBar.LargeChange = 1;
+			this.XTrackBar.Location = new System.Drawing.Point(3, 252);
+			this.XTrackBar.Maximum = 15;
+			this.XTrackBar.Minimum = 5;
+			this.XTrackBar.Name = "XTrackBar";
+			this.XTrackBar.Size = new System.Drawing.Size(144, 45);
+			this.XTrackBar.TabIndex = 1;
+			this.XTrackBar.TickStyle = System.Windows.Forms.TickStyle.Both;
+			this.XTrackBar.Value = 10;
+			this.XTrackBar.ValueChanged += new System.EventHandler(this.XTrackBar_ValueChanged);
+			// 
+			// label1
+			// 
+			this.label1.AutoSize = true;
+			this.label1.Location = new System.Drawing.Point(54, 18);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(11, 14);
+			this.label1.TabIndex = 2;
+			this.label1.Text = " ";
 			// 
 			// AudioPanel
 			// 
@@ -168,8 +182,8 @@
 			this.panel1.ResumeLayout(false);
 			this.groupBox1.ResumeLayout(false);
 			this.groupBox1.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.XTrackBar)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.YTrackBar)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.XTrackBar)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -184,5 +198,6 @@
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.TrackBar XTrackBar;
 		private System.Windows.Forms.TrackBar YTrackBar;
+		private System.Windows.Forms.Label label1;
 	}
 }

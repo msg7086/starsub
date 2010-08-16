@@ -49,5 +49,11 @@ namespace starsub
 				t.Start();
 			}
 		}
+
+		private void FormMain_KeyPress(object sender, KeyPressEventArgs e)
+		{
+			if (e.KeyChar == ' ')
+				Text += "A";
+		}
 	}
 }

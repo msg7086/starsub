@@ -9,6 +9,7 @@ namespace starsub
 {
 	public partial class AudioPanel : UserControl
 	{
+		public new event KeyPressEventHandler KeyPress;
 		public AudioPanel()
 		{
 			InitializeComponent();
@@ -398,11 +399,18 @@ namespace starsub
 		{
 			MyYScale = YTrackBar.Value * YTrackBar.Value * YTrackBar.Value / 1000f;
 			YScale = Convert.ToInt32(MaxPeakValue / (WaveDisplay.Height - 30) * 2 / MyYScale);
+			label1.Text = string.Format("X: {0:0.00}{1}Y: {2:0.00}", XScale, Environment.NewLine, MyYScale);
 		}
 
 		private void XTrackBar_ValueChanged(object sender, EventArgs e)
 		{
-			XScale = XTrackBar.Value * XTrackBar.Value * XTrackBar.Value / 1000f;
+			XScale = XTrackBar.Value * XTrackBar.Value / 100f;
+			label1.Text = string.Format("X: {0:0.00}{1}Y: {2:0.00}", XScale, Environment.NewLine, MyYScale);
+		}
+
+		private void All_KeyPress(object sender, KeyPressEventArgs e)
+		{
+			KeyPress(sender, e);
 		}
 
 	}
