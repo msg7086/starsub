@@ -38,9 +38,9 @@
 			this.OpenAudioDialog = new System.Windows.Forms.OpenFileDialog();
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
 			this.listView1 = new System.Windows.Forms.ListView();
+			this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
 			this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
 			this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
-			this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.DialogTextBox = new System.Windows.Forms.TextBox();
 			this.StartTimeBox = new System.Windows.Forms.MaskedTextBox();
@@ -114,7 +114,7 @@
 			// 
 			// OpenAudioDialog
 			// 
-			this.OpenAudioDialog.Filter = "Audio files|*.mp3|All files|*.*";
+			this.OpenAudioDialog.Filter = "Audio files|*.mp3;*.wav;*.ogg|All files|*.*";
 			// 
 			// splitContainer1
 			// 
@@ -148,15 +148,20 @@
 			this.listView1.GridLines = true;
 			this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
 			this.listView1.HideSelection = false;
-			this.listView1.Location = new System.Drawing.Point(0, 36);
+			this.listView1.Location = new System.Drawing.Point(0, 30);
 			this.listView1.Name = "listView1";
-			this.listView1.Size = new System.Drawing.Size(692, 202);
+			this.listView1.Size = new System.Drawing.Size(692, 208);
 			this.listView1.TabIndex = 0;
 			this.listView1.UseCompatibleStateImageBehavior = false;
 			this.listView1.View = System.Windows.Forms.View.Details;
 			this.listView1.DoubleClick += new System.EventHandler(this.listView1_DoubleClick);
 			this.listView1.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.listView1_ItemSelectionChanged);
 			this.listView1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FormMain_KeyPress);
+			// 
+			// columnHeader3
+			// 
+			this.columnHeader3.DisplayIndex = 2;
+			this.columnHeader3.Width = 320;
 			// 
 			// columnHeader1
 			// 
@@ -170,40 +175,35 @@
 			this.columnHeader2.Text = "End";
 			this.columnHeader2.Width = 100;
 			// 
-			// columnHeader3
-			// 
-			this.columnHeader3.DisplayIndex = 2;
-			this.columnHeader3.Width = 320;
-			// 
 			// panel1
 			// 
 			this.panel1.Controls.Add(this.DialogTextBox);
 			this.panel1.Controls.Add(this.StartTimeBox);
 			this.panel1.Controls.Add(this.EndTimeBox);
 			this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-			this.panel1.Font = new System.Drawing.Font("Lucida Console", 14F);
+			this.panel1.Font = new System.Drawing.Font("Lucida Console", 12F);
 			this.panel1.Location = new System.Drawing.Point(0, 0);
 			this.panel1.Name = "panel1";
 			this.panel1.Padding = new System.Windows.Forms.Padding(3);
-			this.panel1.Size = new System.Drawing.Size(692, 36);
+			this.panel1.Size = new System.Drawing.Size(692, 30);
 			this.panel1.TabIndex = 2;
 			// 
 			// DialogTextBox
 			// 
 			this.DialogTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.DialogTextBox.Location = new System.Drawing.Point(311, 3);
+			this.DialogTextBox.Location = new System.Drawing.Point(243, 3);
 			this.DialogTextBox.Name = "DialogTextBox";
-			this.DialogTextBox.Size = new System.Drawing.Size(378, 26);
+			this.DialogTextBox.Size = new System.Drawing.Size(446, 23);
 			this.DialogTextBox.TabIndex = 2;
 			// 
 			// StartTimeBox
 			// 
 			this.StartTimeBox.Dock = System.Windows.Forms.DockStyle.Left;
 			this.StartTimeBox.InsertKeyMode = System.Windows.Forms.InsertKeyMode.Overwrite;
-			this.StartTimeBox.Location = new System.Drawing.Point(141, 3);
+			this.StartTimeBox.Location = new System.Drawing.Point(123, 3);
 			this.StartTimeBox.Mask = "0:90:00.00";
 			this.StartTimeBox.Name = "StartTimeBox";
-			this.StartTimeBox.Size = new System.Drawing.Size(170, 26);
+			this.StartTimeBox.Size = new System.Drawing.Size(120, 23);
 			this.StartTimeBox.TabIndex = 0;
 			this.StartTimeBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			// 
@@ -214,13 +214,13 @@
 			this.EndTimeBox.Location = new System.Drawing.Point(3, 3);
 			this.EndTimeBox.Mask = "0:90:00.00";
 			this.EndTimeBox.Name = "EndTimeBox";
-			this.EndTimeBox.Size = new System.Drawing.Size(138, 26);
+			this.EndTimeBox.Size = new System.Drawing.Size(120, 23);
 			this.EndTimeBox.TabIndex = 1;
 			this.EndTimeBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			// 
 			// OpenSubDialog
 			// 
-			this.OpenSubDialog.Filter = "Subtitle files|*.ass|All files|*.*";
+			this.OpenSubDialog.Filter = "Subtitle files|*.ass;*.ssa|All files|*.*";
 			// 
 			// audioPanel1
 			// 
