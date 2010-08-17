@@ -37,16 +37,17 @@
 			this.playPauseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.OpenAudioDialog = new System.Windows.Forms.OpenFileDialog();
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-			this.audioPanel1 = new starsub.AudioPanel();
 			this.listView1 = new System.Windows.Forms.ListView();
-			this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
-			this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
-			this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
+			this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.DialogTextBox = new System.Windows.Forms.TextBox();
 			this.StartTimeBox = new System.Windows.Forms.MaskedTextBox();
 			this.EndTimeBox = new System.Windows.Forms.MaskedTextBox();
 			this.OpenSubDialog = new System.Windows.Forms.OpenFileDialog();
+			this.audioPanel1 = new starsub.AudioPanel();
+			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.menuStrip1.SuspendLayout();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
@@ -101,7 +102,8 @@
 			// controlToolStripMenuItem
 			// 
 			this.controlToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.playPauseToolStripMenuItem});
+            this.playPauseToolStripMenuItem,
+            this.toolStripSeparator2});
 			this.controlToolStripMenuItem.Name = "controlToolStripMenuItem";
 			this.controlToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
 			this.controlToolStripMenuItem.Text = "&Control";
@@ -109,7 +111,7 @@
 			// playPauseToolStripMenuItem
 			// 
 			this.playPauseToolStripMenuItem.Name = "playPauseToolStripMenuItem";
-			this.playPauseToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
+			this.playPauseToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.playPauseToolStripMenuItem.Text = "&Play/Pause";
 			// 
 			// OpenAudioDialog
@@ -127,25 +129,15 @@
 			// splitContainer1.Panel1
 			// 
 			this.splitContainer1.Panel1.Controls.Add(this.audioPanel1);
-			this.splitContainer1.Panel1MinSize = 200;
+			this.splitContainer1.Panel1MinSize = 300;
 			// 
 			// splitContainer1.Panel2
 			// 
 			this.splitContainer1.Panel2.Controls.Add(this.listView1);
 			this.splitContainer1.Panel2.Controls.Add(this.panel1);
-			this.splitContainer1.Size = new System.Drawing.Size(692, 442);
-			this.splitContainer1.SplitterDistance = 200;
+			this.splitContainer1.Size = new System.Drawing.Size(692, 538);
+			this.splitContainer1.SplitterDistance = 300;
 			this.splitContainer1.TabIndex = 4;
-			// 
-			// audioPanel1
-			// 
-			this.audioPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.audioPanel1.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-			this.audioPanel1.Location = new System.Drawing.Point(0, 0);
-			this.audioPanel1.Name = "audioPanel1";
-			this.audioPanel1.Size = new System.Drawing.Size(692, 200);
-			this.audioPanel1.TabIndex = 0;
-			this.audioPanel1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FormMain_KeyPress);
 			// 
 			// listView1
 			// 
@@ -160,12 +152,12 @@
 			this.listView1.HideSelection = false;
 			this.listView1.Location = new System.Drawing.Point(0, 30);
 			this.listView1.Name = "listView1";
-			this.listView1.Size = new System.Drawing.Size(692, 208);
+			this.listView1.Size = new System.Drawing.Size(692, 204);
 			this.listView1.TabIndex = 0;
 			this.listView1.UseCompatibleStateImageBehavior = false;
 			this.listView1.View = System.Windows.Forms.View.Details;
-			this.listView1.DoubleClick += new System.EventHandler(this.listView1_DoubleClick);
 			this.listView1.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.listView1_ItemSelectionChanged);
+			this.listView1.DoubleClick += new System.EventHandler(this.listView1_DoubleClick);
 			this.listView1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FormMain_KeyPress);
 			// 
 			// columnHeader3
@@ -232,11 +224,26 @@
 			// 
 			this.OpenSubDialog.Filter = "Subtitle files|*.ass;*.ssa|All files|*.*";
 			// 
+			// audioPanel1
+			// 
+			this.audioPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.audioPanel1.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+			this.audioPanel1.Location = new System.Drawing.Point(0, 0);
+			this.audioPanel1.Name = "audioPanel1";
+			this.audioPanel1.Size = new System.Drawing.Size(692, 300);
+			this.audioPanel1.TabIndex = 0;
+			this.audioPanel1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FormMain_KeyPress);
+			// 
+			// toolStripSeparator2
+			// 
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			this.toolStripSeparator2.Size = new System.Drawing.Size(149, 6);
+			// 
 			// FormMain
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 14F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(692, 466);
+			this.ClientSize = new System.Drawing.Size(692, 562);
 			this.Controls.Add(this.splitContainer1);
 			this.Controls.Add(this.menuStrip1);
 			this.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -279,5 +286,6 @@
 		private System.Windows.Forms.TextBox DialogTextBox;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.OpenFileDialog OpenSubDialog;
+				private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 	}
 }

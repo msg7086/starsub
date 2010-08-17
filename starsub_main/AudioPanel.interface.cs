@@ -85,7 +85,7 @@ namespace starsub
 				SliceCount = AudioLength / SliceSizeMS;
 				Invoke(new MethodInvoker(() =>
 				{
-					progressBar1.Maximum = Convert.ToInt32(SliceCount);
+					progressBar1.Maximum = Convert.ToInt32(SliceCount) / 1000;
 					progressBar1.Value = 0;
 					progressBar1.Visible = true;
 				}));
@@ -112,7 +112,7 @@ namespace starsub
 					weakdata[pos] = weak;
 					pos++;
 					if (pos < (SliceCount + 5) && pos % 500 == 0)
-						Invoke(new MethodInvoker(() => progressBar1.Value = Convert.ToInt32(pos)));
+						Invoke(new MethodInvoker(() => progressBar1.Value = Convert.ToInt32(pos) / 1000));
 					//	statusBar1.Text = string.Format(lang._("message", "openfile"), curraudio) + "  " + (pos * 100 / (SliceCount + 5)) + "%";
 				} while (SampleCount == BytePerSlice);
 				SliceCount = pos;
@@ -147,7 +147,7 @@ namespace starsub
 				fs = null;
 			}
 			//statusBar1.Text += " Done";
-			YScale = Convert.ToInt32(MaxPeakValue / (WaveDisplay.Height - 30) * 2 / MyYScale);
+			YScale = Convert.ToInt32(MaxPeakValue / (WaveDisplay.Height - 130) * 2 / MyYScale);
 			calcscrollbar();
 			Invoke(new MethodInvoker(() => WaveDisplay.Refresh()));
 			sound.release();
