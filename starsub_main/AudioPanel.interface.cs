@@ -35,8 +35,8 @@ namespace starsub
 			//statusBar1.Text = string.Format(lang._("message", "openfile"), curraudio);
 
 			FMOD.RESULT result = system.createStream(AudioFileName, FMOD.MODE.HARDWARE | FMOD.MODE.ACCURATETIME, ref sound);
-			sound.seekData(0);
 			ERRCHECK(result);
+			sound.seekData(0);
 
 			// build waveform data
 			/* the following variables used when loading from cache file:
@@ -82,6 +82,8 @@ namespace starsub
 				uint SampleCount = 0, AudioLength = 0;
 				sound.getLength(ref SampleCount, FMOD.TIMEUNIT.PCM);
 				sound.getLength(ref AudioLength, FMOD.TIMEUNIT.MS);
+				if (SampleCount > 4294967290 || AudioLength > 4294967290)
+					return;
 				uint SampleCountPerSlice = (uint)((ulong)SampleCount * 1000 / AudioLength) / SlicePerSecond;
 				SliceCount = AudioLength / SliceSizeMS;
 				Invoke(new MethodInvoker(() =>
@@ -206,7 +208,16 @@ namespace starsub
 		public string GetMouseTimeText()
 		{
 			var MS = MousePointMS;
-			return string.Format("{0:00}:{1:00}:{2:00}.{3:00}", MS / 3600000, MS % 3600000 / 60000, MS % 60000 / 1000, MS % 1000 / 10);
+			return string.Format("{0:0}:{1:00}:{2:00}.{3:00}", MS / 3600000, MS % 3600000 / 60000, MS % 60000 / 1000, MS % 1000 / 10);
+		}
+
+		public void Seek(int Milliseconds)
+		{
+			if (Milliseconds > AudioLengthMS - 100)
+				return;
+			MousePointMS = Convert.ToUInt32(Milliseconds);
+			SecondBar.Value = Math.Max(Milliseconds / 1000 - 1, 0);
+			WaveDisplay.Refresh();
 		}
 
 		public void RefreshWave()

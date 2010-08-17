@@ -1,6 +1,6 @@
 /* ========================================================================================== */
-/* FMOD Ex - C# Wrapper . Copyright (c), Firelight Technologies Pty, Ltd. 2004-2006.          */
 /*                                                                                            */
+/* FMOD Ex - C# Wrapper . Copyright (c), Firelight Technologies Pty, Ltd. 2004-2010.          */
 /*                                                                                            */
 /* ========================================================================================== */
 
@@ -16,8 +16,12 @@ namespace FMOD
     */
     public class VERSION
     {
-        public const int    number = 0x00040406;
-        public const string dll    = "fmodex.dll";
+        public const int    number = 0x00043200;
+#if WIN64
+        public const string dll    = "fmodex64";
+#else
+        public const string dll    = "fmodex";
+#endif
     }
 
     /*
@@ -34,7 +38,7 @@ namespace FMOD
         To use a right handed co-ordinate system specify FMOD_INIT_3D_RIGHTHANDED from FMOD_INITFLAGS in System::init.
 
         [PLATFORMS]
-        Win32, Win64, Linux, Macintosh, Xbox, Xbox360, PlayStation 2, GameCube, PlayStation Portable
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
 
         [SEE_ALSO]      
         System::set3DListenerAttributes
@@ -53,11 +57,66 @@ namespace FMOD
         FMOD_INITFLAGS
     ]
     */
+    [StructLayout(LayoutKind.Sequential)]
     public struct VECTOR
     {
         public float x;        /* X co-ordinate in 3D space. */
         public float y;        /* Y co-ordinate in 3D space. */
         public float z;        /* Z co-ordinate in 3D space. */
+    }
+
+
+    /*
+    [STRUCTURE] 
+    [
+        [DESCRIPTION]   
+        Structure describing a globally unique identifier.
+
+        [REMARKS]
+
+        [PLATFORMS]
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
+
+        [SEE_ALSO]      
+        System::getDriverInfo
+    ]
+    */
+    [StructLayout(LayoutKind.Sequential)]
+    public struct GUID
+    {
+        public uint   Data1;       /* Specifies the first 8 hexadecimal digits of the GUID */
+        public ushort Data2;       /* Specifies the first group of 4 hexadecimal digits.   */
+        public ushort Data3;       /* Specifies the second group of 4 hexadecimal digits.  */
+        [MarshalAs(UnmanagedType.ByValArray,SizeConst=8)]
+        public byte[] Data4;       /* Array of 8 bytes. The first 2 bytes contain the third group of 4 hexadecimal digits. The remaining 6 bytes contain the final 12 hexadecimal digits. */
+    }
+
+    /*
+    [STRUCTURE] 
+    [
+        [DESCRIPTION]   
+
+        [REMARKS]
+
+        [PLATFORMS]
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii, iPhone
+
+        [SEE_ALSO]      
+    ]
+    */
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ASYNCREADINFO
+    {
+        public IntPtr   handle;         /* [r] The file handle that was filled out in the open callback. */
+        public uint     offset;         /* [r] Seek position, make sure you read from this file offset. */
+        public uint     sizebytes;      /* [r] how many bytes requested for read. */
+        public int      priority;       /* [r] 0 = low importance.  100 = extremely important (ie 'must read now or stuttering may occur') */
+
+        public IntPtr   buffer;         /* [w] Buffer to read file data into. */
+        public uint     bytesread;      /* [w] Fill this in before setting result code to tell FMOD how many bytes were read. */
+        public RESULT   result;         /* [r/w] Result code, FMOD_OK tells the system it is ready to consume the data.  Set this last!  Default value = FMOD_ERR_NOTREADY. */
+
+        public IntPtr   userdata;       /* [r] User data pointer. */
     }
 
     /*
@@ -69,12 +128,12 @@ namespace FMOD
         [REMARKS]
 
         [PLATFORMS]
-        Win32, Win64, Linux, Macintosh, Xbox, Xbox360, PlayStation 2, GameCube, PlayStation Portable
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
 
         [SEE_ALSO]      
     ]
     */
-    public enum RESULT
+    public enum RESULT :int
     {
         OK,                        /* No errors. */
         ERR_ALREADYLOCKED,         /* Tried to call lock a second time before unlock was called. */
@@ -97,6 +156,7 @@ namespace FMOD
         ERR_DSP_TOOMANYCONNECTIONS,/* DSP connection error.  The unit being connected to or disconnected should only have 1 input or output. */
         ERR_FILE_BAD,              /* Error loading file. */
         ERR_FILE_COULDNOTSEEK,     /* Couldn't perform seek operation.  This is a limitation of the medium (ie netstreams) or the file format. */
+        ERR_FILE_DISKEJECTED,      /* Media was ejected while reading. */
         ERR_FILE_EOF,              /* End of file unexpectedly reached while trying to read essential data (truncated data?). */
         ERR_FILE_NOTFOUND,         /* File not found. */
         ERR_FILE_UNWANTED,         /* Unwanted file access occured. */
@@ -108,12 +168,19 @@ namespace FMOD
         ERR_HTTP_TIMEOUT,          /* The HTTP request timed out. */
         ERR_INITIALIZATION,        /* FMOD was not initialized correctly to support this function. */
         ERR_INITIALIZED,           /* Cannot call this command after System::init. */
-        ERR_INTERNAL,              /* An error occured that wasnt supposed to.  Contact support. */
+        ERR_INTERNAL,              /* An error occured that wasn't supposed to.  Contact support. */
+        ERR_INVALID_ADDRESS,       /* On Xbox 360, this memory address passed to FMOD must be physical, (ie allocated with XPhysicalAlloc.) */
+        ERR_INVALID_FLOAT,         /* Value passed in was a NaN, Inf or denormalized float. */
         ERR_INVALID_HANDLE,        /* An invalid object handle was used. */
         ERR_INVALID_PARAM,         /* An invalid parameter was passed to this function. */
+        ERR_INVALID_POSITION,      /* An invalid seek position was passed to this function. */
         ERR_INVALID_SPEAKER,       /* An invalid speaker was passed to this function based on the current speaker mode. */
+        ERR_INVALID_SYNCPOINT,     /* The syncpoint did not come from this sound handle. */
+        ERR_INVALID_VECTOR,        /* The vectors passed in are not unit length, or perpendicular. */
         ERR_IRX,                   /* PS2 only.  fmodex.irx failed to initialize.  This is most likely because you forgot to load it. */
+        ERR_MAXAUDIBLE,            /* Reached maximum audible playback count for this sound's soundgroup. */
         ERR_MEMORY,                /* Not enough memory or resources. */
+        ERR_MEMORY_CANTPOINT,      /* Can't use FMOD_OPENMEMORY_POINT on non PCM source data, or non mp3/xma/adpcm data if CREATECOMPRESSEDSAMPLE was used. */
         ERR_MEMORY_IOP,            /* PS2 only.  Not enough memory or resources on PlayStation 2 IOP ram. */
         ERR_MEMORY_SRAM,           /* Not enough memory or resources on console sound ram. */
         ERR_NEEDS2D,               /* Tried to call a command on a 3d sound when the command was meant for 2d sound. */
@@ -123,29 +190,51 @@ namespace FMOD
         ERR_NET_CONNECT,           /* Couldn't connect to the specified host. */
         ERR_NET_SOCKET_ERROR,      /* A socket error occurred.  This is a catch-all for socket-related errors not listed elsewhere. */
         ERR_NET_URL,               /* The specified URL couldn't be resolved. */
+        ERR_NET_WOULD_BLOCK,       /* Operation on a non-blocking socket could not complete immediately. */
         ERR_NOTREADY,              /* Operation could not be performed because specified sound is not ready. */
         ERR_OUTPUT_ALLOCATED,      /* Error initializing output device, but more specifically, the output device is already in use and cannot be reused. */
         ERR_OUTPUT_CREATEBUFFER,   /* Error creating hardware sound buffer. */
         ERR_OUTPUT_DRIVERCALL,     /* A call to a standard soundcard driver failed, which could possibly mean a bug in the driver or resources were missing or exhausted. */
+        ERR_OUTPUT_ENUMERATION,    /* Error enumerating the available driver list. List may be inconsistent due to a recent device addition or removal. */
         ERR_OUTPUT_FORMAT,         /* Soundcard does not support the minimum features needed for this soundsystem (16bit stereo output). */
         ERR_OUTPUT_INIT,           /* Error initializing output device. */
         ERR_OUTPUT_NOHARDWARE,     /* FMOD_HARDWARE was specified but the sound card does not have the resources nescessary to play it. */
         ERR_OUTPUT_NOSOFTWARE,     /* Attempted to create a software sound but no software channels were specified in System::init. */
         ERR_PAN,                   /* Panning only works with mono or stereo sound sources. */
         ERR_PLUGIN,                /* An unspecified error has been returned from a 3rd party plugin. */
+        ERR_PLUGIN_INSTANCES,      /* The number of allowed instances of a plugin has been exceeded */
         ERR_PLUGIN_MISSING,        /* A requested output, dsp unit type or codec was not available. */
         ERR_PLUGIN_RESOURCE,       /* A resource that the plugin requires cannot be found. (ie the DLS file for MIDI playback) */
+        ERR_PRELOADED,             /* The specified sound is still in use by the event system, call EventSystem::unloadFSB before trying to release it. */
+        ERR_PROGRAMMERSOUND,       /* The specified sound is still in use by the event system, wait for the event which is using it finish with it. */
         ERR_RECORD,                /* An error occured trying to initialize the recording device. */
-        ERR_REVERB_INSTANCE,       /* Specified Instance in FMOD_REVERB_PROPERTIES couldn't be set. Most likely because another application has locked the EAX4 FX slot. */
-        ERR_SUBSOUNDS,             /* The error occured because the sound referenced contains subsounds.  (ie you cannot play the parent sound as a static sample, only its subsounds.) */
+        ERR_REVERB_INSTANCE,       /* Specified Instance in REVERB_PROPERTIES couldn't be set. Most likely because another application has locked the EAX4 FX slot. */
         ERR_SUBSOUND_ALLOCATED,    /* This subsound is already being used by another sound, you cannot have more than one parent to a sound.  Null out the other parent's entry first. */
+        ERR_SUBSOUND_CANTMOVE,     /* Shared subsounds cannot be replaced or moved from their parent stream, such as when the parent stream is an FSB file. */
+        ERR_SUBSOUND_MODE,         /* The subsound's mode bits do not match with the parent sound's mode bits.  See documentation for function that it was called with. */
+        ERR_SUBSOUNDS,             /* The error occured because the sound referenced contains subsounds.  (ie you cannot play the parent sound as a static sample, only its subsounds.) */
         ERR_TAGNOTFOUND,           /* The specified tag could not be found or there are no tags. */
-        ERR_TOOMANYCHANNELS,       /* The sound created exceeds the allowable input channel count.  This can be increased with System::setMaxInputChannels. */
+        ERR_TOOMANYCHANNELS,       /* The sound created exceeds the allowable input channel count.  This can be increased using the maxinputchannels parameter in System::setSoftwareFormat. */
         ERR_UNIMPLEMENTED,         /* Something in FMOD hasn't been implemented when it should be! contact support! */
         ERR_UNINITIALIZED,         /* This command failed because System::init or System::setDriver was not called. */
         ERR_UNSUPPORTED,           /* A command issued was not supported by this object.  Possibly a plugin without certain callbacks specified. */
-        ERR_UPDATE,                /* On PS2, System::update was called twice in a row when System::updateFinished must be called first. */
+        ERR_UPDATE,                /* An error caused by System::update occured. */
         ERR_VERSION,               /* The version number of this file format is not supported. */
+
+        ERR_EVENT_FAILED,          /* An Event failed to be retrieved, most likely due to 'just fail' being specified as the max playbacks behavior. */
+        ERR_EVENT_INFOONLY,        /* Can't execute this command on an EVENT_INFOONLY event. */
+        ERR_EVENT_INTERNAL,        /* An error occured that wasn't supposed to.  See debug log for reason. */
+        ERR_EVENT_MAXSTREAMS,      /* Event failed because 'Max streams' was hit when FMOD_INIT_FAIL_ON_MAXSTREAMS was specified. */
+        ERR_EVENT_MISMATCH,        /* FSB mis-matches the FEV it was compiled with. */
+        ERR_EVENT_NAMECONFLICT,    /* A category with the same name already exists. */
+        ERR_EVENT_NOTFOUND,        /* The requested event, event group, event category or event property could not be found. */
+        ERR_EVENT_NEEDSSIMPLE,     /* Tried to call a function on a complex event that's only supported by simple events. */
+        ERR_EVENT_GUIDCONFLICT,    /* An event with the same GUID already exists. */
+        ERR_EVENT_ALREADY_LOADED,  /* The specified project has already been loaded. Having multiple copies of the same project loaded simultaneously is forbidden. */
+
+        ERR_MUSIC_UNINITIALIZED,   /* Music system is not initialized probably because no music data is loaded. */
+        ERR_MUSIC_NOTFOUND,        /* The requested music entity could not be found. */
+        ERR_MUSIC_NOCALLBACK,      /* The music callback is required, but it has not been set. */
     }
 
 
@@ -167,7 +256,7 @@ namespace FMOD
         Currently these are the only FMOD drivers that take extra information.  Other unknown plugins may have different requirements.
 
         [PLATFORMS]
-        Win32, Win64, Linux, Macintosh, Xbox, Xbox360, PlayStation 2, GameCube, PlayStation Portable
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
 
         [SEE_ALSO]      
         System::setOutput
@@ -177,7 +266,7 @@ namespace FMOD
         System::init
     ]
     */
-    public enum OUTPUTTYPE
+    public enum OUTPUTTYPE :int
     {
         AUTODETECT,    /* Picks the best output mode for the platform.  This is the default. */
 
@@ -187,20 +276,24 @@ namespace FMOD
         NOSOUND_NRT,   /* All         - Non-realtime version of FMOD_OUTPUTTYPE_NOSOUND.  User can drive mixer with System::update at whatever rate they want. */
         WAVWRITER_NRT, /* All         - Non-realtime version of FMOD_OUTPUTTYPE_WAVWRITER.  User can drive mixer with System::update at whatever rate they want. */
 
-        DSOUND,        /* Win32/Win64 - DirectSound output.  Use this to get hardware accelerated 3d audio and EAX Reverb support. (Default on Windows) */
-        WINMM,         /* Win32/Win64 - Windows Multimedia output. */
-        ASIO,          /* Win32       - Low latency ASIO driver. */
-        OSS,           /* Linux       - Open Sound System output. */
-        ALSA,          /* Linux       - Advanced Linux Sound Architecture output. */
-        ESD,           /* Linux       - Enlightment Sound Daemon output. */
-        SOUNDMANAGER,  /* Mac         - Macintosh SoundManager output. */
-        COREAUDIO,     /* Mac         - Macintosh CoreAudio output */
-        XBOX,          /* Xbox        - Native hardware output. */
-        PS2,           /* PS2         - Native hardware output. */
-        GC,            /* GameCube    - Native hardware output. */
-        XBOX360,       /* Xbox 360    - Native hardware output. */
-        PSP,           /* PSP         - Native hardware output. */
-        OPENAL,        /* Win32/Win64 - OpenAL 1.1 output. Use this for lower CPU overhead than FMOD_OUTPUTTYPE_DSOUND, and also Vista H/W support with Creative Labs cards. */
+        DSOUND,        /* Win32/Win64   - DirectSound output.  Use this to get hardware accelerated 3d audio and EAX Reverb support. (Default on Windows) */
+        WINMM,         /* Win32/Win64   - Windows Multimedia output. */
+        WASAPI,        /* Win32         - Windows Audio Session API. (Default on Windows Vista) */        
+        ASIO,          /* Win32         - Low latency ASIO driver. */
+        OSS,           /* Linux         - Open Sound System output. */
+        ALSA,          /* Linux         - Advanced Linux Sound Architecture output. */
+        ESD,           /* Linux         - Enlightment Sound Daemon output. */
+        SOUNDMANAGER,  /* Mac           - Macintosh SoundManager output. */
+        PULSEAUDIO,    /* Linux/Linux64 - PulseAudio output. */
+        COREAUDIO,     /* Mac           - Macintosh CoreAudio output */
+        XBOX,          /* Xbox          - Native hardware output. */
+        PS2,           /* PS2           - Native hardware output. */
+        PS3,           /* PS3           - Native hardware output. (Default on PS3) */
+        GC,            /* GameCube      - Native hardware output. */
+        XBOX360,       /* Xbox 360      - Native hardware output. */
+        PSP,           /* PSP           - Native hardware output. */
+        WII,           /* Wii           - Native hardware output. (Default on Wii) */
+        ANDROID,       /* Android       - Native android output. */
 
         MAX            /* Maximum number of output types supported. */
     }
@@ -214,7 +307,7 @@ namespace FMOD
         [REMARKS]
 
         [PLATFORMS]
-        Win32, Win64, Linux, Macintosh, Xbox, Xbox360, PlayStation 2, GameCube, PlayStation Portable
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
 
         [SEE_ALSO]
     ]
@@ -223,7 +316,7 @@ namespace FMOD
     {
         NONE                   = 0x00000000,    /* Device has no special capabilities. */
         HARDWARE               = 0x00000001,    /* Device supports hardware mixing. */
-        HARDWARE_EMULATED      = 0x00000002,    /* Device supports FMOD_HARDWARE but it will be mixed on the CPU by the kernel (not FMOD's software mixer). */
+        HARDWARE_EMULATED      = 0x00000002,    /* User has device set to 'Hardware acceleration = off' in control panel, and now extra 200ms latency is incurred. */
         OUTPUT_MULTICHANNEL    = 0x00000004,    /* Device can do multichannel output, ie greater than 2 channels. */
         OUTPUT_FORMAT_PCM8     = 0x00000008,    /* Device can output to 8bit integer PCM. */
         OUTPUT_FORMAT_PCM16    = 0x00000010,    /* Device can output to 16bit integer PCM. */
@@ -233,8 +326,83 @@ namespace FMOD
         REVERB_EAX2            = 0x00000100,    /* Device supports EAX2 reverb. */
         REVERB_EAX3            = 0x00000200,    /* Device supports EAX3 reverb. */
         REVERB_EAX4            = 0x00000400,    /* Device supports EAX4 reverb  */
-        REVERB_I3DL2           = 0x00000800,    /* Device supports I3DL2 reverb. */
-        REVERB_LIMITED         = 0x00001000     /* Device supports some form of limited hardware reverb, maybe parameterless and only selectable by environment. */
+        REVERB_EAX5            = 0x00000800,    /* Device supports EAX5 reverb  */
+        REVERB_I3DL2           = 0x00001000,    /* Device supports I3DL2 reverb. */
+        REVERB_LIMITED         = 0x00002000     /* Device supports some form of limited hardware reverb, maybe parameterless and only selectable by environment. */
+    }
+
+    /*
+    [DEFINE] 
+    [
+        [NAME]
+        FMOD_DEBUGLEVEL
+
+        [DESCRIPTION]   
+        Bit fields to use with FMOD::Debug_SetLevel / FMOD::Debug_GetLevel to control the level of tty debug output with logging versions of FMOD (fmodL).
+
+        [REMARKS]
+
+        [PLATFORMS]
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
+
+        [SEE_ALSO]
+        Debug_SetLevel 
+        Debug_GetLevel
+    ]
+    */
+    public enum DEBUGLEVEL
+    {
+        LEVEL_NONE           = 0x00000000,
+        LEVEL_LOG            = 0x00000001,
+        LEVEL_ERROR          = 0x00000002,
+        LEVEL_WARNING        = 0x00000004,
+        LEVEL_HINT           = 0x00000008,
+        LEVEL_ALL            = 0x000000FF,   
+        TYPE_MEMORY          = 0x00000100,
+        TYPE_THREAD          = 0x00000200,
+        TYPE_FILE            = 0x00000400,
+        TYPE_NET             = 0x00000800,
+        TYPE_EVENT           = 0x00001000,
+        TYPE_ALL             = 0x0000FFFF,                     
+        DISPLAY_TIMESTAMPS   = 0x01000000,
+        DISPLAY_LINENUMBERS  = 0x02000000,
+        DISPLAY_COMPRESS     = 0x04000000,
+        DISPLAY_THREAD       = 0x08000000,
+        DISPLAY_ALL          = 0x0F000000,   
+        ALL                  = unchecked((int)0xffffffff)
+    }
+
+
+    /*
+    [DEFINE] 
+    [
+        [NAME]
+        FMOD_MEMORY_TYPE
+
+        [DESCRIPTION]   
+        Bit fields for memory allocation type being passed into FMOD memory callbacks.
+
+        [REMARKS]
+
+        [PLATFORMS]
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
+
+        [SEE_ALSO]
+        FMOD_MEMORY_ALLOCCALLBACK
+        FMOD_MEMORY_REALLOCCALLBACK
+        FMOD_MEMORY_FREECALLBACK
+        Memory_Initialize
+    
+    ]
+    */
+    public enum MEMORY_TYPE
+    {
+        NORMAL           = 0x00000000,       /* Standard memory. */
+        STREAM_FILE      = 0x00000001,       /* Stream file buffer, size controllable with System::setStreamBufferSize. */
+        STREAM_DECODE    = 0x00000002,       /* Stream decode buffer, size controllable with FMOD_CREATESOUNDEXINFO::decodebuffersize. */
+        XBOX360_PHYSICAL = 0x00100000,       /* Requires XPhysicalAlloc / XPhysicalFree. */
+        PERSISTENT       = 0x00200000,       /* Persistent memory. Memory will be freed when System::release is called. */
+        SECONDARY        = 0x00400000        /* Secondary memory. Allocation should be in secondary memory. For example RSX on the PS3. */
     }
 
 
@@ -330,7 +498,7 @@ namespace FMOD
         sound should be placed in.<br>
 
         [PLATFORMS]
-        Win32, Win64, Linux, Macintosh, Xbox, Xbox360, PlayStation 2, GameCube, PlayStation Portable
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
 
         [SEE_ALSO]
         System::setSpeakerMode
@@ -339,7 +507,7 @@ namespace FMOD
         Channel::setSpeakerLevels
     ]
     */
-    public enum SPEAKERMODE
+    public enum SPEAKERMODE :int
     {
         RAW,              /* There is no specific speakermode.  Sound channels are mapped in order of input to output.  See remarks for more information. */
         MONO,             /* The speakers are monaural. */
@@ -350,7 +518,7 @@ namespace FMOD
         _7POINT1,         /* 7.1 speaker setup.  This includes front left, front right, center, rear left, rear right, side left, side right and a subwoofer. */
         PROLOGIC,         /* Stereo output, but data is encoded in a way that is picked up by a Prologic/Prologic2 decoder and split into a 5.1 speaker setup. */
 
-        FMOD_SPEAKERMODE_MAX,              /* Maximum number of speaker modes supported. */
+        MAX,              /* Maximum number of speaker modes supported. */
     }
 
 
@@ -367,7 +535,7 @@ namespace FMOD
         Values higher than this can be used if an output system has more than 8 speaker types / output channels.  15 is the current maximum.
 
         [PLATFORMS]
-        Win32, Win64, Linux, Macintosh, Xbox, Xbox360, PlayStation 2, GameCube, PlayStation Portable
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
 
         [SEE_ALSO]
         FMOD_SPEAKERMODE
@@ -377,7 +545,7 @@ namespace FMOD
         System::getSpeakerPosition
     ]
     */
-    public enum SPEAKER
+    public enum SPEAKER :int
     {
         FRONT_LEFT,
         FRONT_RIGHT,
@@ -388,9 +556,11 @@ namespace FMOD
         SIDE_LEFT,
         SIDE_RIGHT,
     
-        MAX,                          /* Maximum number of speaker types supported. */
-        MONO        = FRONT_LEFT,     /* For use with FMOD_SPEAKERMODE_MONO and Channel::SetSpeakerLevels.  Mapped to same value as FMOD_SPEAKER_FRONT_LEFT. */
-        BACK_CENTER = LOW_FREQUENCY,  /* For use with FMOD_SPEAKERMODE_SURROUND and Channel::SetSpeakerLevels only.  Mapped to same value as FMOD_SPEAKER_LOW_FREQUENCY. */
+        MAX,                               /* Maximum number of speaker types supported. */
+        MONO        = FRONT_LEFT,    /* For use with FMOD_SPEAKERMODE_MONO and Channel::SetSpeakerLevels.  Mapped to same value as FMOD_SPEAKER_FRONT_LEFT. */
+        NULL        = MAX,           /* A non speaker.  Use this to send. */
+        SBL         = SIDE_LEFT,     /* For use with FMOD_SPEAKERMODE_7POINT1 on PS3 where the extra speakers are surround back inside of side speakers. */
+        SBR         = SIDE_RIGHT,    /* For use with FMOD_SPEAKERMODE_7POINT1 on PS3 where the extra speakers are surround back inside of side speakers. */
     }
 
 
@@ -404,7 +574,7 @@ namespace FMOD
         [REMARKS]
 
         [PLATFORMS]
-        Win32, Win64, Linux, Macintosh, Xbox, Xbox360, PlayStation 2, GameCube, PlayStation Portable
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
 
         [SEE_ALSO]
         System::getNumPlugins
@@ -412,7 +582,7 @@ namespace FMOD
         System::unloadPlugin
     ]
     */
-    public enum PLUGINTYPE
+    public enum PLUGINTYPE :int
     {
         OUTPUT,     /* The plugin type is an output module.  FMOD mixed audio will play through one of these devices */
         CODEC,      /* The plugin type is a file format codec.  FMOD will use these codecs to load file formats for playback. */
@@ -429,24 +599,35 @@ namespace FMOD
         [REMARKS]
 
         [PLATFORMS]
-        Win32, Win64, Linux, Macintosh, Xbox, Xbox360, PlayStation 2, GameCube, PlayStation Portable
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
 
         [SEE_ALSO]
         System::init
     ]
     */
-    public enum INITFLAG
+    public enum INITFLAGS :int
     {
         NORMAL                  = 0x00000000,   /* All platforms - Initialize normally */
         STREAM_FROM_UPDATE      = 0x00000001,   /* All platforms - No stream thread is created internally.  Streams are driven from System::update.  Mainly used with non-realtime outputs. */
         _3D_RIGHTHANDED         = 0x00000002,   /* All platforms - FMOD will treat +X as left, +Y as up and +Z as forwards. */
-        DISABLESOFTWARE         = 0x00000004,   /* All platforms - Disable software mixer to save memory.  Anything created with FMOD_SOFTWARE will fail and DSP will not work. */
-        DSOUND_HRTFNONE         = 0x00000200,   /* Win32 only - for DirectSound output - FMOD_HARDWARE | FMOD_3D buffers use simple stereo panning/doppler/attenuation when 3D hardware acceleration is not present. */
-        DSOUND_HRTFLIGHT        = 0x00000400,   /* Win32 only - for DirectSound output - FMOD_HARDWARE | FMOD_3D buffers use a slightly higher quality algorithm when 3D hardware acceleration is not present. */
-        DSOUND_HRTFFULL         = 0x00000800,   /* Win32 only - for DirectSound output - FMOD_HARDWARE | FMOD_3D buffers use full quality 3D playback when 3d hardware acceleration is not present. */
+        SOFTWARE_DISABLE        = 0x00000004,   /* All platforms - Disable software mixer to save memory.  Anything created with FMOD_SOFTWARE will fail and DSP will not work. */
+        SOFTWARE_OCCLUSION      = 0x00000008,   /* All platforms - All FMOD_SOFTWARE with FMOD_3D based voices will add a software lowpass filter effect into the DSP chain which is automatically used when Channel::set3DOcclusion is used or the geometry API. */
+        SOFTWARE_HRTF           = 0x00000010,   /* All platforms - All FMOD_SOFTWARE with FMOD_3D based voices will add a software lowpass filter effect into the DSP chain which causes sounds to sound duller when the sound goes behind the listener. */
+        SOFTWARE_REVERB_LOWMEM  = 0x00000040,   /* All platforms - SFX reverb is run using 22/24khz delay buffers, halving the memory required. */
+        ENABLE_PROFILE          = 0x00000020,   /* All platforms - Enable TCP/IP based host which allows "DSPNet Listener.exe" to connect to it, and view the DSP dataflow network graph in real-time. */
+        VOL0_BECOMES_VIRTUAL    = 0x00000080,   /* All platforms - Any sounds that are 0 volume will go virtual and not be processed except for having their positions updated virtually.  Use System::setAdvancedSettings to adjust what volume besides zero to switch to virtual at. */
+        WASAPI_EXCLUSIVE        = 0x00000100,   /* Win32 Vista only - for WASAPI output - Enable exclusive access to hardware, lower latency at the expense of excluding other applications from accessing the audio hardware. */
         PS2_DISABLECORE0REVERB  = 0x00010000,   /* PS2 only - Disable reverb on CORE 0 to regain SRAM. */
         PS2_DISABLECORE1REVERB  = 0x00020000,   /* PS2 only - Disable reverb on CORE 1 to regain SRAM. */
+        PS2_DONTUSESCRATCHPAD   = 0x00040000,   /* PS2 only - Disable FMOD's usage of the scratchpad. */
+        PS2_SWAPDMACHANNELS     = 0x00080000,   /* PS2 only - Changes FMOD from using SPU DMA channel 0 for software mixing, and 1 for sound data upload/file streaming, to 1 and 0 respectively. */
         XBOX_REMOVEHEADROOM     = 0x00100000,   /* XBox only - By default DirectSound attenuates all sound by 6db to avoid clipping/distortion.  CAUTION.  If you use this flag you are responsible for the final mix to make sure clipping / distortion doesn't happen. */
+        WII_DISABLEDOLBY        = 0x00100000,   /* Wii only - Disable Dolby Pro Logic surround. Speakermode will be set to STEREO even if user has selected surround in the Wii system settings. */
+        _360_MUSICMUTENOTPAUSE  = 0x00200000,   /* Xbox 360 only - The "music" channelgroup which by default pauses when custom 360 dashboard music is played, can be changed to mute (therefore continues playing) instead of pausing, by using this flag. */
+        SYNCMIXERWITHUPDATE     = 0x00400000,   /* Win32/Wii/PS3/Xbox 360 - FMOD Mixer thread is woken up to do a mix when System::update is called rather than waking periodically on its own timer. */
+        DTS_NEURALSURROUND      = 0x02000000,   /* Win32/Mac/Linux - Use DTS Neural surround downmixing from 7.1 if speakermode set to FMOD_SPEAKERMODE_STEREO or FMOD_SPEAKERMODE_5POINT1.  Internal DSP structure will be set to 7.1. */
+        GEOMETRY_USECLOSEST     = 0x04000000,   /* All platforms - With the geometry engine, only process the closest polygon rather than accumulating all polygons the sound to listener line intersects. */
+        DISABLE_MYEARS          = 0x08000000    /* Win32 - Disables MyEars HRTF 7.1 downmixing.  MyEars will otherwise be disbaled if speakermode is not set to FMOD_SPEAKERMODE_STEREO or the data file is missing. */
     }
 
 
@@ -459,7 +640,7 @@ namespace FMOD
         [REMARKS]
 
         [PLATFORMS]
-        Win32, Win64, Linux, Macintosh, Xbox, Xbox360, PlayStation 2, GameCube, PlayStation Portable
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
 
         [SEE_ALSO]      
         Sound::getFormat
@@ -467,27 +648,32 @@ namespace FMOD
     */
     public enum SOUND_TYPE
     {
-        UNKNOWN,    /* 3rd party / unknown plugin format. */
-        AIFF,       /* AIFF */
-        ASF,        /* Microsoft Advanced Systems Format (ie WMA/ASF/WMV) */
-        AAC,        /* AAC */
-        CDDA,       /* Digital CD audio */
-        DLS,        /* Sound font / downloadable sound bank. */
-        FLAC,       /* FLAC lossless codec. */
-        FSB,        /* FMOD Sample Bank */
-        GCADPCM,    /* GameCube ADPCM */
-        IT,         /* Impulse Tracker. */
-        MIDI,       /* MIDI */
-        MOD,        /* Protracker / Fasttracker MOD. */
-        MPEG,       /* MP2/MP3 MPEG. */
-        OGGVORBIS,  /* Ogg vorbis. */
-        PLAYLIST,   /* Information only from ASX/PLS/M3U/WAX playlists */
-        S3M,        /* ScreamTracker 3. */
-        SF2,        /* Sound font 2 format. */
-        RAW,        /* Raw PCM data. */
-        USER,       /* User created sound */
-        WAV,        /* Microsoft WAV. */
-        XM          /* FastTracker 2 XM. */
+        UNKNOWN,         /* 3rd party / unknown plugin format. */
+        AAC,             /* AAC.  Currently unsupported. */
+        AIFF,            /* AIFF. */
+        ASF,             /* Microsoft Advanced Systems Format (ie WMA/ASF/WMV). */
+        AT3,             /* Sony ATRAC 3 format */
+        CDDA,            /* Digital CD audio. */
+        DLS,             /* Sound font / downloadable sound bank. */
+        FLAC,            /* FLAC lossless codec. */
+        FSB,             /* FMOD Sample Bank. */
+        GCADPCM,         /* GameCube ADPCM */
+        IT,              /* Impulse Tracker. */
+        MIDI,            /* MIDI. */
+        MOD,             /* Protracker / Fasttracker MOD. */
+        MPEG,            /* MP2/MP3 MPEG. */
+        OGGVORBIS,       /* Ogg vorbis. */
+        PLAYLIST,        /* Information only from ASX/PLS/M3U/WAX playlists */
+        RAW,             /* Raw PCM data. */
+        S3M,             /* ScreamTracker 3. */
+        SF2,             /* Sound font 2 format. */
+        USER,            /* User created sound. */
+        WAV,             /* Microsoft WAV. */
+        XM,              /* FastTracker 2 XM. */
+        XMA,             /* Xbox360 XMA */
+        VAG,             /* PlayStation 2 / PlayStation Portable adpcm VAG format. */        
+        AUDIOQUEUE,      /* iPhone hardware decoder, supports AAC, ALAC and MP3. */
+        XWMA,            /* Xbox360 XWMA */
     }
 
 
@@ -501,14 +687,14 @@ namespace FMOD
         This is the format the native hardware or software buffer will be or is created in.
 
         [PLATFORMS]
-        Win32, Win64, Linux, Macintosh, Xbox, Xbox360, PlayStation 2, GameCube, PlayStation Portable
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
 
         [SEE_ALSO]
         System::createSoundEx
         Sound::getFormat
     ]
     */
-    public enum SOUND_FORMAT
+    public enum SOUND_FORMAT :int
     {
         NONE,     /* Unitialized / unknown */
         PCM8,     /* 8bit integer PCM data */
@@ -518,43 +704,44 @@ namespace FMOD
         PCMFLOAT, /* 32bit floating point PCM data  */
         GCADPCM,  /* Compressed GameCube DSP data */
         IMAADPCM, /* Compressed XBox ADPCM data */
-		VAG,      /* Compressed PlayStation 2 ADPCM data */
-		XMA,      /* Compressed Xbox360 data. */
-		MPEG,     /* Compressed MPEG layer 2 or 3 data. */
-		MAX       /* Maximum number of sound formats supported. */ 
+        VAG,      /* Compressed PlayStation 2 ADPCM data */
+        XMA,      /* Compressed Xbox360 data. */
+        MPEG,     /* Compressed MPEG layer 2 or 3 data. */
+        MAX,      /* Maximum number of sound formats supported. */ 
+        CELT      /* Compressed CELT data. */
     }
 
 
-	/*
-	[DEFINE]
-	[
-		[NAME] 
-		FMOD_MODE
+    /*
+    [DEFINE]
+    [
+        [NAME] 
+        FMOD_MODE
 
-		[DESCRIPTION]   
-		Sound description bitfields, bitwise OR them together for loading and describing sounds.
+        [DESCRIPTION]   
+        Sound description bitfields, bitwise OR them together for loading and describing sounds.
 
-		[REMARKS]
-		By default a sound will open as a static sound that is decompressed fully into memory.<br>
-		To have a sound stream instead, use FMOD_CREATESTREAM.<br>
-		Some opening modes (ie FMOD_OPENUSER, FMOD_OPENMEMORY, FMOD_OPENRAW) will need extra information.<br>
-		This can be provided using the FMOD_CREATESOUNDEXINFO structure.
+        [REMARKS]
+        By default a sound will open as a static sound that is decompressed fully into memory.<br>
+        To have a sound stream instead, use FMOD_CREATESTREAM.<br>
+        Some opening modes (ie FMOD_OPENUSER, FMOD_OPENMEMORY, FMOD_OPENRAW) will need extra information.<br>
+        This can be provided using the FMOD_CREATESOUNDEXINFO structure.
 
-		[PLATFORMS]
-		Win32, Win64, Linux, Macintosh, Xbox, Xbox360, PlayStation 2, GameCube, PlayStation Portable
+        [PLATFORMS]
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
 
-		[SEE_ALSO]
-		System::createSound
-		System::createStream
-		Sound::setMode
-		Sound::getMode
-		Channel::setMode
-		Channel::getMode
-		Sound::set3DCustomRolloff
+        [SEE_ALSO]
+        System::createSound
+        System::createStream
+        Sound::setMode
+        Sound::getMode
+        Channel::setMode
+        Channel::getMode
+        Sound::set3DCustomRolloff
         Channel::set3DCustomRolloff
-	]
-	*/
-	public enum MODE
+    ]
+    */
+    public enum MODE :uint
     {
         DEFAULT                = 0x00000000,  /* FMOD_DEFAULT is a default sound type.  Equivalent to all the defaults listed below.  FMOD_LOOP_OFF, FMOD_2D, FMOD_HARDWARE. */
         LOOP_OFF               = 0x00000001,  /* For non looping sounds. (default).  Overrides FMOD_LOOP_NORMAL / FMOD_LOOP_BIDI. */
@@ -569,22 +756,26 @@ namespace FMOD
         CREATECOMPRESSEDSAMPLE = 0x00000200,  /* Load MP2, MP3, IMAADPCM or XMA into memory and leave it compressed.  During playback the FMOD software mixer will decode it in realtime as a 'compressed sample'.  Can only be used in combination with FMOD_SOFTWARE. */
         OPENUSER               = 0x00000400,  /* Opens a user created static sample or stream. Use FMOD_CREATESOUNDEXINFO to specify format and/or read callbacks.  If a user created 'sample' is created with no read callback, the sample will be empty.  Use FMOD_Sound_Lock and FMOD_Sound_Unlock to place sound data into the sound if this is the case. */
         OPENMEMORY             = 0x00000800,  /* "name_or_data" will be interpreted as a pointer to memory instead of filename for creating sounds. */
+        OPENMEMORY_POINT       = 0x10000000,  /* "name_or_data" will be interpreted as a pointer to memory instead of filename for creating sounds.  Use FMOD_CREATESOUNDEXINFO to specify length.  This differs to FMOD_OPENMEMORY in that it uses the memory as is, without duplicating the memory into its own buffers.  FMOD_SOFTWARE only.  Doesn't work with FMOD_HARDWARE, as sound hardware cannot access main ram on a lot of platforms.  Cannot be freed after open, only after Sound::release.   Will not work if the data is compressed and FMOD_CREATECOMPRESSEDSAMPLE is not used. */
         OPENRAW                = 0x00001000,  /* Will ignore file format and treat as raw pcm.  User may need to declare if data is FMOD_SIGNED or FMOD_UNSIGNED */
         OPENONLY               = 0x00002000,  /* Just open the file, dont prebuffer or read.  Good for fast opens for info, or when sound::readData is to be used. */
         ACCURATETIME           = 0x00004000,  /* For FMOD_CreateSound - for accurate FMOD_Sound_GetLength / FMOD_Channel_SetPosition on VBR MP3, AAC and MOD/S3M/XM/IT/MIDI files.  Scans file first, so takes longer to open. FMOD_OPENONLY does not affect this. */
         MPEGSEARCH             = 0x00008000,  /* For corrupted / bad MP3 files.  This will search all the way through the file until it hits a valid MPEG header.  Normally only searches for 4k. */
-        NONBLOCKING            = 0x00010000,  /* For opening sounds asyncronously, return value from open function must be polled for when it is ready. */
+        NONBLOCKING            = 0x00010000,  /* For opening sounds and getting streamed subsounds (seeking) asyncronously.  Use Sound::getOpenState to poll the state of the sound as it opens or retrieves the subsound in the background. */
         UNIQUE                 = 0x00020000,  /* Unique sound, can only be played one at a time */
         _3D_HEADRELATIVE       = 0x00040000,  /* Make the sound's position, velocity and orientation relative to the listener. */
         _3D_WORLDRELATIVE      = 0x00080000,  /* Make the sound's position, velocity and orientation absolute (relative to the world). (DEFAULT) */
         _3D_LOGROLLOFF         = 0x00100000,  /* This sound will follow the standard logarithmic rolloff model where mindistance = full volume, maxdistance = where sound stops attenuating, and rolloff is fixed according to the global rolloff factor.  (default) */
         _3D_LINEARROLLOFF      = 0x00200000,  /* This sound will follow a linear rolloff model where mindistance = full volume, maxdistance = silence.  */
         _3D_CUSTOMROLLOFF      = 0x04000000,  /* This sound will follow a rolloff model defined by Sound::set3DCustomRolloff / Channel::set3DCustomRolloff.  */
-		CDDA_FORCEASPI         = 0x00400000,  /* For CDDA sounds only - use ASPI instead of NTSCSI to access the specified CD/DVD device. */
+        _3D_IGNOREGEOMETRY     = 0x40000000,  /* Is not affect by geometry occlusion.  If not specified in Sound::setMode, or Channel::setMode, the flag is cleared and it is affected by geometry again. */
+        CDDA_FORCEASPI         = 0x00400000,  /* For CDDA sounds only - use ASPI instead of NTSCSI to access the specified CD/DVD device. */
         CDDA_JITTERCORRECT     = 0x00800000,  /* For CDDA sounds only - perform jitter correction. Jitter correction helps produce a more accurate CDDA stream at the cost of more CPU time. */
         UNICODE                = 0x01000000,  /* Filename is double-byte unicode. */
         IGNORETAGS             = 0x02000000,  /* Skips id3v2/asf/etc tag checks when opening a sound, to reduce seek/read overhead when opening files (helps with CD performance). */
         LOWMEM                 = 0x08000000,  /* Removes some features from samples to give a lower memory overhead, like Sound::getName. */
+        LOADSECONDARYRAM       = 0x20000000,  /* Load sound into the secondary RAM of supported platform.  On PS3, sounds will be loaded into RSX/VRAM. */
+        VIRTUAL_PLAYFROMSTART  = 0x80000000   /* For sounds that start virtual (due to being quiet or low importance), instead of swapping back to audible, and playing at the correct offset according to time, this flag makes the sound play from the start. */
     }
 
 
@@ -597,22 +788,88 @@ namespace FMOD
         [REMARKS]    
 
         [PLATFORMS]
-        Win32, Win64, Linux, Macintosh, Xbox, Xbox360, PlayStation 2, GameCube, PlayStation Portable
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
 
         [SEE_ALSO]
         Sound::getOpenState
         MODE
     ]
     */
-    public enum OPENSTATE
+    public enum OPENSTATE :int
     {
         READY = 0,       /* Opened and ready to play */
         LOADING,         /* Initial load in progress */
         ERROR,           /* Failed to open - file not found, out of memory etc.  See return value of Sound::getOpenState for what happened. */
         CONNECTING,      /* Connecting to remote host (internet sounds only) */
-        BUFFERING        /* Buffering data */
+        BUFFERING,       /* Buffering data */
+        SEEKING,         /* Seeking to subsound and re-flushing stream buffer. */
+        PLAYING,         /* Ready and playing, but not possible to release at this time without stalling the main thread. */
+        SETPOSITION,     /* Seeking within a stream to a different position. */
     }
 
+
+    /*
+    [ENUM]
+    [
+        [DESCRIPTION]   
+        These flags are used with SoundGroup::setMaxAudibleBehavior to determine what happens when more sounds 
+        are played than are specified with SoundGroup::setMaxAudible.
+
+        [REMARKS]
+        When using FMOD_SOUNDGROUP_BEHAVIOR_MUTE, SoundGroup::setMuteFadeSpeed can be used to stop a sudden transition.  
+        Instead, the time specified will be used to cross fade between the sounds that go silent and the ones that become audible.
+
+        [PLATFORMS]
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
+
+        [SEE_ALSO]      
+        SoundGroup::setMaxAudibleBehavior
+        SoundGroup::getMaxAudibleBehavior
+        SoundGroup::setMaxAudible
+        SoundGroup::getMaxAudible
+        SoundGroup::setMuteFadeSpeed
+        SoundGroup::getMuteFadeSpeed
+    ]
+    */
+    public enum SOUNDGROUP_BEHAVIOR :int
+    {
+        BEHAVIOR_FAIL,              /* Any sound played that puts the sound count over the SoundGroup::setMaxAudible setting, will simply fail during System::playSound. */
+        BEHAVIOR_MUTE,              /* Any sound played that puts the sound count over the SoundGroup::setMaxAudible setting, will be silent, then if another sound in the group stops the sound that was silent before becomes audible again. */
+        BEHAVIOR_STEALLOWEST        /* Any sound played that puts the sound count over the SoundGroup::setMaxAudible setting, will steal the quietest / least important sound playing in the group. */
+    }
+
+    /*
+    [ENUM]
+    [
+        [DESCRIPTION]   
+        These callback types are used with System::setCallback.
+
+        [REMARKS]
+        Each callback has commanddata parameters passed as int unique to the type of callback.<br>
+        See reference to FMOD_SYSTEM_CALLBACK to determine what they might mean for each type of callback.<br>
+        <br>
+        <b>Note!</b>  Currently the user must call System::update for these callbacks to trigger!
+
+        [PLATFORMS]
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
+
+        [SEE_ALSO]      
+        System::setCallback
+        FMOD_SYSTEM_CALLBACK
+        System::update
+    ]
+    */
+    public enum SYSTEM_CALLBACKTYPE :int
+    {
+        DEVICELISTCHANGED,      /* Called when the enumerated list of devices has changed. */
+        DEVICELOST,             /* Called from System::update when an output device has been lost due to control panel parameter changes and FMOD cannot automatically recover. */
+        MEMORYALLOCATIONFAILED, /* Called directly when a memory allocation fails somewhere in FMOD. */
+        THREADCREATED,          /* Called directly when a thread is created. */
+        BADDSPCONNECTION,       /* Called when a bad connection was made with DSP::addInput. Usually called from mixer thread because that is where the connections are made.  */
+        BADDSPLEVEL,            /* Called when too many effects were added exceeding the maximum tree depth of 128.  This is most likely caused by accidentally adding too many DSP effects. Usually called from mixer thread because that is where the connections are made.  */
+
+        MAX                     /* Maximum number of callback types supported. */
+    }
 
     /*
     [ENUM]
@@ -625,22 +882,43 @@ namespace FMOD
         See reference to FMOD_CHANNEL_CALLBACK to determine what they might mean for each type of callback.
 
         [PLATFORMS]
-        Win32, Win64, Linux, Macintosh, Xbox, Xbox360, PlayStation 2, GameCube, PlayStation Portable
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
 
         [SEE_ALSO]      
         Channel::setCallback
         FMOD_CHANNEL_CALLBACK
     ]
     */
-    public enum CHANNEL_CALLBACKTYPE
+    public enum CHANNEL_CALLBACKTYPE :int
     {
         END,                  /* Called when a sound ends. */
         VIRTUALVOICE,         /* Called when a voice is swapped out or swapped in. */
         SYNCPOINT,            /* Called when a syncpoint is encountered.  Can be from wav file markers. */
+        OCCLUSION,            /* Called when the channel has its geometry occlusion value calculated.  Can be used to clamp or change the value. */
 
         MAX
     }
 
+
+    /* 
+        FMOD Callbacks
+    */
+    public delegate RESULT SYSTEM_CALLBACK          (IntPtr systemraw, SYSTEM_CALLBACKTYPE type, IntPtr commanddata1, IntPtr commanddata2);
+
+    public delegate RESULT CHANNEL_CALLBACK         (IntPtr channelraw, CHANNEL_CALLBACKTYPE type, IntPtr commanddata1, IntPtr commanddata2);
+
+    public delegate RESULT SOUND_NONBLOCKCALLBACK   (IntPtr soundraw, RESULT result);
+    public delegate RESULT SOUND_PCMREADCALLBACK    (IntPtr soundraw, IntPtr data, uint datalen);
+    public delegate RESULT SOUND_PCMSETPOSCALLBACK  (IntPtr soundraw, int subsound, uint position, TIMEUNIT postype);
+
+    public delegate RESULT FILE_OPENCALLBACK        ([MarshalAs(UnmanagedType.LPWStr)]string name, int unicode, ref uint filesize, ref IntPtr handle, ref IntPtr userdata);
+    public delegate RESULT FILE_CLOSECALLBACK       (IntPtr handle, IntPtr userdata);
+    public delegate RESULT FILE_READCALLBACK        (IntPtr handle, IntPtr buffer, uint sizebytes, ref uint bytesread, IntPtr userdata);
+    public delegate RESULT FILE_SEEKCALLBACK        (IntPtr handle, int pos, IntPtr userdata);
+    public delegate RESULT FILE_ASYNCREADCALLBACK   (IntPtr handle, IntPtr info, IntPtr userdata);
+    public delegate RESULT FILE_ASYNCCANCELCALLBACK (IntPtr handle, IntPtr userdata);
+
+    public delegate float  CB_3D_ROLLOFFCALLBACK    (IntPtr channelraw, float distance);
 
     /*
     [ENUM]
@@ -677,14 +955,14 @@ namespace FMOD
         </exclude>
 
         [PLATFORMS]
-        Win32, Win64, Linux, Macintosh, Xbox, Xbox360, PlayStation 2, GameCube, PlayStation Portable
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
 
         [SEE_ALSO]      
         System::getSpectrum
         Channel::getSpectrum
     ]
     */
-    public enum DSP_FFT_WINDOW
+    public enum DSP_FFT_WINDOW :int
     {
         RECT,           /* w[n] = 1.0                                                                                            */
         TRIANGLE,       /* w[n] = TRI(2n/N)                                                                                      */
@@ -708,19 +986,19 @@ namespace FMOD
         Use System::setSoftwareFormat to tell FMOD the resampling quality you require for FMOD_SOFTWARE based sounds.
 
         [PLATFORMS]
-        Win32, Win64, Linux, Macintosh, Xbox, Xbox360, PlayStation 2, GameCube, PlayStation Portable
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
 
         [SEE_ALSO]      
         System::setSoftwareFormat
         System::getSoftwareFormat
     ]
     */
-    public enum DSP_RESAMPLER
+    public enum DSP_RESAMPLER :int
     {
         NOINTERP,        /* No interpolation.  High frequency aliasing hiss will be audible depending on the sample rate of the sound. */
         LINEAR,          /* Linear interpolation (default method).  Fast and good quality, causes very slight lowpass effect on low frequency sounds. */
-        CUBIC,           /* Cubic interoplation.  Slower than linear interpolation but better quality. */
-        SPLINE,          /* 5 point spline interoplation.  Slowest resampling method but best quality. */
+        CUBIC,           /* Cubic interpolation.  Slower than linear interpolation but better quality. */
+        SPLINE,          /* 5 point spline interpolation.  Slowest resampling method but best quality. */
 
         MAX,             /* Maximum number of resample methods supported. */
     }
@@ -735,13 +1013,13 @@ namespace FMOD
         [REMARKS]
 
         [PLATFORMS]
-        Win32, Win64, Linux, Macintosh, Xbox, Xbox360, PlayStation 2, GameCube, PlayStation Portable
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
 
         [SEE_ALSO]      
         Sound::getTag
     ]
     */
-    public enum TAGTYPE
+    public enum TAGTYPE :int
     {
         UNKNOWN = 0,
         ID3V1,
@@ -766,13 +1044,13 @@ namespace FMOD
         [REMARKS]
 
         [PLATFORMS]
-        Win32, Win64, Linux, Macintosh, Xbox, Xbox360, PlayStation 2, GameCube, PlayStation Portable
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
 
         [SEE_ALSO]      
         Sound::getTag
     ]
     */
-    public enum TAGDATATYPE
+    public enum TAGDATATYPE :int
     {
         BINARY = 0,
         INT,
@@ -782,6 +1060,56 @@ namespace FMOD
         STRING_UTF16BE,
         STRING_UTF8,
         CDTOC
+    }
+
+    /*
+    [ENUM]
+    [
+        [DESCRIPTION]   
+        Types of delay that can be used with Channel::setDelay / Channel::getDelay.
+
+        [REMARKS]
+        If you haven't called Channel::setDelay yet, if you call Channel::getDelay with FMOD_DELAYTYPE_DSPCLOCK_START it will return the 
+        equivalent global DSP clock value to determine when a channel started, so that you can use it for other channels to sync against.<br>
+        <br>
+        Use System::getDSPClock to also get the current dspclock time, a base for future calls to Channel::setDelay.<br>
+        <br>
+        Use FMOD_64BIT_ADD or FMOD_64BIT_SUB to add a hi/lo combination together and cope with wraparound.
+        <br>
+        If FMOD_DELAYTYPE_END_MS is specified, the value is not treated as a 64 bit number, just the delayhi value is used and it is treated as milliseconds.
+
+        [PLATFORMS]
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
+
+        [SEE_ALSO]      
+        Channel::setDelay
+        Channel::getDelay
+        System::getDSPClock
+    ]
+    */
+    public enum DELAYTYPE :int
+    {
+        END_MS,              /* Delay at the end of the sound in milliseconds.  Use delayhi only.   Channel::isPlaying will remain true until this delay has passed even though the sound itself has stopped playing.*/
+        DSPCLOCK_START,      /* Time the sound started if Channel::getDelay is used, or if Channel::setDelay is used, the sound will delay playing until this exact tick. */
+        DSPCLOCK_END,        /* Time the sound should end. If this is non-zero, the channel will go silent at this exact tick. */
+        DSPCLOCK_PAUSE,      /* Time the sound should pause. If this is non-zero, the channel will pause at this exact tick. */
+
+        MAX                  /* Maximum number of tag datatypes supported. */
+    }
+
+    public class DELAYTYPE_UTILITY
+    {
+        void FMOD_64BIT_ADD(ref uint hi1, ref uint lo1, uint hi2, uint lo2)
+        {
+            hi1 += (uint)((hi2) + ((((lo1) + (lo2)) < (lo1)) ? 1 : 0));
+            lo1 += (lo2);
+        }
+
+        void FMOD_64BIT_SUB(ref uint hi1, ref uint lo1, uint hi2, uint lo2)
+        {
+            hi1 -= (uint)((hi2) + ((((lo1) - (lo2)) > (lo1)) ? 1 : 0));
+            lo1 -= (lo2);
+        }
     }
 
 
@@ -796,7 +1124,7 @@ namespace FMOD
         Members marked with [out] mean FMOD sets the value to be used after the function exits.
 
         [PLATFORMS]
-        Win32, Win64, Linux, Macintosh, Xbox, Xbox360, PlayStation 2, GameCube, PlayStation Portable
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
 
         [SEE_ALSO]      
         Sound::getTag
@@ -804,6 +1132,7 @@ namespace FMOD
         TAGDATATYPE
     ]
     */
+    [StructLayout(LayoutKind.Sequential,CharSet=CharSet.Ansi)]
     public struct TAG
     {
         public TAGTYPE           type;         /* [out] The type of this tag. */
@@ -826,12 +1155,13 @@ namespace FMOD
         Members marked with [out] mean FMOD sets the value to be used after the function exits.
 
         [PLATFORMS]
-        Win32, Win64, Linux, Macintosh, Xbox, Xbox360, PlayStation 2, GameCube, PlayStation Portable
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
 
         [SEE_ALSO]      
         Sound::getTag
     ]
     */
+    [StructLayout(LayoutKind.Sequential)]
     public struct CDTOC
     {
         public int numtracks;                  /* [out] The number of tracks on the CD */
@@ -853,7 +1183,7 @@ namespace FMOD
         [REMARKS]
 
         [PLATFORMS]
-        Win32, Win64, Linux, Macintosh, Xbox, Xbox360, PlayStation 2, GameCube, PlayStation Portable
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
 
         [SEE_ALSO]      
         Sound::getLength
@@ -866,7 +1196,8 @@ namespace FMOD
         MS                = 0x00000001,  /* Milliseconds. */
         PCM               = 0x00000002,  /* PCM Samples, related to milliseconds * samplerate / 1000. */
         PCMBYTES          = 0x00000004,  /* Bytes, related to PCM samples * channels * datawidth (ie 16bit = 2 bytes). */
-        RAWBYTES          = 0x00000008,  /* Raw file bytes of (compressed) sound data (does not include headers).  Only used by Sound::getLength and Channel::getPosition. */
+        RAWBYTES          = 0x00000008,  /* Raw file bytes of (compressed) sound data (does not include headers).  Only used by Sound::getLength and Channel::getPosition. */        
+        PCMFRACTION       = 0x00000010,  /* Fractions of 1 PCM sample.  Unsigned int range 0 to 0xFFFFFFFF.  Used for sub-sample granularity for DSP purposes. */
         MODORDER          = 0x00000100,  /* MOD/S3M/XM/IT.  Order in a sequenced module format.  Use Sound::getFormat to determine the format. */
         MODROW            = 0x00000200,  /* MOD/S3M/XM/IT.  Current row in a sequenced module format.  Sound::getLength will return the number if rows in the currently playing or seeked to pattern. */
         MODPATTERN        = 0x00000400,  /* MOD/S3M/XM/IT.  Current pattern in a sequenced module format.  Sound::getLength will return the number of patterns in the song and Channel::getPosition will return the currently playing pattern. */
@@ -878,9 +1209,34 @@ namespace FMOD
         BUFFERED          = 0x10000000,  /* Time value as seen by buffered stream.  This is always ahead of audible time, and is only used for processing. */
     }
 
-    public delegate RESULT SOUND_NONBLOCKCALLBACK (IntPtr soundraw, RESULT result);
-    public delegate RESULT SOUND_PCMREADCALLBACK  (IntPtr soundraw, IntPtr data, uint datalen);
-    public delegate RESULT SOUND_PCMSETPOSCALLBACK(IntPtr soundraw, int subsound, uint position, TIMEUNIT postype);
+
+    /*
+    [ENUM]
+    [
+        [DESCRIPTION]
+        When creating a multichannel sound, FMOD will pan them to their default speaker locations, for example a 6 channel sound will default to one channel per 5.1 output speaker.<br>
+        Another example is a stereo sound.  It will default to left = front left, right = front right.<br>
+        <br>
+        This is for sounds that are not 'default'.  For example you might have a sound that is 6 channels but actually made up of 3 stereo pairs, that should all be located in front left, front right only.
+
+        [REMARKS]
+        For full flexibility of speaker assignments, use Channel::setSpeakerLevels.  This functionality is cheaper, uses less memory and easier to use.
+
+        [PLATFORMS]
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
+
+        [SEE_ALSO]
+        FMOD_CREATESOUNDEXINFO
+        Channel::setSpeakerLevels
+    ]
+    */
+    public enum SPEAKERMAPTYPE
+    {
+        DEFAULT,     /* This is the default, and just means FMOD decides which speakers it puts the source channels. */
+        ALLMONO,     /* This means the sound is made up of all mono sounds.  All voices will be panned to the front center by default in this case.  */
+        ALLSTEREO,   /* This means the sound is made up of all stereo sounds.  All voices will be panned to front left and front right alternating every second channel.  */
+        _51_PROTOOLS /* Map a 5.1 sound to use protools L C R Ls Rs LFE mapping.  Will return an error if not a 6 channel sound. */
+    }
 
 
     /*
@@ -945,7 +1301,7 @@ namespace FMOD
         If you have a stuttering effect, then it is using more cpu than the decode buffer playback rate can keep up with.  Increasing the decode buffersize will most likely solve this problem.
 
         [PLATFORMS]
-        Win32, Win64, Linux, Macintosh, Xbox, Xbox360, PlayStation 2, GameCube, PlayStation Portable
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
 
         [SEE_ALSO]
         System::createSound
@@ -953,6 +1309,7 @@ namespace FMOD
         FMOD_MODE
     ]
     */
+    [StructLayout(LayoutKind.Sequential)]
     public struct CREATESOUNDEXINFO
     {
         public int                         cbsize;                 /* [in] Size of this structure.  This is used so the structure can be expanded in the future and still work on older versions of FMOD Ex. */
@@ -974,6 +1331,18 @@ namespace FMOD
         public int                         maxpolyphony;           /* [in] Optional. Specify 0 to ingore. For sequenced formats with dynamic channel allocation such as .MID and .IT, this specifies the maximum voice count allowed while playing.  .IT defaults to 64.  .MID defaults to 32. */
         public IntPtr                      userdata;               /* [in] Optional. Specify 0 to ignore. This is user data to be attached to the sound during creation.  Access via Sound::getUserData. */
         public SOUND_TYPE                  suggestedsoundtype;     /* [in] Optional. Specify 0 or FMOD_SOUND_TYPE_UNKNOWN to ignore.  Instead of scanning all codec types, use this to speed up loading by making it jump straight to this codec. */
+        public FILE_OPENCALLBACK           useropen;               /* [in] Optional. Specify 0 to ignore. Callback for opening this file. */
+        public FILE_CLOSECALLBACK          userclose;              /* [in] Optional. Specify 0 to ignore. Callback for closing this file. */
+        public FILE_READCALLBACK           userread;               /* [in] Optional. Specify 0 to ignore. Callback for reading from this file. */
+        public FILE_SEEKCALLBACK           userseek;               /* [in] Optional. Specify 0 to ignore. Callback for seeking within this file. */
+        public FILE_ASYNCREADCALLBACK      userasyncread;          /* [in] Optional. Specify 0 to ignore. Callback for asyncronously reading from this file. */
+        public FILE_ASYNCCANCELCALLBACK    userasynccancel;        /* [in] Optional. Specify 0 to ignore. Callback for cancelling an asyncronous read. */
+        public SPEAKERMAPTYPE              speakermap;             /* [in] Optional. Specify 0 to ignore. Use this to differ the way fmod maps multichannel sounds to speakers.  See FMOD_SPEAKERMAPTYPE for more. */
+        public IntPtr                      initialsoundgroup;      /* [in] Optional. Specify 0 to ignore. Specify a sound group if required, to put sound in as it is created. */
+        public uint                        initialseekposition;    /* [in] Optional. Specify 0 to ignore. For streams. Specify an initial position to seek the stream to. */
+        public TIMEUNIT                    initialseekpostype;     /* [in] Optional. Specify 0 to ignore. For streams. Specify the time unit for the position set in initialseekposition. */
+        public int                         ignoresetfilesystem;    /* [in] Optional. Specify 0 to ignore. Set to 1 to use fmod's built in file system. Ignores setFileSystem callbacks and also FMOD_CREATESOUNEXINFO file callbacks.  Useful for specific cases where you don't want to use your own file system but want to use fmod's file system (ie net streaming). */
+        public IntPtr                      extracodecdata;         /* [in] Optional. Specify 0 to ignore. Codec specific data. See FMOD_SOUND_TYPE for what each codec might take here. */
     }
 
 
@@ -981,47 +1350,48 @@ namespace FMOD
     [STRUCTURE] 
     [
         [DESCRIPTION]
-        Structure defining a reverb environment.
-        
+        Structure defining a reverb environment.<br>
+        <br>
         For more indepth descriptions of the reverb properties under win32, please see the EAX2 and EAX3
-        documentation at http://developer.creative.com/ under the 'downloads' section.
+        documentation at http://developer.creative.com/ under the 'downloads' section.<br>
         If they do not have the EAX3 documentation, then most information can be attained from
         the EAX2 documentation, as EAX3 only adds some more parameters and functionality on top of 
         EAX2.
 
         [REMARKS]
-        Note the default reverb properties are the same as the FMOD_PRESET_GENERIC preset.
+        Note the default reverb properties are the same as the FMOD_PRESET_GENERIC preset.<br>
         Note that integer values that typically range from -10,000 to 1000 are represented in 
-        decibels, and are of a logarithmic scale, not linear, wheras float values are always linear.
-        PORTABILITY: Each member has the platform it supports in braces ie (win32/xbox).  
-        Some reverb parameters are only supported in win32 and some only on xbox. If all parameters are set then
-        the reverb should product a similar effect on either platform.
-        Win32/Win64 - This is only supported with FMOD_OUTPUTTYPE_DSOUND and EAX compatible sound cards. 
-        Macintosh - Currently unsupported. 
-        Linux - Currently unsupported. 
-        XBox - Only a subset of parameters are supported.  
-        PlayStation 2 - Only the Environment and Flags paramenters are supported. 
-        GameCube - Only a subset of parameters are supported. 
-        
-        The numerical values listed below are the maximum, minimum and default values for each variable respectively.
-        
-        Members marked with [in] mean the user sets the value before passing it to the function.
-        Members marked with [out] mean FMOD sets the value to be used after the function exits.
+        decibels, and are of a logarithmic scale, not linear, wheras float values are always linear.<br>
+        <br>
+        The numerical values listed below are the maximum, minimum and default values for each variable respectively.<br>
+        <br>
+        <b>SUPPORTED</b> next to each parameter means the platform the parameter can be set on.  Some platforms support all parameters and some don't.<br>
+        EAX   means hardware reverb on FMOD_OUTPUTTYPE_DSOUND on windows only (must use FMOD_HARDWARE), on soundcards that support EAX 1 to 4.<br>
+        EAX4  means hardware reverb on FMOD_OUTPUTTYPE_DSOUND on windows only (must use FMOD_HARDWARE), on soundcards that support EAX 4.<br>
+        I3DL2 means hardware reverb on FMOD_OUTPUTTYPE_DSOUND on windows only (must use FMOD_HARDWARE), on soundcards that support I3DL2 non EAX native reverb.<br>
+        GC    means Nintendo Gamecube hardware reverb (must use FMOD_HARDWARE).<br>
+        WII   means Nintendo Wii hardware reverb (must use FMOD_HARDWARE).<br>
+        PS2   means Playstation 2 hardware reverb (must use FMOD_HARDWARE).<br>
+        SFX   means FMOD SFX software reverb.  This works on any platform that uses FMOD_SOFTWARE for loading sounds.<br>
+        <br>
+        Members marked with [in] mean the user sets the value before passing it to the function.<br>
+        Members marked with [out] mean FMOD sets the value to be used after the function exits.<br>
 
         [PLATFORMS]
-        Win32, Win64, Xbox, Xbox360, PlayStation 2, GameCube, PlayStation Portable
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
 
         [SEE_ALSO]
         System::setReverbProperties
         System::getReverbProperties
-        REVERB_PRESETS
-        REVERB_FLAGS
+        FMOD_REVERB_PRESETS
+        FMOD_REVERB_FLAGS
     ]
     */
-    public class REVERB_PROPERTIES
+    [StructLayout(LayoutKind.Sequential)]
+    public struct REVERB_PROPERTIES
     {                                   /*          MIN     MAX    DEFAULT   DESCRIPTION */
-        public int   Instance;          /* [in]     0     , 2     , 0      , EAX4 only. Environment Instance. 3 seperate reverbs simultaneously are possible. This specifies which one to set. (win32 only) */
-        public uint  Environment;       /* [in/out] 0     , 25    , 0      , sets all listener properties (win32/ps2) */
+        public int   Instance;          /* [in]     0     , 3     , 0      , EAX4 only. Environment Instance. 3 seperate reverbs simultaneously are possible. This specifies which one to set. (win32 only) */
+        public int   Environment;       /* [in/out] -1    , 25    , -1     , sets all listener properties (win32/ps2) */
         public float EnvSize;           /* [in/out] 1.0   , 100.0 , 7.5    , environment size in meters (win32 only) */
         public float EnvDiffusion;      /* [in/out] 0.0   , 1.0   , 1.0    , environment diffusion (win32/xbox) */
         public int   Room;              /* [in/out] -10000, 0     , -1000  , room effect level (at mid frequencies) (win32/xbox) */
@@ -1045,19 +1415,22 @@ namespace FMOD
         public float AirAbsorptionHF;   /* [in/out] -100  , 0.0   , -5.0   , change in level per meter at high frequencies (win32 only) */
         public float HFReference;       /* [in/out] 1000.0, 20000 , 5000.0 , reference high frequency (hz) (win32/xbox) */
         public float LFReference;       /* [in/out] 20.0  , 1000.0, 250.0  , reference low frequency (hz) (win32 only) */
-		public float RoomRolloffFactor; /* [in/out] 0.0   , 10.0  , 0.0    , like rolloffscale in System::set3DSettings but for reverb room size effect (win32/Xbox) */
+        public float RoomRolloffFactor; /* [in/out] 0.0   , 10.0  , 0.0    , like rolloffscale in System::set3DSettings but for reverb room size effect (win32) */
         public float Diffusion;         /* [in/out] 0.0   , 100.0 , 100.0  , Value that controls the echo density in the late reverberation decay. (xbox only) */
         public float Density;           /* [in/out] 0.0   , 100.0 , 100.0  , Value that controls the modal density in the late reverberation decay (xbox only) */
         public uint  Flags;             /* [in/out] REVERB_FLAGS - modifies the behavior of above properties (win32/ps2) */
 
         #region wrapperinternal
-        public REVERB_PROPERTIES(int instance, uint environment, float envSize, float envDiffusion, int room, int roomHF, int roomLF,
-                          float decayTime, float decayHFRatio, float decayLFRatio, int reflections, float reflectionsDelay,
-                          float reflectionsPanx, float reflectionsPany, float reflectionsPanz, int reverb, float reverbDelay,
-                          float reverbPanx, float reverbPany, float reverbPanz, float echoTime, float echoDepth, float modulationTime,
-                          float modulationDepth, float airAbsorptionHF, float hfReference, float lfReference, float roomRolloffFactor,
-                          float diffusion, float density, uint flags)
+        public REVERB_PROPERTIES(int instance, int environment, float envSize, float envDiffusion, int room, int roomHF, int roomLF,
+            float decayTime, float decayHFRatio, float decayLFRatio, int reflections, float reflectionsDelay,
+            float reflectionsPanx, float reflectionsPany, float reflectionsPanz, int reverb, float reverbDelay,
+            float reverbPanx, float reverbPany, float reverbPanz, float echoTime, float echoDepth, float modulationTime,
+            float modulationDepth, float airAbsorptionHF, float hfReference, float lfReference, float roomRolloffFactor,
+            float diffusion, float density, uint flags)
         {
+            ReflectionsPan      = new float[3];
+            ReverbPan           = new float[3];
+
             Instance            = instance;
             Environment         = environment;
             EnvSize             = envSize;
@@ -1104,13 +1477,14 @@ namespace FMOD
         Values for the Flags member of the REVERB_PROPERTIES structure.
 
         [PLATFORMS]
-        Win32, Win64, Linux, Macintosh, Xbox, Xbox360, PlayStation 2, GameCube, PlayStation Portable
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
 
         [SEE_ALSO]
         REVERB_PROPERTIES
     ]
     */
-    public class REVERB_FLAGS
+    [StructLayout(LayoutKind.Sequential)]
+    public struct REVERB_FLAGS
     {
         public const uint DECAYTIMESCALE        = 0x00000001;   /* 'EnvSize' affects reverberation decay time */
         public const uint REFLECTIONSSCALE      = 0x00000002;   /* 'EnvSize' affects reflection level */
@@ -1142,7 +1516,7 @@ namespace FMOD
     FMOD_REVERB_PROPERTIES prop = FMOD_PRESET_GENERIC;
 
     [PLATFORMS]
-    Win32, Win64, Linux, Macintosh, Xbox, Xbox360, PlayStation 2, GameCube, PlayStation Portable
+    Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
 
     [SEE_ALSO]
     System::setReverbProperties
@@ -1151,7 +1525,7 @@ namespace FMOD
     class PRESET
     {
         /*                                                                           Instance  Env   Size    Diffus  Room   RoomHF  RmLF DecTm   DecHF  DecLF   Refl  RefDel  RefPan           Revb  RevDel  ReverbPan       EchoTm  EchDp  ModTm  ModDp  AirAbs  HFRef    LFRef  RRlOff Diffus  Densty  FLAGS */
-        public REVERB_PROPERTIES OFF()                 { return new REVERB_PROPERTIES(0,       0,    7.5f,   1.00f, -10000, -10000, 0,   1.00f,  1.00f, 1.0f,  -2602, 0.007f, 0.0f,0.0f,0.0f,   200, 0.011f, 0.0f,0.0f,0.0f, 0.250f, 0.00f, 0.25f, 0.000f, -5.0f, 5000.0f, 250.0f, 0.0f,   0.0f,   0.0f, 0x3f );}
+        public REVERB_PROPERTIES OFF()                 { return new REVERB_PROPERTIES(0,      -1,    7.5f,   1.00f, -10000, -10000, 0,   1.00f,  1.00f, 1.0f,  -2602, 0.007f, 0.0f,0.0f,0.0f,   200, 0.011f, 0.0f,0.0f,0.0f, 0.250f, 0.00f, 0.25f, 0.000f, -5.0f, 5000.0f, 250.0f, 0.0f,   0.0f,   0.0f, 0x33f);}
         public REVERB_PROPERTIES GENERIC()             { return new REVERB_PROPERTIES(0,       0,    7.5f,   1.00f, -1000,  -100,   0,   1.49f,  0.83f, 1.0f,  -2602, 0.007f, 0.0f,0.0f,0.0f,   200, 0.011f, 0.0f,0.0f,0.0f, 0.250f, 0.00f, 0.25f, 0.000f, -5.0f, 5000.0f, 250.0f, 0.0f, 100.0f, 100.0f, 0x3f );}
         public REVERB_PROPERTIES PADDEDCELL()          { return new REVERB_PROPERTIES(0,       1,    1.4f,   1.00f, -1000,  -6000,  0,   0.17f,  0.10f, 1.0f,  -1204, 0.001f, 0.0f,0.0f,0.0f,   207, 0.002f, 0.0f,0.0f,0.0f, 0.250f, 0.00f, 0.25f, 0.000f, -5.0f, 5000.0f, 250.0f, 0.0f, 100.0f, 100.0f, 0x3f );}
         public REVERB_PROPERTIES ROOM()                { return new REVERB_PROPERTIES(0,       2,    1.9f,   1.00f, -1000,  -454,   0,   0.40f,  0.83f, 1.0f,  -1646, 0.002f, 0.0f,0.0f,0.0f,    53, 0.003f, 0.0f,0.0f,0.0f, 0.250f, 0.00f, 0.25f, 0.000f, -5.0f, 5000.0f, 250.0f, 0.0f, 100.0f, 100.0f, 0x3f );}
@@ -1184,15 +1558,15 @@ namespace FMOD
 
         /* PlayStation 2 Only presets */
 
-        public REVERB_PROPERTIES PS2_ROOM()            { return new REVERB_PROPERTIES(0,       1,    0,	    0,         0,  0,      0,   0.0f,   0.0f,  0.0f,     0,  0.000f,  0.0f,0.0f,0.0f ,     0, 0.000f,  0.0f,0.0f,0.0f , 0.000f, 0.00f, 0.00f, 0.000f,  0.0f, 0000.0f,   0.0f, 0.0f,   0.0f,   0.0f, 0x31f );}
-        public REVERB_PROPERTIES PS2_STUDIO_A()        { return new REVERB_PROPERTIES(0,       2,    0,	    0,         0,  0,      0,   0.0f,   0.0f,  0.0f,     0,  0.000f,  0.0f,0.0f,0.0f ,     0, 0.000f,  0.0f,0.0f,0.0f , 0.000f, 0.00f, 0.00f, 0.000f,  0.0f, 0000.0f,   0.0f, 0.0f,   0.0f,   0.0f, 0x31f );}
-        public REVERB_PROPERTIES PS2_STUDIO_B()        { return new REVERB_PROPERTIES(0,       3,    0,	    0,         0,  0,      0,   0.0f,   0.0f,  0.0f,     0,  0.000f,  0.0f,0.0f,0.0f ,     0, 0.000f,  0.0f,0.0f,0.0f , 0.000f, 0.00f, 0.00f, 0.000f,  0.0f, 0000.0f,   0.0f, 0.0f,   0.0f,   0.0f, 0x31f );}
-        public REVERB_PROPERTIES PS2_STUDIO_C()        { return new REVERB_PROPERTIES(0,       4,    0,	    0,         0,  0,      0,   0.0f,   0.0f,  0.0f,     0,  0.000f,  0.0f,0.0f,0.0f ,     0, 0.000f,  0.0f,0.0f,0.0f , 0.000f, 0.00f, 0.00f, 0.000f,  0.0f, 0000.0f,   0.0f, 0.0f,   0.0f,   0.0f, 0x31f );}
-        public REVERB_PROPERTIES PS2_HALL()            { return new REVERB_PROPERTIES(0,       5,    0,	    0,         0,  0,      0,   0.0f,   0.0f,  0.0f,     0,  0.000f,  0.0f,0.0f,0.0f ,     0, 0.000f,  0.0f,0.0f,0.0f , 0.000f, 0.00f, 0.00f, 0.000f,  0.0f, 0000.0f,   0.0f, 0.0f,   0.0f,   0.0f, 0x31f );}
-        public REVERB_PROPERTIES PS2_SPACE()           { return new REVERB_PROPERTIES(0,       6,    0,	    0,         0,  0,      0,   0.0f,   0.0f,  0.0f,     0,  0.000f,  0.0f,0.0f,0.0f ,     0, 0.000f,  0.0f,0.0f,0.0f , 0.000f, 0.00f, 0.00f, 0.000f,  0.0f, 0000.0f,   0.0f, 0.0f,   0.0f,   0.0f, 0x31f );}
-        public REVERB_PROPERTIES PS2_ECHO()            { return new REVERB_PROPERTIES(0,       7,    0,	    0,         0,  0,      0,   0.0f,   0.0f,  0.0f,     0,  0.000f,  0.0f,0.0f,0.0f ,     0, 0.000f,  0.0f,0.0f,0.0f , 0.000f, 0.00f, 0.00f, 0.000f,  0.0f, 0000.0f,   0.0f, 0.0f,   0.0f,   0.0f, 0x31f );}
-        public REVERB_PROPERTIES PS2_DELAY()           { return new REVERB_PROPERTIES(0,       8,    0,	    0,         0,  0,      0,   0.0f,   0.0f,  0.0f,     0,  0.000f,  0.0f,0.0f,0.0f ,     0, 0.000f,  0.0f,0.0f,0.0f , 0.000f, 0.00f, 0.00f, 0.000f,  0.0f, 0000.0f,   0.0f, 0.0f,   0.0f,   0.0f, 0x31f );}
-        public REVERB_PROPERTIES PS2_PIPE()            { return new REVERB_PROPERTIES(0,       9,    0,	    0,         0,  0,      0,   0.0f,   0.0f,  0.0f,     0,  0.000f,  0.0f,0.0f,0.0f ,     0, 0.000f,  0.0f,0.0f,0.0f , 0.000f, 0.00f, 0.00f, 0.000f,  0.0f, 0000.0f,   0.0f, 0.0f,   0.0f,   0.0f, 0x31f );}
+        public REVERB_PROPERTIES PS2_ROOM()            { return new REVERB_PROPERTIES(0,       1,    0,     0,         0,  0,      0,   0.0f,   0.0f,  0.0f,     0,  0.000f,  0.0f,0.0f,0.0f ,     0, 0.000f,  0.0f,0.0f,0.0f , 0.000f, 0.00f, 0.00f, 0.000f,  0.0f, 0000.0f,   0.0f, 0.0f,   0.0f,   0.0f, 0x31f );}
+        public REVERB_PROPERTIES PS2_STUDIO_A()        { return new REVERB_PROPERTIES(0,       2,    0,     0,         0,  0,      0,   0.0f,   0.0f,  0.0f,     0,  0.000f,  0.0f,0.0f,0.0f ,     0, 0.000f,  0.0f,0.0f,0.0f , 0.000f, 0.00f, 0.00f, 0.000f,  0.0f, 0000.0f,   0.0f, 0.0f,   0.0f,   0.0f, 0x31f );}
+        public REVERB_PROPERTIES PS2_STUDIO_B()        { return new REVERB_PROPERTIES(0,       3,    0,     0,         0,  0,      0,   0.0f,   0.0f,  0.0f,     0,  0.000f,  0.0f,0.0f,0.0f ,     0, 0.000f,  0.0f,0.0f,0.0f , 0.000f, 0.00f, 0.00f, 0.000f,  0.0f, 0000.0f,   0.0f, 0.0f,   0.0f,   0.0f, 0x31f );}
+        public REVERB_PROPERTIES PS2_STUDIO_C()        { return new REVERB_PROPERTIES(0,       4,    0,     0,         0,  0,      0,   0.0f,   0.0f,  0.0f,     0,  0.000f,  0.0f,0.0f,0.0f ,     0, 0.000f,  0.0f,0.0f,0.0f , 0.000f, 0.00f, 0.00f, 0.000f,  0.0f, 0000.0f,   0.0f, 0.0f,   0.0f,   0.0f, 0x31f );}
+        public REVERB_PROPERTIES PS2_HALL()            { return new REVERB_PROPERTIES(0,       5,    0,     0,         0,  0,      0,   0.0f,   0.0f,  0.0f,     0,  0.000f,  0.0f,0.0f,0.0f ,     0, 0.000f,  0.0f,0.0f,0.0f , 0.000f, 0.00f, 0.00f, 0.000f,  0.0f, 0000.0f,   0.0f, 0.0f,   0.0f,   0.0f, 0x31f );}
+        public REVERB_PROPERTIES PS2_SPACE()           { return new REVERB_PROPERTIES(0,       6,    0,     0,         0,  0,      0,   0.0f,   0.0f,  0.0f,     0,  0.000f,  0.0f,0.0f,0.0f ,     0, 0.000f,  0.0f,0.0f,0.0f , 0.000f, 0.00f, 0.00f, 0.000f,  0.0f, 0000.0f,   0.0f, 0.0f,   0.0f,   0.0f, 0x31f );}
+        public REVERB_PROPERTIES PS2_ECHO()            { return new REVERB_PROPERTIES(0,       7,    0,     0,         0,  0,      0,   0.0f,   0.0f,  0.0f,     0,  0.000f,  0.0f,0.0f,0.0f ,     0, 0.000f,  0.0f,0.0f,0.0f , 0.000f, 0.00f, 0.00f, 0.000f,  0.0f, 0000.0f,   0.0f, 0.0f,   0.0f,   0.0f, 0x31f );}
+        public REVERB_PROPERTIES PS2_DELAY()           { return new REVERB_PROPERTIES(0,       8,    0,     0,         0,  0,      0,   0.0f,   0.0f,  0.0f,     0,  0.000f,  0.0f,0.0f,0.0f ,     0, 0.000f,  0.0f,0.0f,0.0f , 0.000f, 0.00f, 0.00f, 0.000f,  0.0f, 0000.0f,   0.0f, 0.0f,   0.0f,   0.0f, 0x31f );}
+        public REVERB_PROPERTIES PS2_PIPE()            { return new REVERB_PROPERTIES(0,       9,    0,     0,         0,  0,      0,   0.0f,   0.0f,  0.0f,     0,  0.000f,  0.0f,0.0f,0.0f ,     0, 0.000f,  0.0f,0.0f,0.0f , 0.000f, 0.00f, 0.00f, 0.000f,  0.0f, 0000.0f,   0.0f, 0.0f,   0.0f,   0.0f, 0x31f );}
     }
 
     /*
@@ -1225,7 +1599,7 @@ namespace FMOD
         If the sound card does not support EAX4, the environment flag is ignored.
 
         [PLATFORMS]
-        Win32, Win64, Linux, Macintosh, Xbox, Xbox360, PlayStation 2, GameCube, PlayStation Portable
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
 
         [SEE_ALSO]
         Channel::setReverbProperties
@@ -1233,26 +1607,28 @@ namespace FMOD
         REVERB_CHANNELFLAGS
     ]
     */
+    [StructLayout(LayoutKind.Sequential)]
     public struct REVERB_CHANNELPROPERTIES  
     {                                      /*          MIN     MAX    DEFAULT  DESCRIPTION */
-        public int   Direct;               /* [in/out] -10000, 1000,  0,       direct path level (at low and mid frequencies) (win32/xbox) */
-        public int   DirectHF;             /* [in/out] -10000, 0,     0,       relative direct path level at high frequencies (win32/xbox) */
-        public int   Room;                 /* [in/out] -10000, 1000,  0,       room effect level (at low and mid frequencies) (win32/xbox) */
-        public int   RoomHF;               /* [in/out] -10000, 0,     0,       relative room effect level at high frequencies (win32/xbox) */
-        public int   Obstruction;          /* [in/out] -10000, 0,     0,       main obstruction control (attenuation at high frequencies)  (win32/xbox) */
-        public float ObstructionLFRatio;   /* [in/out] 0.0,    1.0,   0.0,     obstruction low-frequency level re. main control (win32/xbox) */
-        public int   Occlusion;            /* [in/out] -10000, 0,     0,       main occlusion control (attenuation at high frequencies) (win32/xbox) */
-        public float OcclusionLFRatio;     /* [in/out] 0.0,    1.0,   0.25,    occlusion low-frequency level re. main control (win32/xbox) */
-        public float OcclusionRoomRatio;   /* [in/out] 0.0,    10.0,  1.5,     relative occlusion control for room effect (win32) */
-        public float OcclusionDirectRatio; /* [in/out] 0.0,    10.0,  1.0,     relative occlusion control for direct path (win32) */
-        public int   Exclusion;            /* [in/out] -10000, 0,     0,       main exlusion control (attenuation at high frequencies) (win32) */
-        public float ExclusionLFRatio;     /* [in/out] 0.0,    1.0,   1.0,     exclusion low-frequency level re. main control (win32) */
-        public int   OutsideVolumeHF;      /* [in/out] -10000, 0,     0,       outside sound cone level at high frequencies (win32) */
-        public float DopplerFactor;        /* [in/out] 0.0,    10.0,  0.0,     like DS3D flDopplerFactor but per source (win32) */
-        public float RolloffFactor;        /* [in/out] 0.0,    10.0,  0.0,     like DS3D flRolloffFactor but per source (win32) */
-        public float RoomRolloffFactor;    /* [in/out] 0.0,    10.0,  0.0,     like DS3D flRolloffFactor but for room effect (win32/xbox) */
-        public float AirAbsorptionFactor;  /* [in/out] 0.0,    10.0,  1.0,     multiplies AirAbsorptionHF member of REVERB_PROPERTIES (win32) */
-        public uint  Flags;                /* [in/out] REVERB_CHANNELFLAGS - modifies the behavior of properties (win32) */
+        public int       Direct;               /* [in/out] -10000, 1000,  0,       direct path level (at low and mid frequencies) (win32/xbox) */
+        public int       DirectHF;             /* [in/out] -10000, 0,     0,       relative direct path level at high frequencies (win32/xbox) */
+        public int       Room;                 /* [in/out] -10000, 1000,  0,       room effect level (at low and mid frequencies) (win32/xbox) */
+        public int       RoomHF;               /* [in/out] -10000, 0,     0,       relative room effect level at high frequencies (win32/xbox) */
+        public int       Obstruction;          /* [in/out] -10000, 0,     0,       main obstruction control (attenuation at high frequencies)  (win32/xbox) */
+        public float     ObstructionLFRatio;   /* [in/out] 0.0,    1.0,   0.0,     obstruction low-frequency level re. main control (win32/xbox) */
+        public int       Occlusion;            /* [in/out] -10000, 0,     0,       main occlusion control (attenuation at high frequencies) (win32/xbox) */
+        public float     OcclusionLFRatio;     /* [in/out] 0.0,    1.0,   0.25,    occlusion low-frequency level re. main control (win32/xbox) */
+        public float     OcclusionRoomRatio;   /* [in/out] 0.0,    10.0,  1.5,     relative occlusion control for room effect (win32) */
+        public float     OcclusionDirectRatio; /* [in/out] 0.0,    10.0,  1.0,     relative occlusion control for direct path (win32) */
+        public int       Exclusion;            /* [in/out] -10000, 0,     0,       main exlusion control (attenuation at high frequencies) (win32) */
+        public float     ExclusionLFRatio;     /* [in/out] 0.0,    1.0,   1.0,     exclusion low-frequency level re. main control (win32) */
+        public int       OutsideVolumeHF;      /* [in/out] -10000, 0,     0,       outside sound cone level at high frequencies (win32) */
+        public float     DopplerFactor;        /* [in/out] 0.0,    10.0,  0.0,     like DS3D flDopplerFactor but per source (win32) */
+        public float     RolloffFactor;        /* [in/out] 0.0,    10.0,  0.0,     like DS3D flRolloffFactor but per source (win32) */
+        public float     RoomRolloffFactor;    /* [in/out] 0.0,    10.0,  0.0,     like DS3D flRolloffFactor but for room effect (win32/xbox) */
+        public float     AirAbsorptionFactor;  /* [in/out] 0.0,    10.0,  1.0,     multiplies AirAbsorptionHF member of REVERB_PROPERTIES (win32) */
+        public uint      Flags;                /* [in/out] REVERB_CHANNELFLAGS - modifies the behavior of properties (win32) */
+        public IntPtr    ConnectionPoint;      /* [in/out] See remarks.            DSP network location to connect reverb for this channel.    (SUPPORTED:SFX only).*/
     }
 
 
@@ -1266,21 +1642,23 @@ namespace FMOD
         Values for the Flags member of the REVERB_CHANNELPROPERTIES structure.
 
         [PLATFORMS]
-        Win32, Win64, Linux, Macintosh, Xbox, Xbox360, PlayStation 2, GameCube, PlayStation Portable
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
 
         [SEE_ALSO]
         REVERB_CHANNELPROPERTIES
     ]
     */
-    public class REVERB_CHANNELFLAGS
+    [StructLayout(LayoutKind.Sequential)]
+    public struct REVERB_CHANNELFLAGS
     {
-        public const uint DIRECTHFAUTO = 0x00000001; /* Automatic setting of 'Direct'  due to distance from listener */
-        public const uint ROOMAUTO     = 0x00000002; /* Automatic setting of 'Room'  due to distance from listener */
-        public const uint ROOMHFAUTO   = 0x00000004; /* Automatic setting of 'RoomHF' due to distance from listener */
-        public const uint ENVIRONMENT0 = 0x00000008; /* EAX4 only. Specify channel to target reverb instance 0. */
-        public const uint ENVIRONMENT1 = 0x00000010; /* EAX4 only. Specify channel to target reverb instance 1. */
-        public const uint ENVIRONMENT2 = 0x00000020; /* EAX4 only. Specify channel to target reverb instance 2. */
-        public const uint DEFAULT      = (DIRECTHFAUTO | ROOMAUTO | ROOMHFAUTO | ENVIRONMENT0);
+        public const uint DIRECTHFAUTO  = 0x00000001; /* Automatic setting of 'Direct'  due to distance from listener */
+        public const uint ROOMAUTO      = 0x00000002; /* Automatic setting of 'Room'  due to distance from listener */
+        public const uint ROOMHFAUTO    = 0x00000004; /* Automatic setting of 'RoomHF' due to distance from listener */
+        public const uint INSTANCE0     = 0x00000010; /* SFX/Wii. Specify channel to target reverb instance 0.  Default target. */
+        public const uint INSTANCE1     = 0x00000020; /* SFX/Wii. Specify channel to target reverb instance 1. */
+        public const uint INSTANCE2     = 0x00000040; /* SFX/Wii. Specify channel to target reverb instance 2. */
+        public const uint INSTANCE3     = 0x00000080; /* SFX. Specify channel to target reverb instance 3. */
+        public const uint DEFAULT       = (DIRECTHFAUTO | ROOMAUTO | ROOMHFAUTO | INSTANCE0);
     }
 
 
@@ -1294,19 +1672,36 @@ namespace FMOD
         maxMPEGcodecs / maxADPCMcodecs / maxXMAcodecs will determine the maximum cpu usage of playing realtime samples.  Use this to lower potential excess cpu usage and also control memory usage.<br>
    
         [PLATFORMS]
-        Win32, Win64, Linux, Linux64, Macintosh, Xbox, Xbox360, PlayStation 2, GameCube, PlayStation Portable, PlayStation 3
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3
    
         [SEE_ALSO]
         System::setAdvancedSettings
         System::getAdvancedSettings
     ]
     */
-    public class ADVANCEDSETTINGS
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ADVANCEDSETTINGS
     {                       
-        public int     cbsize;             /* Size of structure.  Use sizeof(FMOD_ADVANCEDSETTINGS) */
-        public int     maxMPEGcodecs;      /* For use with FMOD_CREATECOMPRESSEDSAMPLE only.  Mpeg  codecs consume 48,696 per instance and this number will determine how many mpeg channels can be played simultaneously.  Default = 16. */
-        public int     maxADPCMcodecs;     /* For use with FMOD_CREATECOMPRESSEDSAMPLE only.  ADPCM codecs consume 1k per instance and this number will determine how many ADPCM channels can be played simultaneously.  Default = 32. */
-        public int     maxXMAcodecs;       /* For use with FMOD_CREATECOMPRESSEDSAMPLE only.  XMA   codecs consume 8k per instance and this number will determine how many XMA channels can be played simultaneously.  Default = 32.  */
+        public int     cbsize;                      /* Size of structure.  Use sizeof(FMOD_ADVANCEDSETTINGS) */
+        public int     maxMPEGcodecs;               /* For use with FMOD_CREATECOMPRESSEDSAMPLE only.  Mpeg  codecs consume 48,696 per instance and this number will determine how many mpeg channels can be played simultaneously.  Default = 16. */
+        public int     maxADPCMcodecs;              /* For use with FMOD_CREATECOMPRESSEDSAMPLE only.  ADPCM codecs consume 1k per instance and this number will determine how many ADPCM channels can be played simultaneously.  Default = 32. */
+        public int     maxXMAcodecs;                /* For use with FMOD_CREATECOMPRESSEDSAMPLE only.  XMA   codecs consume 8k per instance and this number will determine how many XMA channels can be played simultaneously.  Default = 32.  */
+        public int     maxPCMcodecs;                /* [in/out] Optional. Specify 0 to ignore. For use with PS3 only.                          PCM   codecs consume 12,672 bytes per instance and this number will determine how many streams and PCM voices can be played simultaneously. Default = 16 */
+        public int     maxCELTcodecs;               /* [in/out] Optional. Specify 0 to ignore. For use with FMOD_CREATECOMPRESSEDSAMPLE only.  CELT  codecs consume 11,500 bytes per instance and this number will determine how many CELT channels can be played simultaneously. Default = 16 */    
+        public int     ASIONumChannels;             /* [in/out] */
+        public IntPtr  ASIOChannelList;             /* [in/out] */
+        public IntPtr  ASIOSpeakerList;             /* [in/out] Optional. Specify 0 to ignore. Pointer to a list of speakers that the ASIO channels map to.  This can be called after System::init to remap ASIO output. */
+        public int     max3DReverbDSPs;             /* [in/out] The max number of 3d reverb DSP's in the system. */
+        public float   HRTFMinAngle;                /* [in/out] For use with FMOD_INIT_SOFTWARE_HRTF.  The angle (0-360) of a 3D sound from the listener's forward vector at which the HRTF function begins to have an effect.  Default = 180.0. */
+        public float   HRTFMaxAngle;                /* [in/out] For use with FMOD_INIT_SOFTWARE_HRTF.  The angle (0-360) of a 3D sound from the listener's forward vector at which the HRTF function begins to have maximum effect.  Default = 360.0.  */
+        public float   HRTFFreq;                    /* [in/out] For use with FMOD_INIT_SOFTWARE_HRTF.  The cutoff frequency of the HRTF's lowpass filter function when at maximum effect. (i.e. at HRTFMaxAngle).  Default = 4000.0. */
+        public float   vol0virtualvol;              /* [in/out] For use with FMOD_INIT_VOL0_BECOMES_VIRTUAL.  If this flag is used, and the volume is 0.0, then the sound will become virtual.  Use this value to raise the threshold to a different point where a sound goes virtual. */
+        public int     eventqueuesize;              /* [in/out] Optional. Specify 0 to ignore. For use with FMOD Event system only.  Specifies the number of slots available for simultaneous non blocking loads.  Default = 32. */
+        public uint    defaultDecodeBufferSize;     /* [in/out] Optional. Specify 0 to ignore. For streams. This determines the default size of the double buffer (in milliseconds) that a stream uses.  Default = 400ms */
+        public IntPtr  debugLogFilename;            /* [in/out] Optional. Specify 0 to ignore. Gives fmod's logging system a path/filename.  Normally the log is placed in the same directory as the executable and called fmod.log. When using System::getAdvancedSettings, provide at least 256 bytes of memory to copy into. */
+        public ushort  profileport;                 /* [in/out] Optional. Specify 0 to ignore. For use with FMOD_INIT_ENABLE_PROFILE.  Specify the port to listen on for connections by the profiler application. */
+        public uint    geometryMaxFadeTime;         /* [in/out] Optional. Specify 0 to ignore. The maximum time in miliseconds it takes for a channel to fade to the new level when its occlusion changes. */
+        public uint    maxSpectrumWaveDataBuffers;  /* [in/out] Optional. Specify 0 to ignore. The maximum number of buffers for use with getWaveData/getSpectrum. */
     }
 
 
@@ -1320,7 +1715,7 @@ namespace FMOD
         Miscellaneous values for FMOD functions.
 
         [PLATFORMS]
-        Win32, Win64, Linux, Macintosh, Xbox, Xbox360, PlayStation 2, GameCube, PlayStation Portable
+        Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation 2, PlayStation Portable, PlayStation 3, Wii
 
         [SEE_ALSO]
         System::playSound
@@ -1335,17 +1730,6 @@ namespace FMOD
     }
 
 
-    /* 
-        FMOD Callbacks
-    */
-    public delegate RESULT CHANNEL_CALLBACK      (IntPtr channelraw, CHANNEL_CALLBACKTYPE type, int command, uint commanddata1, uint commanddata2);
-
-    public delegate RESULT FILE_OPENCALLBACK     (string name, int unicode, ref uint filesize, ref IntPtr handle, ref IntPtr userdata);
-    public delegate RESULT FILE_CLOSECALLBACK    (IntPtr handle, IntPtr userdata);
-    public delegate RESULT FILE_READCALLBACK     (IntPtr handle, IntPtr buffer, uint sizebytes, ref uint bytesread, IntPtr userdata);
-    public delegate RESULT FILE_SEEKCALLBACK     (IntPtr handle, int pos, IntPtr userdata);
-
-
     /*
         FMOD System factory functions.  Use this to create an FMOD System Instance.  below you will see System_Init/Close to get started.
     */
@@ -1353,7 +1737,33 @@ namespace FMOD
     {        
         public static RESULT System_Create(ref System system)
         {
-            RESULT result      = RESULT.OK;
+#if WIN64
+            if (IntPtr.Size != 8)
+            {
+                /* Attempting to use 64-bit FMOD dll with 32-bit application.*/
+            
+                return RESULT.ERR_FILE_BAD;
+            }
+#else
+            if (IntPtr.Size != 4)
+            {
+                /* Attempting to use 32-bit FMOD dll with 64-bit application. A likely cause of this error 
+                 * is targetting platform 'Any CPU'. You cannot link to unmanaged dll with 'Any CPU'
+                 * target. 
+                 * 
+                 * For 32-bit applications: set the platform to 'x86'.
+                 * 
+                 * For 64-bit applications:
+                 * 1. set the platform to x64
+                 * 2. add the conditional complication symbol WIN64
+                 * 3. download the win64 fmod release
+                 * 4. copy the fmodex64.dll to the location of the .exe file for your application */
+
+                return RESULT.ERR_FILE_BAD;
+            }
+#endif
+
+            RESULT result           = RESULT.OK;
             IntPtr      systemraw   = new IntPtr();
             System      systemnew   = null;
 
@@ -1379,6 +1789,28 @@ namespace FMOD
         #endregion
     }
 
+    
+    public class Memory
+    {
+        public static RESULT GetStats(ref int currentalloced, ref int maxalloced)
+        {
+            return FMOD_Memory_GetStats(ref currentalloced, ref maxalloced, 1);
+        }
+    
+        public static RESULT GetStats(ref int currentalloced, ref int maxalloced, bool blocking)
+        {
+            return FMOD_Memory_GetStats(ref currentalloced, ref maxalloced, (blocking ? 1 : 0));
+        }
+
+
+        #region importfunctions
+  
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_Memory_GetStats(ref int currentalloced, ref int maxalloced, int blocking);
+
+        #endregion
+    }
+        
 
     /*
         'System' API
@@ -1404,9 +1836,10 @@ namespace FMOD
         {
             return FMOD_System_GetNumDrivers(systemraw, ref numdrivers);
         }
-        public RESULT getDriverName          (int id, StringBuilder name, int namelen)
+        public RESULT getDriverInfo          (int id, [MarshalAs(UnmanagedType.LPWStr)]StringBuilder name, int namelen, ref GUID guid)
         {
-            return FMOD_System_GetDriverName(systemraw, id, name, namelen);
+            //use multibyte version
+            return FMOD_System_GetDriverInfoW(systemraw, id, name, namelen, ref guid);
         }
         public RESULT getDriverCaps          (int id, ref CAPS caps, ref int minfrequency, ref int maxfrequency, ref SPEAKERMODE controlpanelspeakermode)
         {
@@ -1423,10 +1856,6 @@ namespace FMOD
         public RESULT setHardwareChannels    (int min2d, int max2d, int min3d, int max3d)
         {
             return FMOD_System_SetHardwareChannels(systemraw, min2d, max2d, min3d, max3d);
-        }
-        public RESULT getHardwareChannels    (ref int num2d, ref int num3d, ref int total)
-        {
-            return FMOD_System_GetHardwareChannels(systemraw, ref num2d, ref num3d, ref total);
         }
         public RESULT setSoftwareChannels    (int numsoftwarechannels)
         {
@@ -1452,9 +1881,9 @@ namespace FMOD
         {
             return FMOD_System_GetDSPBufferSize(systemraw, ref bufferlength, ref numbuffers);
         }
-        public RESULT setFileSystem          (FILE_OPENCALLBACK useropen, FILE_CLOSECALLBACK userclose, FILE_READCALLBACK userread, FILE_SEEKCALLBACK userseek, int buffersize)
+        public RESULT setFileSystem          (FILE_OPENCALLBACK useropen, FILE_CLOSECALLBACK userclose, FILE_READCALLBACK userread, FILE_SEEKCALLBACK userseek, FILE_ASYNCREADCALLBACK userasyncread, FILE_ASYNCCANCELCALLBACK userasynccancel, int blockalign)
         {
-            return FMOD_System_SetFileSystem(systemraw, useropen, userclose, userread, userseek, buffersize);
+            return FMOD_System_SetFileSystem(systemraw, useropen, userclose, userread, userseek, userasyncread, userasynccancel, blockalign);
         }
         public RESULT attachFileSystem       (FILE_OPENCALLBACK useropen, FILE_CLOSECALLBACK userclose, FILE_READCALLBACK userread, FILE_SEEKCALLBACK userseek)
         {
@@ -1476,47 +1905,59 @@ namespace FMOD
         {
             return FMOD_System_GetSpeakerMode(systemraw, ref speakermode);
         }
-        
+        public RESULT setCallback            (SYSTEM_CALLBACK callback)
+        {
+            return FMOD_System_SetCallback(systemraw, callback);
+        }
                          
         // Plug-in support
         public RESULT setPluginPath          (string path)
         {
             return FMOD_System_SetPluginPath(systemraw, path);
         }
-        public RESULT loadPlugin             (string filename, ref PLUGINTYPE plugintype, ref int index)
+        public RESULT loadPlugin             (string filename, ref uint handle, uint priority)
         {
-            return FMOD_System_LoadPlugin(systemraw, filename, ref plugintype, ref index);
+            return FMOD_System_LoadPlugin(systemraw, filename, ref handle, priority);
+        }
+        public RESULT unloadPlugin           (uint handle)
+        {
+            return FMOD_System_UnloadPlugin(systemraw, handle);
         }
         public RESULT getNumPlugins          (PLUGINTYPE plugintype, ref int numplugins)
         {
             return FMOD_System_GetNumPlugins(systemraw, plugintype, ref numplugins);
         }
-        public RESULT getPluginInfo          (PLUGINTYPE plugintype, int index, StringBuilder name, int namelen, ref uint version)
+        public RESULT getPluginHandle        (PLUGINTYPE plugintype, int index, ref uint handle)
         {
-            return FMOD_System_GetPluginInfo(systemraw, plugintype, index, name, namelen, ref version);
+            return FMOD_System_GetPluginHandle(systemraw, plugintype, index, ref handle);
         }
-        public RESULT unloadPlugin           (PLUGINTYPE plugintype, int index)
+        public RESULT getPluginInfo          (uint handle, ref PLUGINTYPE plugintype, StringBuilder name, int namelen, ref uint version)
         {
-            return FMOD_System_UnloadPlugin(systemraw, plugintype, index);
+            return FMOD_System_GetPluginInfo(systemraw, handle, ref plugintype, name, namelen, ref version);
         }
-        public RESULT setOutputByPlugin      (int index)
+
+        public RESULT setOutputByPlugin      (uint handle)
         {
-            return FMOD_System_SetOutputByPlugin(systemraw, index);
+            return FMOD_System_SetOutputByPlugin(systemraw, handle);
         }
-        public RESULT getOutputByPlugin      (ref int index)
+        public RESULT getOutputByPlugin      (ref uint handle)
         {
-            return FMOD_System_GetOutputByPlugin(systemraw, ref index);
+            return FMOD_System_GetOutputByPlugin(systemraw, ref handle);
         }
-        public RESULT createCodec            (IntPtr codecdescription)
+        public RESULT createDSPByPlugin      (uint handle, ref IntPtr dsp)
         {
-            return FMOD_System_CreateCodec(systemraw, codecdescription);
+            return FMOD_System_CreateDSPByPlugin(systemraw, handle, ref dsp);
+        }
+        public RESULT createCodec            (IntPtr description, uint priority)
+        {
+            return FMOD_System_CreateCodec(systemraw, description, priority);
         }
 
 
         // Init/Close 
-        public RESULT init                   (int maxchannels, INITFLAG flags, IntPtr extradata)
+        public RESULT init                   (int maxchannels, INITFLAGS flags, IntPtr extradriverdata)
         {
-            return FMOD_System_Init(systemraw, maxchannels, flags, extradata);
+            return FMOD_System_Init(systemraw, maxchannels, flags, extradriverdata);
         }
         public RESULT close                  ()
         {
@@ -1528,10 +1969,6 @@ namespace FMOD
         public RESULT update                 ()
         {
             return FMOD_System_Update(systemraw);
-        }
-        public RESULT updateFinished()
-        {
-            return FMOD_System_UpdateFinished(systemraw);
         }
 
         public RESULT set3DSettings          (float dopplerscale, float distancefactor, float rolloffscale)
@@ -1559,13 +1996,25 @@ namespace FMOD
             return FMOD_System_Get3DListenerAttributes(systemraw, listener, ref pos, ref vel, ref forward, ref up);
         }
 
-        public RESULT setSpeakerPosition     (SPEAKER speaker, float x, float y)
+        public RESULT set3DRolloffCallback   (CB_3D_ROLLOFFCALLBACK callback)
         {
-            return FMOD_System_SetSpeakerPosition(systemraw, speaker, x, y);
+            return  FMOD_System_Set3DRolloffCallback   (systemraw, callback);
         }
-        public RESULT getSpeakerPosition     (SPEAKER speaker, ref float x, ref float y)
+        public RESULT set3DSpeakerPosition     (SPEAKER speaker, float x, float y, bool active)
         {
-            return FMOD_System_GetSpeakerPosition(systemraw, speaker, ref x, ref y);
+            return FMOD_System_Set3DSpeakerPosition(systemraw, speaker, x, y, (active ? 1 : 0));
+        }
+        public RESULT get3DSpeakerPosition     (SPEAKER speaker, ref float x, ref float y, ref bool active)
+        {
+            RESULT result;
+            
+            int isactive = 0;
+
+            result = FMOD_System_Get3DSpeakerPosition(systemraw, speaker, ref x, ref y, ref isactive);
+
+            active = (isactive != 0);
+
+            return result;
         }
 
         public RESULT setStreamBufferSize    (uint filebuffersize, TIMEUNIT filebuffersizetype)
@@ -1591,11 +2040,15 @@ namespace FMOD
         {
             return FMOD_System_GetChannelsPlaying(systemraw, ref channels);
         }
-        public RESULT getCPUUsage            (ref float dsp, ref float stream, ref float update, ref float total)
+        public RESULT getHardwareChannels    (ref int num2d, ref int num3d, ref int total)
         {
-            return FMOD_System_GetCPUUsage(systemraw, ref dsp, ref stream, ref update, ref total);
+            return FMOD_System_GetHardwareChannels(systemraw, ref num2d, ref num3d, ref total);
         }
-        public RESULT getSoundRam(ref int currentalloced, ref int maxalloced, ref int total)
+        public RESULT getCPUUsage            (ref float dsp, ref float stream, ref float geometry, ref float update, ref float total)
+        {
+            return FMOD_System_GetCPUUsage(systemraw, ref dsp, ref stream, ref geometry, ref update, ref total);
+        }
+        public RESULT getSoundRAM            (ref int currentalloced, ref int maxalloced, ref int total)
         {
             return FMOD_System_GetSoundRAM(systemraw, ref currentalloced, ref maxalloced, ref total);
         }
@@ -1623,6 +2076,8 @@ namespace FMOD
             RESULT result           = RESULT.OK;
             IntPtr      soundraw    = new IntPtr();
             Sound       soundnew    = null;
+
+            mode = mode | FMOD.MODE.UNICODE;
 
             try
             {
@@ -1688,6 +2143,8 @@ namespace FMOD
             IntPtr      soundraw    = new IntPtr();
             Sound       soundnew    = null;
 
+            mode = mode | FMOD.MODE.UNICODE;
+
             try
             {
                 result = FMOD_System_CreateSound(systemraw, name_or_data, mode, 0, ref soundraw);
@@ -1719,6 +2176,8 @@ namespace FMOD
             RESULT result           = RESULT.OK;
             IntPtr      soundraw    = new IntPtr();
             Sound       soundnew    = null;
+
+            mode = mode | FMOD.MODE.UNICODE;
 
             try
             {
@@ -1783,6 +2242,8 @@ namespace FMOD
             RESULT result           = RESULT.OK;
             IntPtr      soundraw    = new IntPtr();
             Sound       soundnew    = null;
+
+            mode = mode | FMOD.MODE.UNICODE;
 
             try
             {
@@ -1874,39 +2335,6 @@ namespace FMOD
                              
             return result;  
         }
-        public RESULT createDSPByIndex       (int index, ref DSP dsp)
-        {
-            RESULT result = RESULT.OK;
-            IntPtr dspraw = new IntPtr();
-            DSP    dspnew = null;
-
-            try
-            {
-                result = FMOD_System_CreateDSPByIndex(systemraw, index, ref dspraw);
-            }
-            catch
-            {
-                result = RESULT.ERR_INVALID_PARAM;
-            }
-            if (result != RESULT.OK)
-            {
-                return result;
-            }
-
-            if (dsp == null)
-            {
-                dspnew = new DSP();
-                dspnew.setRaw(dspraw);
-                dsp = dspnew;
-            }
-            else
-            {
-                dsp.setRaw(dspraw);
-            }
-                             
-            return result;  
-        }
-                       
         public RESULT createChannelGroup     (string name, ref ChannelGroup channelgroup)
         {
             RESULT result = RESULT.OK;
@@ -1937,7 +2365,71 @@ namespace FMOD
                 channelgroup.setRaw(channelgroupraw);
             }
                              
-            return result; 
+            return result;
+        }
+        public RESULT createSoundGroup       (string name, ref SoundGroup soundgroup)
+        {
+            RESULT result = RESULT.OK;
+            IntPtr soundgroupraw = new IntPtr();
+            SoundGroup soundgroupnew = null;
+
+            try
+            {
+                result = FMOD_System_CreateSoundGroup(systemraw, name, ref soundgroupraw);
+            }
+            catch
+            {
+                result = RESULT.ERR_INVALID_PARAM;
+            }
+            if (result != RESULT.OK)
+            {
+                return result;
+            }
+
+            if (soundgroup == null)
+            {
+                soundgroupnew = new SoundGroup();
+                soundgroupnew.setRaw(soundgroupraw);
+                soundgroup = soundgroupnew;
+            }
+            else
+            {
+                soundgroup.setRaw(soundgroupraw);
+            }
+
+            return result;
+        }
+        public RESULT createReverb           (ref Reverb reverb)
+        {
+            RESULT result = RESULT.OK;
+            IntPtr reverbraw = new IntPtr();
+            Reverb reverbnew = null;
+
+            try
+            {
+                result = FMOD_System_CreateReverb(systemraw, ref reverbraw);
+            }
+            catch
+            {
+                result = RESULT.ERR_INVALID_PARAM;
+            }
+            if (result != RESULT.OK)
+            {
+                return result;
+            }
+
+            if (reverb == null)
+            {
+                reverbnew = new Reverb();
+                reverbnew.setRaw(reverbraw);
+                reverb = reverbnew;
+            }
+            else
+            {
+                reverb.setRaw(reverbraw);
+            }
+
+            return result;
         }
         public RESULT playSound              (CHANNELINDEX channelid, Sound sound, bool paused, ref Channel channel)
         {
@@ -1956,7 +2448,7 @@ namespace FMOD
 
             try
             {
-                result = FMOD_System_PlaySound(systemraw, channelid, sound.getRaw(), paused, ref channelraw);
+                result = FMOD_System_PlaySound(systemraw, channelid, sound.getRaw(), (paused ? 1 : 0), ref channelraw);
             }
             catch
             {
@@ -1997,7 +2489,7 @@ namespace FMOD
 
             try
             {
-                result = FMOD_System_PlayDSP(systemraw, channelid, dsp.getRaw(), paused, ref channelraw);
+                result = FMOD_System_PlayDSP(systemraw, channelid, dsp.getRaw(), (paused ? 1 : 0), ref channelraw);
             }
             catch
             {
@@ -2087,6 +2579,39 @@ namespace FMOD
             return result; 
         }
 
+        public RESULT getMasterSoundGroup    (ref SoundGroup soundgroup)
+        {
+            RESULT result = RESULT.OK;
+            IntPtr soundgroupraw = new IntPtr();
+            SoundGroup    soundgroupnew = null;
+
+            try
+            {
+                result = FMOD_System_GetMasterSoundGroup(systemraw, ref soundgroupraw);
+            }
+            catch
+            {
+                result = RESULT.ERR_INVALID_PARAM;
+            }
+            if (result != RESULT.OK)
+            {
+                return result;
+            }
+
+            if (soundgroup == null)
+            {
+                soundgroupnew = new SoundGroup();
+                soundgroupnew.setRaw(soundgroupraw);
+                soundgroup = soundgroupnew;
+            }
+            else
+            {
+                soundgroup.setRaw(soundgroupraw);
+            }
+                             
+            return result; 
+        }
+
         // Reverb api
         public RESULT setReverbProperties    (ref REVERB_PROPERTIES prop)
         {
@@ -2097,7 +2622,15 @@ namespace FMOD
             return FMOD_System_GetReverbProperties(systemraw, ref prop);
         }
                                         
-        
+        public RESULT setReverbAmbientProperties (ref REVERB_PROPERTIES prop)
+        {
+            return FMOD_System_SetReverbAmbientProperties(systemraw, ref prop);
+        }
+        public RESULT getReverbAmbientProperties (ref REVERB_PROPERTIES prop)
+        {
+            return FMOD_System_GetReverbAmbientProperties(systemraw, ref prop);
+        }
+
         // System level DSP access.
         public RESULT getDSPHead             (ref DSP dsp)
         {
@@ -2131,9 +2664,37 @@ namespace FMOD
 
             return result;
         }
-        public RESULT addDSP             (DSP dsp)
+        public RESULT addDSP                 (DSP dsp, ref DSPConnection connection)
         {
-            return FMOD_System_AddDSP(systemraw, dsp.getRaw());
+            RESULT result = RESULT.OK;
+            IntPtr dspconnectionraw = new IntPtr();
+            DSPConnection dspconnectionnew = null;
+
+            try
+            {
+                result = FMOD_System_AddDSP(systemraw, dsp.getRaw(), ref dspconnectionraw);
+            }
+            catch
+            {
+                result = RESULT.ERR_INVALID_PARAM;
+            }
+            if (result != RESULT.OK)
+            { 
+                return result;
+            }
+
+            if (connection == null)
+            {
+                dspconnectionnew = new DSPConnection();
+                dspconnectionnew.setRaw(dspconnectionraw);
+                connection = dspconnectionnew;
+            }
+            else
+            {
+                connection.setRaw(dspconnectionraw);
+            }
+
+            return result;
         }
         public RESULT lockDSP            ()
         {
@@ -2143,50 +2704,58 @@ namespace FMOD
         {
             return FMOD_System_UnlockDSP(systemraw);
         }
+        public RESULT getDSPClock          (ref uint hi, ref uint lo)
+        {
+            return FMOD_System_GetDSPClock   (systemraw, ref hi, ref lo);
+        }
                                             
         
         // Recording api
-        public RESULT setRecordDriver        (int driver)
-        {
-            return FMOD_System_SetRecordDriver(systemraw, driver);
-        }
-        public RESULT getRecordDriver        (ref int driver)
-        {
-            return FMOD_System_GetRecordDriver(systemraw, ref driver);
-        }
         public RESULT getRecordNumDrivers    (ref int numdrivers)
         {
             return FMOD_System_GetRecordNumDrivers(systemraw, ref numdrivers);
         }
-        public RESULT getRecordDriverName    (int id, StringBuilder name, int namelen)
+        public RESULT getRecordDriverInfo    (int id, [MarshalAs(UnmanagedType.LPWStr)]StringBuilder name, int namelen, ref GUID guid)
         {
-            return FMOD_System_GetRecordDriverName(systemraw, id, name, namelen);
+            //use multibyte version
+            return FMOD_System_GetRecordDriverInfoW(systemraw, id, name, namelen, ref guid);
         }
- 
-        public RESULT getRecordPosition      (ref uint position)
+        public RESULT getRecordDriverCaps    (int id, ref CAPS caps, ref int minfrequency, ref int maxfrequency)
         {
-            return FMOD_System_GetRecordPosition(systemraw, ref position);
+            return FMOD_System_GetRecordDriverCaps(systemraw, id, ref caps, ref minfrequency, ref maxfrequency);
         }
-        public RESULT recordStart            (Sound sound, bool loop)
+        public RESULT getRecordPosition      (int id, ref uint position)
         {
-            return FMOD_System_RecordStart(systemraw, sound.getRaw(), loop);
+            return FMOD_System_GetRecordPosition(systemraw, id, ref position);
         }
-        public RESULT recordStop             ()
+
+        public RESULT recordStart            (int id, Sound sound, bool loop)
         {
-            return FMOD_System_RecordStop(systemraw);
+            return FMOD_System_RecordStart(systemraw, id, sound.getRaw(), (loop ? 1 : 0));
         }
-        public RESULT isRecording            (ref bool recording)
+        public RESULT recordStop             (int id)
         {
-            return FMOD_System_IsRecording(systemraw, ref recording);
+            return FMOD_System_RecordStop(systemraw, id);
+        }
+        public RESULT isRecording            (int id, ref bool recording)
+        {
+            RESULT result;
+            int r = 0;
+            
+            result = FMOD_System_IsRecording(systemraw, id, ref r);
+
+            recording = (r != 0);
+
+            return result;
         }
          
       
-        // Geometry api	
-        public RESULT createGeometry		 (int maxpolygons, int maxvertices, ref Geometry geometryf)
+        // Geometry api 
+        public RESULT createGeometry         (int maxpolygons, int maxvertices, ref Geometry geometry)
         {
             RESULT result           = RESULT.OK;
-            IntPtr      geometryraw    = new IntPtr();
-            Geometry    geometrynew    = null;
+            IntPtr geometryraw      = new IntPtr();
+            Geometry geometrynew    = null;
 
             try
             {
@@ -2201,15 +2770,15 @@ namespace FMOD
                 return result;
             }
 
-            if (geometryf == null)
+            if (geometry == null)
             {
                 geometrynew = new Geometry();
                 geometrynew.setRaw(geometryraw);
-                geometryf = geometrynew;
+                geometry = geometrynew;
             }
             else
             {
-                geometryf.setRaw(geometryraw);
+                geometry.setRaw(geometryraw);
             }
 
             return result;
@@ -2253,15 +2822,18 @@ namespace FMOD
             }
 
             return result;
+        } 
+        public RESULT getGeometryOcclusion    (ref VECTOR listener, ref VECTOR source, ref float direct, ref float reverb)
+        {
+            return FMOD_System_GetGeometryOcclusion(systemraw, ref listener, ref source, ref direct, ref reverb);
         }
-
   
         // Network functions
         public RESULT setNetworkProxy               (string proxy)
         {
             return FMOD_System_SetNetworkProxy(systemraw, proxy);
         }
-        public RESULT getProxy               (StringBuilder proxy, int proxylen)
+        public RESULT getNetworkProxy               (StringBuilder proxy, int proxylen)
         {
             return FMOD_System_GetNetworkProxy(systemraw, proxy, proxylen);
         }
@@ -2284,6 +2856,10 @@ namespace FMOD
             return FMOD_System_GetUserData(systemraw, ref userdata);
         }
 
+        public RESULT getMemoryInfo(uint memorybits, uint event_memorybits, ref uint memoryused, ref MEMORY_USAGE_DETAILS memoryused_details)
+        {
+            return FMOD_System_GetMemoryInfo(systemraw, memorybits, event_memorybits, ref memoryused, ref memoryused_details);
+        }
 
 
         #region importfunctions
@@ -2297,7 +2873,9 @@ namespace FMOD
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_System_GetNumDrivers          (IntPtr system, ref int numdrivers);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_System_GetDriverName          (IntPtr system, int id, StringBuilder name, int namelen);
+        private static extern RESULT FMOD_System_GetDriverInfo          (IntPtr system, int id, StringBuilder name, int namelen, ref GUID guid);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_System_GetDriverInfoW         (IntPtr system, int id, [MarshalAs(UnmanagedType.LPWStr)]StringBuilder name, int namelen, ref GUID guid);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_System_GetDriverCaps          (IntPtr system, int id, ref CAPS caps, ref int minfrequency, ref int maxfrequency, ref SPEAKERMODE controlpanelspeakermode);
         [DllImport (VERSION.dll)]
@@ -2321,27 +2899,31 @@ namespace FMOD
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_System_GetDSPBufferSize       (IntPtr system, ref uint bufferlength, ref int numbuffers);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_System_SetFileSystem          (IntPtr system, FILE_OPENCALLBACK useropen, FILE_CLOSECALLBACK userclose, FILE_READCALLBACK userread, FILE_SEEKCALLBACK userseek, int buffersize);
+        private static extern RESULT FMOD_System_SetFileSystem(IntPtr system, FILE_OPENCALLBACK useropen, FILE_CLOSECALLBACK userclose, FILE_READCALLBACK userread, FILE_SEEKCALLBACK userseek, FILE_ASYNCREADCALLBACK userasyncread, FILE_ASYNCCANCELCALLBACK userasynccancel, int blockalign);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_System_AttachFileSystem       (IntPtr system, FILE_OPENCALLBACK useropen, FILE_CLOSECALLBACK userclose, FILE_READCALLBACK userread, FILE_SEEKCALLBACK userseek);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_System_SetPluginPath          (IntPtr system, string path);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_System_LoadPlugin             (IntPtr system, string filename, ref PLUGINTYPE plugintype, ref int index);
+        private static extern RESULT FMOD_System_LoadPlugin             (IntPtr system, string filename, ref uint handle, uint priority);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_System_UnloadPlugin           (IntPtr system, uint handle);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_System_GetNumPlugins          (IntPtr system, PLUGINTYPE plugintype, ref int numplugins);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_System_GetPluginInfo          (IntPtr system, PLUGINTYPE plugintype, int index, StringBuilder name, int namelen, ref uint version);
+        private static extern RESULT FMOD_System_GetPluginHandle        (IntPtr system, PLUGINTYPE plugintype, int index, ref uint handle);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_System_UnloadPlugin           (IntPtr system, PLUGINTYPE plugintype, int index);
+        private static extern RESULT FMOD_System_GetPluginInfo          (IntPtr system, uint handle, ref PLUGINTYPE plugintype, StringBuilder name, int namelen, ref uint version);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_System_CreateCodec            (IntPtr system, IntPtr codecdescription);
+        private static extern RESULT FMOD_System_CreateDSPByPlugin      (IntPtr system, uint handle, ref IntPtr dsp);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_System_SetOutputByPlugin      (IntPtr system, int index);
+        private static extern RESULT FMOD_System_CreateCodec            (IntPtr system, IntPtr description, uint priority);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_System_GetOutputByPlugin      (IntPtr system, ref int index);        
+        private static extern RESULT FMOD_System_SetOutputByPlugin      (IntPtr system, uint handle);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_System_Init                   (IntPtr system, int maxchannels, INITFLAG flags, IntPtr extradata);
+        private static extern RESULT FMOD_System_GetOutputByPlugin      (IntPtr system, ref uint handle);        
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_System_Init                   (IntPtr system, int maxchannels, INITFLAGS flags, IntPtr extradriverdata);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_System_Close                  (IntPtr system);
         [DllImport (VERSION.dll)]
@@ -2356,10 +2938,14 @@ namespace FMOD
         private static extern RESULT FMOD_System_SetSpeakerMode         (IntPtr system, SPEAKERMODE speakermode);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_System_GetSpeakerMode         (IntPtr system, ref SPEAKERMODE speakermode);
+        [DllImport(VERSION.dll)]
+        private static extern RESULT FMOD_System_Set3DRolloffCallback(IntPtr system, CB_3D_ROLLOFFCALLBACK callback);
+        [DllImport(VERSION.dll)]
+        private static extern RESULT FMOD_System_SetCallback            (IntPtr system, SYSTEM_CALLBACK callback);
+        [DllImport(VERSION.dll)]
+        private static extern RESULT FMOD_System_Set3DSpeakerPosition   (IntPtr system, SPEAKER speaker, float x, float y, int active);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_System_SetSpeakerPosition     (IntPtr system, SPEAKER speaker, float x, float y);
-        [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_System_GetSpeakerPosition     (IntPtr system, SPEAKER speaker, ref float x, ref float y);
+        private static extern RESULT FMOD_System_Get3DSpeakerPosition   (IntPtr system, SPEAKER speaker, ref float x, ref float y, ref int active);
         [DllImport (VERSION.dll)]                       
         private static extern RESULT FMOD_System_Set3DSettings          (IntPtr system, float dopplerscale, float distancefactor, float rolloffscale);
         [DllImport (VERSION.dll)]
@@ -2387,7 +2973,7 @@ namespace FMOD
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_System_GetChannelsPlaying     (IntPtr system, ref int channels);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_System_GetCPUUsage            (IntPtr system, ref float dsp, ref float stream, ref float update, ref float total);
+        private static extern RESULT FMOD_System_GetCPUUsage            (IntPtr system, ref float dsp, ref float stream, ref float geometry, ref float update, ref float total);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_System_GetSoundRAM            (IntPtr system, ref int currentalloced, ref int maxalloced, ref int total);
         [DllImport (VERSION.dll)]
@@ -2398,13 +2984,13 @@ namespace FMOD
         private static extern RESULT FMOD_System_GetSpectrum            (IntPtr system, [MarshalAs(UnmanagedType.LPArray)]float[] spectrumarray, int numvalues, int channeloffset, DSP_FFT_WINDOW windowtype);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_System_GetWaveData            (IntPtr system, [MarshalAs(UnmanagedType.LPArray)]float[] wavearray, int numvalues, int channeloffset);
-        [DllImport (VERSION.dll)]   
+        [DllImport (VERSION.dll, CharSet = CharSet.Unicode)]
         private static extern RESULT FMOD_System_CreateSound            (IntPtr system, string name_or_data, MODE mode, ref CREATESOUNDEXINFO exinfo, ref IntPtr sound);
-        [DllImport (VERSION.dll)]
+        [DllImport (VERSION.dll, CharSet = CharSet.Unicode)]  
         private static extern RESULT FMOD_System_CreateStream           (IntPtr system, string name_or_data, MODE mode, ref CREATESOUNDEXINFO exinfo, ref IntPtr sound);
-        [DllImport (VERSION.dll)]   
+        [DllImport(VERSION.dll, CharSet = CharSet.Unicode)]
         private static extern RESULT FMOD_System_CreateSound            (IntPtr system, string name_or_data, MODE mode, int exinfo, ref IntPtr sound);
-        [DllImport (VERSION.dll)]
+        [DllImport(VERSION.dll, CharSet = CharSet.Unicode)]
         private static extern RESULT FMOD_System_CreateStream           (IntPtr system, string name_or_data, MODE mode, int exinfo, ref IntPtr sound);   
         [DllImport (VERSION.dll)]   
         private static extern RESULT FMOD_System_CreateSound            (IntPtr system, byte[] name_or_data, MODE mode, ref CREATESOUNDEXINFO exinfo, ref IntPtr sound);
@@ -2419,53 +3005,65 @@ namespace FMOD
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_System_CreateDSPByType        (IntPtr system, DSP_TYPE type, ref IntPtr dsp);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_System_CreateDSPByIndex       (IntPtr system, int index, ref IntPtr dsp);
-        [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_System_CreateChannelGroup     (IntPtr system, string name, ref IntPtr channelgroup);
-        [DllImport (VERSION.dll)]                 
-        private static extern RESULT FMOD_System_PlaySound              (IntPtr system, CHANNELINDEX channelid, IntPtr sound, bool paused, ref IntPtr channel);
         [DllImport (VERSION.dll)]
-        public static extern RESULT FMOD_System_PlayDSP                 (IntPtr system, CHANNELINDEX channelid, IntPtr dsp, bool paused, ref IntPtr channel);
+        private static extern RESULT FMOD_System_CreateSoundGroup       (IntPtr system, string name, ref IntPtr soundgroup);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_System_CreateReverb           (IntPtr system, ref IntPtr reverb);
+        [DllImport (VERSION.dll)]                 
+        private static extern RESULT FMOD_System_PlaySound              (IntPtr system, CHANNELINDEX channelid, IntPtr sound, int paused, ref IntPtr channel);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_System_PlayDSP                (IntPtr system, CHANNELINDEX channelid, IntPtr dsp, int paused, ref IntPtr channel);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_System_GetChannel             (IntPtr system, int channelid, ref IntPtr channel);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_System_GetMasterChannelGroup  (IntPtr system, ref IntPtr channelgroup);
         [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_System_GetMasterSoundGroup    (IntPtr system, ref IntPtr soundgroup);
+        [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_System_SetReverbProperties    (IntPtr system, ref REVERB_PROPERTIES prop);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_System_GetReverbProperties    (IntPtr system, ref REVERB_PROPERTIES prop);
         [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_System_SetReverbAmbientProperties(IntPtr system, ref REVERB_PROPERTIES prop);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_System_GetReverbAmbientProperties(IntPtr system, ref REVERB_PROPERTIES prop);
+        [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_System_GetDSPHead             (IntPtr system, ref IntPtr dsp);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_System_AddDSP                 (IntPtr system, IntPtr dsp);
+        private static extern RESULT FMOD_System_AddDSP                 (IntPtr system, IntPtr dsp, ref IntPtr connection);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_System_LockDSP                (IntPtr system);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_System_UnlockDSP              (IntPtr system);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_System_SetRecordDriver        (IntPtr system, int driver);
-        [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_System_GetRecordDriver        (IntPtr system, ref int driver);
-        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_System_GetDSPClock            (IntPtr system, ref uint hi, ref uint lo);
+        [DllImport(VERSION.dll)]
         private static extern RESULT FMOD_System_GetRecordNumDrivers    (IntPtr system, ref int numdrivers);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_System_GetRecordDriverName    (IntPtr system, int id, StringBuilder name, int namelen);
+        private static extern RESULT FMOD_System_GetRecordDriverInfo    (IntPtr system, int id, StringBuilder name, int namelen, ref GUID guid);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_System_GetRecordPosition      (IntPtr system, ref uint position);
+        private static extern RESULT FMOD_System_GetRecordDriverInfoW   (IntPtr system, int id, [MarshalAs(UnmanagedType.LPWStr)]StringBuilder name, int namelen, ref GUID guid);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_System_GetRecordDriverCaps    (IntPtr system, int id, ref CAPS caps, ref int minfrequency, ref int maxfrequency);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_System_GetRecordPosition      (IntPtr system, int id, ref uint position);
         [DllImport (VERSION.dll)]  
-        private static extern RESULT FMOD_System_RecordStart            (IntPtr system, IntPtr sound, bool loop);
+        private static extern RESULT FMOD_System_RecordStart            (IntPtr system, int id, IntPtr sound, int loop);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_System_RecordStop             (IntPtr system);
+        private static extern RESULT FMOD_System_RecordStop             (IntPtr system, int id);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_System_IsRecording            (IntPtr system, ref bool recording);
+        private static extern RESULT FMOD_System_IsRecording            (IntPtr system, int id, ref int recording);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_System_CreateGeometry         (IntPtr system, int maxPolygons, int maxVertices, ref IntPtr geometryf);
+        private static extern RESULT FMOD_System_CreateGeometry         (IntPtr system, int maxpolygons, int maxvertices, ref IntPtr geometry);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_System_SetGeometrySettings    (IntPtr system, float maxWorldSize);
+        private static extern RESULT FMOD_System_SetGeometrySettings    (IntPtr system, float maxworldsize);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_System_GetGeometrySettings    (IntPtr system, ref float maxWorldSize);
+        private static extern RESULT FMOD_System_GetGeometrySettings    (IntPtr system, ref float maxworldsize);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_System_LoadGeometry           (IntPtr system, IntPtr data, int dataSize, ref IntPtr geometry);
+        private static extern RESULT FMOD_System_LoadGeometry           (IntPtr system, IntPtr data, int datasize, ref IntPtr geometry);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_System_GetGeometryOcclusion   (IntPtr system, ref VECTOR listener, ref VECTOR source, ref float direct, ref float reverb);
         [DllImport (VERSION.dll)]               
         private static extern RESULT FMOD_System_SetNetworkProxy        (IntPtr system, string proxy);
         [DllImport (VERSION.dll)]
@@ -2478,6 +3076,8 @@ namespace FMOD
         private static extern RESULT FMOD_System_SetUserData            (IntPtr system, IntPtr userdata);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_System_GetUserData            (IntPtr system, ref IntPtr userdata);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_System_GetMemoryInfo          (IntPtr system, uint memorybits, uint event_memorybits, ref uint memoryused, ref MEMORY_USAGE_DETAILS memoryused_details);
 
         #endregion
 
@@ -2575,21 +3175,21 @@ namespace FMOD
         {
             return FMOD_Sound_Get3DMinMaxDistance(soundraw, ref min, ref max);
         }
-		public RESULT set3DConeSettings	      (float insideconeangle, float outsideconeangle, float outsidevolume)
-		{
+        public RESULT set3DConeSettings       (float insideconeangle, float outsideconeangle, float outsidevolume)
+        {
             return FMOD_Sound_Set3DConeSettings(soundraw, insideconeangle, outsideconeangle, outsidevolume);
-		}
+        }
         public RESULT get3DConeSettings       (ref float insideconeangle, ref float outsideconeangle, ref float outsidevolume)
         {
-		    return FMOD_Sound_Get3DConeSettings(soundraw, ref insideconeangle, ref outsideconeangle, ref outsidevolume);
+            return FMOD_Sound_Get3DConeSettings(soundraw, ref insideconeangle, ref outsideconeangle, ref outsidevolume);
         }
-		public RESULT set3DCustomRolloff      (ref VECTOR points, int numpoints)
+        public RESULT set3DCustomRolloff      (ref VECTOR points, int numpoints)
         {
-		    return FMOD_Sound_Set3DCustomRolloff(soundraw, ref points, numpoints);
+            return FMOD_Sound_Set3DCustomRolloff(soundraw, ref points, numpoints);
         }
-		public RESULT get3DCustomRolloff      (ref IntPtr points, ref int numpoints)
+        public RESULT get3DCustomRolloff      (ref IntPtr points, ref int numpoints)
         {
-		    return FMOD_Sound_Get3DCustomRolloff(soundraw, ref points, ref numpoints);
+            return FMOD_Sound_Get3DCustomRolloff(soundraw, ref points, ref numpoints);
         }
         public RESULT setSubSound             (int index, Sound subsound)
         {
@@ -2659,7 +3259,14 @@ namespace FMOD
         }
         public RESULT getOpenState            (ref OPENSTATE openstate, ref uint percentbuffered, ref bool starving)
         {
-            return FMOD_Sound_GetOpenState(soundraw, ref openstate, ref percentbuffered, ref starving);
+            RESULT result;
+            int s = 0;
+
+            result = FMOD_Sound_GetOpenState(soundraw, ref openstate, ref percentbuffered, ref s);
+
+            starving = (s != 0);
+
+            return result;
         }
         public RESULT readData                (IntPtr buffer, uint lenbytes, ref uint read)
         {
@@ -2668,6 +3275,66 @@ namespace FMOD
         public RESULT seekData                (uint pcm)
         {
             return FMOD_Sound_SeekData(soundraw, pcm);
+        }
+
+
+        public RESULT setSoundGroup           (SoundGroup soundgroup)
+        {
+            return FMOD_Sound_SetSoundGroup(soundraw, soundgroup.getRaw());
+        }
+        public RESULT getSoundGroup           (ref SoundGroup soundgroup)
+        {
+            RESULT result = RESULT.OK;
+            IntPtr soundgroupraw = new IntPtr();
+            SoundGroup    soundgroupnew = null;
+
+            try
+            {
+                result = FMOD_Sound_GetSoundGroup(soundraw, ref soundgroupraw);
+            }
+            catch
+            {
+                result = RESULT.ERR_INVALID_PARAM;
+            }
+            if (result != RESULT.OK)
+            {
+                return result;
+            }
+
+            if (soundgroup == null)
+            {
+                soundgroupnew = new SoundGroup();
+                soundgroupnew.setRaw(soundgroupraw);
+                soundgroup = soundgroupnew;
+            }
+            else
+            {
+                soundgroup.setRaw(soundgroupraw);
+            }
+                             
+            return result; 
+        }
+
+
+        public RESULT getNumSyncPoints        (ref int numsyncpoints)
+        {
+            return FMOD_Sound_GetNumSyncPoints(soundraw, ref numsyncpoints);
+        }
+        public RESULT getSyncPoint            (int index, ref IntPtr point)
+        {
+            return FMOD_Sound_GetSyncPoint(soundraw, index, ref point);
+        }
+        public RESULT getSyncPointInfo        (IntPtr point, StringBuilder name, int namelen, ref uint offset, TIMEUNIT offsettype)
+        {
+            return FMOD_Sound_GetSyncPointInfo(soundraw, point, name, namelen, ref offset, offsettype);
+        }
+        public RESULT addSyncPoint            (uint offset, TIMEUNIT offsettype, string name, ref IntPtr point)
+        {
+            return FMOD_Sound_AddSyncPoint(soundraw, offset, offsettype, name, ref point);
+        }
+        public RESULT deleteSyncPoint         (IntPtr point)
+        {
+            return FMOD_Sound_DeleteSyncPoint(soundraw, point);
         }
 
 
@@ -2696,6 +3363,26 @@ namespace FMOD
             return FMOD_Sound_GetLoopPoints(soundraw, ref loopstart, loopstarttype, ref loopend, loopendtype);
         }
 
+        public RESULT getMusicNumChannels       (ref int numchannels)
+        {
+            return FMOD_Sound_GetMusicNumChannels(soundraw, ref numchannels);
+        }
+        public RESULT setMusicChannelVolume     (int channel, float volume)
+        {
+            return FMOD_Sound_SetMusicChannelVolume(soundraw, channel, volume);
+        }
+        public RESULT getMusicChannelVolume     (int channel, ref float volume)
+        {
+            return FMOD_Sound_GetMusicChannelVolume(soundraw, channel, ref volume);
+        }
+        public RESULT setMusicSpeed(float speed)
+        {
+            return FMOD_Sound_SetMusicSpeed(soundraw, speed);
+        }
+        public RESULT getMusicSpeed(ref float speed)
+        {
+            return FMOD_Sound_GetMusicSpeed(soundraw, ref speed);
+        }
 
         public RESULT setUserData             (IntPtr userdata)
         {
@@ -2706,6 +3393,10 @@ namespace FMOD
             return FMOD_Sound_GetUserData(soundraw, ref userdata);
         }
 
+        public RESULT getMemoryInfo(uint memorybits, uint event_memorybits, ref uint memoryused, ref MEMORY_USAGE_DETAILS memoryused_details)
+        {
+            return FMOD_Sound_GetMemoryInfo(soundraw, memorybits, event_memorybits, ref memoryused, ref memoryused_details);
+        }
 
 
         #region importfunctions
@@ -2730,15 +3421,15 @@ namespace FMOD
         private static extern RESULT FMOD_Sound_Set3DMinMaxDistance     (IntPtr sound, float min, float max);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_Sound_Get3DMinMaxDistance     (IntPtr sound, ref float min, ref float max);
-		[DllImport(VERSION.dll)]
-		private static extern RESULT FMOD_Sound_Set3DConeSettings       (IntPtr sound, float insideconeangle, float outsideconeangle, float outsidevolume);
-		[DllImport(VERSION.dll)]
-		private static extern RESULT FMOD_Sound_Get3DConeSettings       (IntPtr sound, ref float insideconeangle, ref float outsideconeangle, ref float outsidevolume);
-		[DllImport(VERSION.dll)]
-		private static extern RESULT FMOD_Sound_Set3DCustomRolloff      (IntPtr sound, ref VECTOR points, int numpoints);
-		[DllImport(VERSION.dll)]
-		private static extern RESULT FMOD_Sound_Get3DCustomRolloff		(IntPtr sound, ref IntPtr points, ref int numpoints);
-        [DllImport (VERSION.dll)]
+        [DllImport(VERSION.dll)]
+        private static extern RESULT FMOD_Sound_Set3DConeSettings       (IntPtr sound, float insideconeangle, float outsideconeangle, float outsidevolume);
+        [DllImport(VERSION.dll)]
+        private static extern RESULT FMOD_Sound_Get3DConeSettings       (IntPtr sound, ref float insideconeangle, ref float outsideconeangle, ref float outsidevolume);
+        [DllImport(VERSION.dll)]
+        private static extern RESULT FMOD_Sound_Set3DCustomRolloff      (IntPtr sound, ref VECTOR points, int numpoints);
+        [DllImport(VERSION.dll)]
+        private static extern RESULT FMOD_Sound_Get3DCustomRolloff      (IntPtr sound, ref IntPtr points, ref int numpoints);
+        [DllImport(VERSION.dll)]
         private static extern RESULT FMOD_Sound_SetSubSound             (IntPtr sound, int index, IntPtr subsound);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_Sound_GetSubSound             (IntPtr sound, int index, ref IntPtr subsound);
@@ -2757,11 +3448,25 @@ namespace FMOD
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_Sound_GetTag                  (IntPtr sound, string name, int index, ref TAG tag);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_Sound_GetOpenState            (IntPtr sound, ref OPENSTATE openstate, ref uint percentbuffered, ref bool starving);
+        private static extern RESULT FMOD_Sound_GetOpenState            (IntPtr sound, ref OPENSTATE openstate, ref uint percentbuffered, ref int starving);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_Sound_ReadData                (IntPtr sound, IntPtr buffer, uint lenbytes, ref uint read);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_Sound_SeekData                (IntPtr sound, uint pcm);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_Sound_SetSoundGroup           (IntPtr sound, IntPtr soundgroup);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_Sound_GetSoundGroup           (IntPtr sound, ref IntPtr soundgroup);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_Sound_GetNumSyncPoints        (IntPtr sound, ref int numsyncpoints);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_Sound_GetSyncPoint            (IntPtr sound, int index, ref IntPtr point);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_Sound_GetSyncPointInfo        (IntPtr sound, IntPtr point, StringBuilder name, int namelen, ref uint offset, TIMEUNIT offsettype);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_Sound_AddSyncPoint            (IntPtr sound, uint offset, TIMEUNIT offsettype, string name, ref IntPtr point);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_Sound_DeleteSyncPoint         (IntPtr sound, IntPtr point);
         [DllImport (VERSION.dll)]                   
         private static extern RESULT FMOD_Sound_SetMode                 (IntPtr sound, MODE mode);
         [DllImport (VERSION.dll)]
@@ -2774,11 +3479,22 @@ namespace FMOD
         private static extern RESULT FMOD_Sound_SetLoopPoints           (IntPtr sound, uint loopstart, TIMEUNIT loopstarttype, uint loopend, TIMEUNIT loopendtype);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_Sound_GetLoopPoints           (IntPtr sound, ref uint loopstart, TIMEUNIT loopstarttype, ref uint loopend, TIMEUNIT loopendtype);
-        [DllImport (VERSION.dll)]                                        
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_Sound_GetMusicNumChannels     (IntPtr sound, ref int numchannels);
+        [DllImport(VERSION.dll)]
+        private static extern RESULT FMOD_Sound_SetMusicChannelVolume   (IntPtr sound, int channel, float volume);
+        [DllImport(VERSION.dll)]
+        private static extern RESULT FMOD_Sound_GetMusicChannelVolume   (IntPtr sound, int channel, ref float volume);
+        [DllImport(VERSION.dll)]
+        private static extern RESULT FMOD_Sound_SetMusicSpeed           (IntPtr sound, float speed);
+        [DllImport(VERSION.dll)]
+        private static extern RESULT FMOD_Sound_GetMusicSpeed           (IntPtr sound, ref float speed);
+        [DllImport(VERSION.dll)]                
         private static extern RESULT FMOD_Sound_SetUserData             (IntPtr sound, IntPtr userdata);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_Sound_GetUserData             (IntPtr sound, ref IntPtr userdata);
-
+        [DllImport(VERSION.dll)]
+        private static extern RESULT FMOD_Sound_GetMemoryInfo           (IntPtr sound, uint memorybits, uint event_memorybits, ref uint memoryused, ref MEMORY_USAGE_DETAILS memoryused_details);
         #endregion
 
         #region wrapperinternal
@@ -2845,11 +3561,18 @@ namespace FMOD
         }
         public RESULT setPaused             (bool paused)
         {
-            return FMOD_Channel_SetPaused(channelraw, paused);
+            return FMOD_Channel_SetPaused(channelraw, (paused ? 1 : 0));
         }
         public RESULT getPaused             (ref bool paused)
         {
-            return FMOD_Channel_GetPaused(channelraw, ref paused);
+            RESULT result;
+            int p = 0;
+
+            result = FMOD_Channel_GetPaused(channelraw, ref p);
+
+            paused = (p != 0);
+
+            return result;
         }
         public RESULT setVolume             (float volume)
         {
@@ -2875,13 +3598,13 @@ namespace FMOD
         {
             return FMOD_Channel_GetPan(channelraw, ref pan);
         }
-        public RESULT setDelay              (uint startdelay, uint enddelay)
+        public RESULT setDelay              (DELAYTYPE delaytype, uint delayhi, uint delaylo)
         {
-            return FMOD_Channel_SetDelay(channelraw, startdelay, enddelay);
+            return FMOD_Channel_SetDelay(channelraw, delaytype, delayhi, delaylo);
         }
-        public RESULT getDelay              (ref uint startdelay, ref uint enddelay)
+        public RESULT getDelay              (DELAYTYPE delaytype, ref uint delayhi, ref uint delaylo)
         {
-            return FMOD_Channel_GetDelay(channelraw, ref startdelay, ref enddelay);
+            return FMOD_Channel_GetDelay(channelraw, delaytype, ref delayhi, ref delaylo);
         }
         public RESULT setSpeakerMix         (float frontleft, float frontright, float center, float lfe, float backleft, float backright, float sideleft, float sideright)
         {
@@ -2899,13 +3622,28 @@ namespace FMOD
         {
             return FMOD_Channel_GetSpeakerLevels(channelraw, speaker, levels, numlevels);
         }
+        public RESULT setInputChannelMix    (float[] levels, int numlevels)
+        {
+            return FMOD_Channel_SetInputChannelMix(channelraw, levels, numlevels);
+        }
+        public RESULT getInputChannelMix    (float[] levels, int numlevels)
+        {
+            return FMOD_Channel_GetInputChannelMix(channelraw, levels, numlevels);
+        }
         public RESULT setMute               (bool mute)
         {
-            return FMOD_Channel_SetMute(channelraw, mute);
+            return FMOD_Channel_SetMute(channelraw, (mute ? 1 : 0));
         }
         public RESULT getMute               (ref bool mute)
         {
-            return FMOD_Channel_GetMute(channelraw, ref mute);
+            RESULT result;
+            int m = 0;
+
+            result = FMOD_Channel_GetMute(channelraw, ref m);
+
+            mute = (m != 0);
+
+            return result;
         }
         public RESULT setPriority           (int priority)
         {
@@ -2922,6 +3660,15 @@ namespace FMOD
         public RESULT getPosition           (ref uint position, TIMEUNIT postype)
         {
             return FMOD_Channel_GetPosition(channelraw, ref position, postype);
+        }
+        
+        public RESULT setLowPassGain           (float gain)
+        {
+            return FMOD_Channel_SetLowPassGain(channelraw, gain);
+        }
+        public RESULT getLowPassGain           (ref float gain)
+        {
+            return FMOD_Channel_GetLowPassGain(channelraw, ref gain);
         }
         
         public RESULT setReverbProperties   (ref REVERB_CHANNELPROPERTIES prop)
@@ -2969,9 +3716,9 @@ namespace FMOD
             return result; 
         }
 
-        public RESULT setCallback           (CHANNEL_CALLBACKTYPE type, CHANNEL_CALLBACK callback, int command)
+        public RESULT setCallback           (CHANNEL_CALLBACK callback)
         {
-            return FMOD_Channel_SetCallback(channelraw, type, callback, command);
+            return FMOD_Channel_SetCallback(channelraw, callback);
         }
 
 
@@ -3011,37 +3758,66 @@ namespace FMOD
         {
             return FMOD_Channel_Set3DCustomRolloff(channelraw, ref points, numpoints);
         }
-        public RESULT get3DCustomRolloff     (ref IntPtr points, ref int numpoints)
+        public RESULT get3DCustomRolloff    (ref IntPtr points, ref int numpoints)
         {
             return FMOD_Channel_Get3DCustomRolloff(channelraw, ref points, ref numpoints);
         }
-        public RESULT set3DOcclusion          (float directOcclusion, float reverbOcclusion)
+        public RESULT set3DOcclusion        (float directocclusion, float reverbocclusion)
         {
-            return FMOD_Channel_Set3DOcclusion(channelraw, directOcclusion, reverbOcclusion);
+            return FMOD_Channel_Set3Docclusion(channelraw, directocclusion, reverbocclusion);
         }
-        public RESULT get3DOcclusion          (ref float directOcclusion, ref float reverbOcclusion)
+        public RESULT get3DOcclusion        (ref float directocclusion, ref float reverbocclusion)
         {
-            return FMOD_Channel_Get3DOcclusion(channelraw, ref directOcclusion, ref reverbOcclusion);
+            return FMOD_Channel_Get3Docclusion(channelraw, ref directocclusion, ref reverbocclusion);
         }
-        public RESULT set3DSpread             (float angle)
+        public RESULT set3DSpread           (float angle)
         {
             return FMOD_Channel_Set3DSpread(channelraw, angle);
         }
-        public RESULT get3DSpread             (ref float angle)
+        public RESULT get3DSpread           (ref float angle)
         {
             return FMOD_Channel_Get3DSpread(channelraw, ref angle);
         }
-
+        public RESULT set3DPanLevel         (float level)
+        {
+            return FMOD_Channel_Set3DPanLevel(channelraw, level);
+        }
+        public RESULT get3DPanLevel         (ref float level)
+        {
+            return FMOD_Channel_Get3DPanLevel(channelraw, ref level);
+        }
+        public RESULT set3DDopplerLevel     (float level)
+        {
+            return FMOD_Channel_Set3DDopplerLevel(channelraw, level);
+        }
+        public RESULT get3DDopplerLevel     (ref float level)
+        {
+            return FMOD_Channel_Get3DDopplerLevel(channelraw, ref level);
+        }
 
         public RESULT isPlaying             (ref bool isplaying)
         {
-            return FMOD_Channel_IsPlaying(channelraw, ref isplaying);
+            RESULT result;
+            int p = 0;
+
+            result = FMOD_Channel_IsPlaying(channelraw, ref p);
+
+            isplaying = (p != 0);
+
+            return result;
         }
         public RESULT isVirtual             (ref bool isvirtual)
         {
-            return FMOD_Channel_IsVirtual(channelraw, ref isvirtual);
+            RESULT result;
+            int v = 0;
+
+            result = FMOD_Channel_IsVirtual(channelraw, ref v);
+
+            isvirtual = (v != 0);
+
+            return result;
         }
-        public RESULT getAudibility(ref float audibility)
+        public RESULT getAudibility         (ref float audibility)
         {
             return FMOD_Channel_GetAudibility(channelraw, ref audibility);
         }
@@ -3085,7 +3861,7 @@ namespace FMOD
         {
             return FMOD_Channel_GetWaveData(channelraw, wavearray, numvalues, channeloffset);
         }
-        public RESULT getIndex(ref int index)
+        public RESULT getIndex              (ref int index)
         {
             return FMOD_Channel_GetIndex(channelraw, ref index);
         }
@@ -3115,9 +3891,37 @@ namespace FMOD
 
             return result; 
         }
-        public RESULT addDSP(DSP dsp)
+        public RESULT addDSP                (DSP dsp, ref DSPConnection connection)
         {
-            return FMOD_Channel_AddDSP(channelraw, dsp.getRaw());
+            RESULT result = RESULT.OK;
+            IntPtr dspconnectionraw = new IntPtr();
+            DSPConnection dspconnectionnew = null;
+
+            try
+            {
+                result = FMOD_Channel_AddDSP(channelraw, dsp.getRaw(), ref dspconnectionraw);
+            }
+            catch
+            {
+                result = RESULT.ERR_INVALID_PARAM;
+            }
+            if (result != RESULT.OK)
+            {
+                return result;
+            }
+
+            if (connection == null)
+            {
+                dspconnectionnew = new DSPConnection();
+                dspconnectionnew.setRaw(dspconnectionraw);
+                connection = dspconnectionnew;
+            }
+            else
+            {
+                connection.setRaw(dspconnectionraw);
+            }
+
+            return result;
         }
          
             
@@ -3156,6 +3960,10 @@ namespace FMOD
             return FMOD_Channel_GetUserData(channelraw, ref userdata);
         }
 
+        public RESULT getMemoryInfo(uint memorybits, uint event_memorybits, ref uint memoryused, ref MEMORY_USAGE_DETAILS memoryused_details)
+        {
+            return FMOD_Channel_GetMemoryInfo(channelraw, memorybits, event_memorybits, ref memoryused, ref memoryused_details);
+        }
 
         #region importfunctions
 
@@ -3164,9 +3972,9 @@ namespace FMOD
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_Channel_Stop                  (IntPtr channel);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_Channel_SetPaused             (IntPtr channel, bool paused);
+        private static extern RESULT FMOD_Channel_SetPaused             (IntPtr channel, int paused);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_Channel_GetPaused             (IntPtr channel, ref bool paused);
+        private static extern RESULT FMOD_Channel_GetPaused             (IntPtr channel, ref int paused);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_Channel_SetVolume             (IntPtr channel, float volume);
         [DllImport (VERSION.dll)]
@@ -3180,9 +3988,9 @@ namespace FMOD
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_Channel_GetPan                (IntPtr channel, ref float pan);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_Channel_SetDelay              (IntPtr channel, uint startdelay, uint enddelay);
+        private static extern RESULT FMOD_Channel_SetDelay              (IntPtr channel, DELAYTYPE delaytype, uint delayhi, uint delaylo);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_Channel_GetDelay              (IntPtr channel, ref uint startdelay, ref uint enddelay);
+        private static extern RESULT FMOD_Channel_GetDelay              (IntPtr channel, DELAYTYPE delaytype, ref uint delayhi, ref uint delaylo);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_Channel_SetSpeakerMix         (IntPtr channel, float frontleft, float frontright, float center, float lfe, float backleft, float backright, float sideleft, float sideright);
         [DllImport (VERSION.dll)]
@@ -3192,9 +4000,13 @@ namespace FMOD
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_Channel_GetSpeakerLevels      (IntPtr channel, SPEAKER speaker, [MarshalAs(UnmanagedType.LPArray)]float[] levels, int numlevels);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_Channel_SetMute               (IntPtr channel, bool mute);
+        private static extern RESULT FMOD_Channel_SetInputChannelMix    (IntPtr channel, float[] levels, int numlevels);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_Channel_GetMute               (IntPtr channel, ref bool mute);
+        private static extern RESULT FMOD_Channel_GetInputChannelMix    (IntPtr channel, [MarshalAs(UnmanagedType.LPArray)]float[] levels, int numlevels);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_Channel_SetMute               (IntPtr channel, int mute);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_Channel_GetMute               (IntPtr channel, ref int mute);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_Channel_SetPriority           (IntPtr channel, int priority);
         [DllImport (VERSION.dll)]
@@ -3219,26 +4031,42 @@ namespace FMOD
         private static extern RESULT FMOD_Channel_Set3DCustomRolloff    (IntPtr channel, ref VECTOR points, int numpoints);
         [DllImport (VERSION.dll)] 
         private static extern RESULT FMOD_Channel_Get3DCustomRolloff    (IntPtr channel, ref IntPtr points, ref int numpoints);
-        [DllImport (VERSION.dll)] 
-        private static extern RESULT FMOD_Channel_Set3DOcclusion        (IntPtr channel, float directOcclusion, float reverbOcclusion);
+        [DllImport (VERSION.dll)]        
+        private static extern RESULT FMOD_Channel_Set3Docclusion        (IntPtr channel, float directocclusion, float reverbocclusion);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_Channel_Get3DOcclusion        (IntPtr channel, ref float directOcclusion, ref float reverbOcclusion);
-        [DllImport (VERSION.dll)]          
+        private static extern RESULT FMOD_Channel_Get3Docclusion        (IntPtr channel, ref float directocclusion, ref float reverbocclusion);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_Channel_Set3DOcclusion        (IntPtr channel, float directocclusion, float reverbocclusion);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_Channel_Get3DOcclusion        (IntPtr channel, ref float directocclusion, ref float reverbocclusion);
+        [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_Channel_Set3DSpread           (IntPtr channel, float angle);
         [DllImport (VERSION.dll)]    
         private static extern RESULT FMOD_Channel_Get3DSpread           (IntPtr channel, ref float angle);
-        [DllImport (VERSION.dll)]                         
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_Channel_Set3DPanLevel         (IntPtr channel, float level);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_Channel_Get3DPanLevel         (IntPtr channel, ref float level);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_Channel_Set3DDopplerLevel     (IntPtr channel, float level);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_Channel_Get3DDopplerLevel     (IntPtr channel, ref float level);
+        [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_Channel_SetReverbProperties   (IntPtr channel, ref REVERB_CHANNELPROPERTIES prop);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_Channel_GetReverbProperties   (IntPtr channel, ref REVERB_CHANNELPROPERTIES prop);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_Channel_SetLowPassGain        (IntPtr channel, float gain);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_Channel_GetLowPassGain        (IntPtr channel, ref float gain);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_Channel_SetChannelGroup       (IntPtr channel, IntPtr channelgroup);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_Channel_GetChannelGroup       (IntPtr channel, ref IntPtr channelgroup);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_Channel_IsPlaying             (IntPtr channel, ref bool isplaying);
+        private static extern RESULT FMOD_Channel_IsPlaying             (IntPtr channel, ref int isplaying);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_Channel_IsVirtual             (IntPtr channel, ref bool isvirtual);
+        private static extern RESULT FMOD_Channel_IsVirtual             (IntPtr channel, ref int isvirtual);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_Channel_GetAudibility         (IntPtr channel, ref float audibility);
         [DllImport (VERSION.dll)]
@@ -3250,7 +4078,7 @@ namespace FMOD
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_Channel_GetIndex              (IntPtr channel, ref int index);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_Channel_SetCallback           (IntPtr channel, CHANNEL_CALLBACKTYPE type, CHANNEL_CALLBACK callback, int command);
+        private static extern RESULT FMOD_Channel_SetCallback           (IntPtr channel, CHANNEL_CALLBACK callback);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_Channel_SetPosition           (IntPtr channel, uint position, TIMEUNIT postype);
         [DllImport (VERSION.dll)]
@@ -3258,7 +4086,7 @@ namespace FMOD
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_Channel_GetDSPHead            (IntPtr channel, ref IntPtr dsp);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_Channel_AddDSP                (IntPtr channel, IntPtr dsp);
+        private static extern RESULT FMOD_Channel_AddDSP                (IntPtr channel, IntPtr dsp, ref IntPtr connection);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_Channel_SetMode               (IntPtr channel, MODE mode);
         [DllImport (VERSION.dll)]
@@ -3275,6 +4103,8 @@ namespace FMOD
         private static extern RESULT FMOD_Channel_SetUserData           (IntPtr channel, IntPtr userdata);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_Channel_GetUserData           (IntPtr channel, ref IntPtr userdata);
+        [DllImport(VERSION.dll)]
+        private static extern RESULT FMOD_Channel_GetMemoryInfo         (IntPtr channel, uint memorybits, uint event_memorybits, ref uint memoryused, ref MEMORY_USAGE_DETAILS memoryused_details);
         #endregion
         
         #region wrapperinternal
@@ -3357,16 +4187,50 @@ namespace FMOD
         {
             return FMOD_ChannelGroup_GetPitch(channelgroupraw, ref pitch);
         }
+        public RESULT set3DOcclusion               (float directocclusion, float reverbocclusion)
+        {
+            return FMOD_ChannelGroup_Set3DOcclusion(channelgroupraw, directocclusion, reverbocclusion);
+        }
+        public RESULT get3DOcclusion               (ref float directocclusion, ref float reverbocclusion)
+        {
+            return FMOD_ChannelGroup_Get3DOcclusion(channelgroupraw, ref directocclusion, ref reverbocclusion);
+        }
+        public RESULT setPaused              (bool paused)
+        {
+            return FMOD_ChannelGroup_SetPaused(channelgroupraw, (paused ? 1 : 0));
+        }
+        public RESULT getPaused              (ref bool paused)
+        {
+            RESULT result;
+            int p = 0;
+
+            result = FMOD_ChannelGroup_GetPaused(channelgroupraw, ref p);
+
+            paused = (p != 0);
+
+            return result;
+        }
+        public RESULT setMute                (bool mute)
+        {
+            return FMOD_ChannelGroup_SetMute(channelgroupraw, (mute ? 1 : 0));
+        }
+        public RESULT getMute                (ref bool mute)
+        {
+            RESULT result;
+            int m = 0;
+
+            result = FMOD_ChannelGroup_GetMute(channelgroupraw, ref m);
+            
+            mute = (m != 0);
+
+            return result;
+        }
 
 
         // Channelgroup override values.  (recursively overwrites whatever settings the channels had)
         public RESULT stop                   ()
         {
             return FMOD_ChannelGroup_Stop(channelgroupraw);
-        }
-        public RESULT overridePaused         (bool paused)
-        {
-            return FMOD_ChannelGroup_OverridePaused(channelgroupraw, paused);
         }
         public RESULT overrideVolume         (float volume)
         {
@@ -3380,10 +4244,6 @@ namespace FMOD
         {
             return FMOD_ChannelGroup_OverridePan(channelgroupraw, pan);
         }
-        public RESULT overrideMute           (bool mute)
-        {
-            return FMOD_ChannelGroup_OverrideMute(channelgroupraw, mute);
-        }
         public RESULT overrideReverbProperties (ref REVERB_CHANNELPROPERTIES prop)
         {
             return FMOD_ChannelGroup_OverrideReverbProperties(channelgroupraw, ref prop);
@@ -3392,7 +4252,7 @@ namespace FMOD
         {
             return FMOD_ChannelGroup_Override3DAttributes(channelgroupraw, ref pos, ref vel);
         }
-        public RESULT overrideSpeakerMix(float frontleft, float frontright, float center, float lfe, float backleft, float backright, float sideleft, float sideright)
+        public RESULT overrideSpeakerMix     (float frontleft, float frontright, float center, float lfe, float backleft, float backright, float sideleft, float sideright)
         {
             return FMOD_ChannelGroup_OverrideSpeakerMix(channelgroupraw, frontleft, frontright, center, lfe, backleft, backright, sideleft, sideright);
         }
@@ -3439,6 +4299,39 @@ namespace FMOD
                              
             return result;
         }
+        public RESULT getParentGroup         (ref ChannelGroup group)
+        {
+            RESULT result = RESULT.OK;
+            IntPtr channelraw = new IntPtr();
+            ChannelGroup    channelnew = null;
+
+            try
+            {
+                result = FMOD_ChannelGroup_GetParentGroup(channelgroupraw, ref channelraw);
+            }
+            catch
+            {
+                result = RESULT.ERR_INVALID_PARAM;
+            }
+            if (result != RESULT.OK)
+            {
+                return result;
+            }
+
+            if (group == null)
+            {
+                channelnew = new ChannelGroup();
+                channelnew.setRaw(channelraw);
+                group = channelnew;
+            }
+            else
+            {
+                group.setRaw(channelraw);
+            }
+                             
+            return result;
+        }
+
 
         // DSP functionality only for channel groups playing sounds created with FMOD_SOFTWARE.
         public RESULT getDSPHead             (ref DSP dsp)
@@ -3474,9 +4367,37 @@ namespace FMOD
             return result; 
         }
 
-        public RESULT addDSP                 (DSP dsp)
+        public RESULT addDSP                 (DSP dsp, ref DSPConnection connection)
         {
-            return FMOD_ChannelGroup_AddDSP(channelgroupraw, dsp.getRaw());
+            RESULT result = RESULT.OK;
+            IntPtr dspconnectionraw = new IntPtr();
+            DSPConnection dspconnectionnew = null;
+
+            try
+            {
+                result = FMOD_ChannelGroup_AddDSP(channelgroupraw, dsp.getRaw(), ref dspconnectionraw);
+            }
+            catch
+            {
+                result = RESULT.ERR_INVALID_PARAM;
+            }
+            if (result != RESULT.OK)
+            {
+                return result;
+            }
+
+            if (connection == null)
+            {
+                dspconnectionnew = new DSPConnection();
+                dspconnectionnew.setRaw(dspconnectionraw);
+                connection = dspconnectionnew;
+            }
+            else
+            {
+                connection.setRaw(dspconnectionraw);
+            }
+
+            return result;
         }
 
 
@@ -3541,6 +4462,11 @@ namespace FMOD
             return FMOD_ChannelGroup_GetUserData(channelgroupraw, ref userdata);
         }
 
+        public RESULT getMemoryInfo(uint memorybits, uint event_memorybits, ref uint memoryused, ref MEMORY_USAGE_DETAILS memoryused_details)
+        {
+            return FMOD_ChannelGroup_GetMemoryInfo(channelgroupraw, memorybits, event_memorybits, ref memoryused, ref memoryused_details);
+        }
+
         #region importfunctions
 
 
@@ -3557,9 +4483,21 @@ namespace FMOD
         [DllImport (VERSION.dll)]       
         private static extern RESULT FMOD_ChannelGroup_GetPitch         (IntPtr channelgroup, ref float pitch);
         [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_ChannelGroup_Set3DOcclusion   (IntPtr channelgroup, float directocclusion, float reverbocclusion);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_ChannelGroup_Get3DOcclusion   (IntPtr channelgroup, ref float directocclusion, ref float reverbocclusion);
+        [DllImport (VERSION.dll)]        
+        private static extern RESULT FMOD_ChannelGroup_SetPaused        (IntPtr channelgroup, int paused);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_ChannelGroup_GetPaused        (IntPtr channelgroup, ref int paused);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_ChannelGroup_SetMute          (IntPtr channelgroup, int mute);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_ChannelGroup_GetMute          (IntPtr channelgroup, ref int mute);
+        [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_ChannelGroup_Stop             (IntPtr channelgroup);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_ChannelGroup_OverridePaused   (IntPtr channelgroup, bool paused);
+        private static extern RESULT FMOD_ChannelGroup_OverridePaused   (IntPtr channelgroup, int paused);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_ChannelGroup_OverrideVolume   (IntPtr channelgroup, float volume);
         [DllImport (VERSION.dll)]
@@ -3567,7 +4505,7 @@ namespace FMOD
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_ChannelGroup_OverridePan      (IntPtr channelgroup, float pan);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_ChannelGroup_OverrideMute     (IntPtr channelgroup, bool mute);
+        private static extern RESULT FMOD_ChannelGroup_OverrideMute     (IntPtr channelgroup, int mute);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_ChannelGroup_OverrideReverbProperties(IntPtr channelgroup, ref REVERB_CHANNELPROPERTIES prop);
         [DllImport (VERSION.dll)]
@@ -3581,9 +4519,11 @@ namespace FMOD
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_ChannelGroup_GetGroup         (IntPtr channelgroup, int index, ref IntPtr group);
         [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_ChannelGroup_GetParentGroup   (IntPtr channelgroup, ref IntPtr group);
+        [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_ChannelGroup_GetDSPHead       (IntPtr channelgroup, ref IntPtr dsp);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_ChannelGroup_AddDSP           (IntPtr channelgroup, IntPtr dsp);
+        private static extern RESULT FMOD_ChannelGroup_AddDSP           (IntPtr channelgroup, IntPtr dsp, ref IntPtr connection);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_ChannelGroup_GetName          (IntPtr channelgroup, StringBuilder name, int namelen);
         [DllImport (VERSION.dll)]
@@ -3598,7 +4538,8 @@ namespace FMOD
         private static extern RESULT FMOD_ChannelGroup_SetUserData      (IntPtr channelgroup, IntPtr userdata);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_ChannelGroup_GetUserData      (IntPtr channelgroup, ref IntPtr userdata);
-
+        [DllImport(VERSION.dll)]
+        private static extern RESULT FMOD_ChannelGroup_GetMemoryInfo    (IntPtr channelgroup, uint memorybits, uint event_memorybits, ref uint memoryused, ref MEMORY_USAGE_DETAILS memoryused_details);
         #endregion
 
         #region wrapperinternal
@@ -3615,6 +4556,210 @@ namespace FMOD
         public IntPtr getRaw()
         {
             return channelgroupraw;
+        }
+
+        #endregion
+    }
+
+
+    /*
+        'SoundGroup' API
+    */
+    public class SoundGroup
+    {
+        public RESULT release                ()
+        {
+            return FMOD_SoundGroup_Release(soundgroupraw);
+        }
+
+        public RESULT getSystemObject        (ref System system)
+        {
+            RESULT result         = RESULT.OK;
+            IntPtr systemraw      = new IntPtr();
+            System systemnew      = null;
+
+            try
+            {
+                result = FMOD_SoundGroup_GetSystemObject(soundgroupraw, ref systemraw);
+            }
+            catch
+            {
+                result = RESULT.ERR_INVALID_PARAM;
+            }
+            if (result != RESULT.OK)
+            {
+                return result;
+            }
+
+            if (system == null)
+            {
+                systemnew = new System();
+                systemnew.setRaw(systemraw);
+                system = systemnew;
+            }
+            else
+            {
+                system.setRaw(systemraw);
+            }
+
+            return result; 
+        }
+
+        // SoundGroup control functions.
+        public RESULT setMaxAudible          (int maxaudible)
+        {
+            return FMOD_SoundGroup_SetMaxAudible(soundgroupraw, maxaudible);
+        }
+
+        public RESULT getMaxAudible          (ref int maxaudible)
+        {
+            return FMOD_SoundGroup_GetMaxAudible(soundgroupraw, ref maxaudible);
+        }
+
+        public RESULT setMaxAudibleBehavior  (SOUNDGROUP_BEHAVIOR behavior)
+        {
+            return FMOD_SoundGroup_SetMaxAudibleBehavior(soundgroupraw, behavior);
+        }
+        public RESULT getMaxAudibleBehavior  (ref SOUNDGROUP_BEHAVIOR behavior)
+        {
+            return FMOD_SoundGroup_GetMaxAudibleBehavior(soundgroupraw, ref behavior);
+        }
+        public RESULT setMuteFadeSpeed       (float speed)
+        {
+            return FMOD_SoundGroup_SetMuteFadeSpeed(soundgroupraw, speed);
+        }
+        public RESULT getMuteFadeSpeed       (ref float speed)
+        {
+            return FMOD_SoundGroup_GetMuteFadeSpeed(soundgroupraw, ref speed);
+        }
+        
+        public RESULT setVolume       (float volume)
+        {
+            return FMOD_SoundGroup_SetVolume(soundgroupraw, volume);
+        }        
+        public RESULT getVolume       (ref float volume)
+        {
+            return FMOD_SoundGroup_GetVolume(soundgroupraw, ref volume);
+        }
+        public RESULT stop       ()
+        {
+            return FMOD_SoundGroup_Stop(soundgroupraw);
+        }
+
+        // Information only functions.
+        public RESULT getName                (StringBuilder name, int namelen)
+        {
+            return FMOD_SoundGroup_GetName(soundgroupraw, name, namelen);
+        }
+        public RESULT getNumSounds           (ref int numsounds)
+        {
+            return FMOD_SoundGroup_GetNumSounds(soundgroupraw, ref numsounds);
+        }
+        public RESULT getSound               (int index, ref Sound sound)
+        {
+            RESULT result         = RESULT.OK;
+            IntPtr soundraw      = new IntPtr();
+            Sound soundnew      = null;
+
+            try
+            {
+                result = FMOD_SoundGroup_GetSound(soundgroupraw, index, ref soundraw);
+            }
+            catch
+            {
+                result = RESULT.ERR_INVALID_PARAM;
+            }
+            if (result != RESULT.OK)
+            {
+                return result;
+            }
+
+            if (sound == null)
+            {
+                soundnew = new Sound();
+                soundnew.setRaw(soundraw);
+                sound = soundnew;
+            }
+            else
+            {
+                sound.setRaw(soundraw);
+            }
+
+            return result; 
+        }
+        public RESULT getNumPlaying          (ref int numplaying)
+        {
+            return FMOD_SoundGroup_GetNumPlaying(soundgroupraw, ref numplaying);
+        }
+
+        // Userdata set/get.
+        public RESULT setUserData            (IntPtr userdata)
+        {
+            return FMOD_SoundGroup_SetUserData(soundgroupraw, userdata);
+        }
+        public RESULT getUserData            (ref IntPtr userdata)
+        {
+            return FMOD_SoundGroup_GetUserData(soundgroupraw, ref userdata);
+        }
+
+        public RESULT getMemoryInfo(uint memorybits, uint event_memorybits, ref uint memoryused, ref MEMORY_USAGE_DETAILS memoryused_details)
+        {
+            return FMOD_SoundGroup_GetMemoryInfo(soundgroupraw, memorybits, event_memorybits, ref memoryused, ref memoryused_details);
+        }
+
+        #region importfunctions
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_SoundGroup_Release            (IntPtr soundgroup);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_SoundGroup_GetSystemObject    (IntPtr soundgroup, ref IntPtr system);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_SoundGroup_SetMaxAudible      (IntPtr soundgroup, int maxaudible);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_SoundGroup_GetMaxAudible      (IntPtr soundgroup, ref int maxaudible);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_SoundGroup_SetMaxAudibleBehavior(IntPtr soundgroup, SOUNDGROUP_BEHAVIOR behavior);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_SoundGroup_GetMaxAudibleBehavior(IntPtr soundgroup, ref SOUNDGROUP_BEHAVIOR behavior);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_SoundGroup_SetMuteFadeSpeed   (IntPtr soundgroup, float speed);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_SoundGroup_GetMuteFadeSpeed   (IntPtr soundgroup, ref float speed);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_SoundGroup_SetVolume          (IntPtr soundgroup, float volume);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_SoundGroup_GetVolume          (IntPtr soundgroup, ref float volume);
+        [DllImport(VERSION.dll)]
+        private static extern RESULT FMOD_SoundGroup_Stop               (IntPtr soundgroup);
+        [DllImport(VERSION.dll)]
+        private static extern RESULT FMOD_SoundGroup_GetName            (IntPtr soundgroup, StringBuilder name, int namelen);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_SoundGroup_GetNumSounds       (IntPtr soundgroup, ref int numsounds);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_SoundGroup_GetSound           (IntPtr soundgroup, int index, ref IntPtr sound);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_SoundGroup_GetNumPlaying      (IntPtr soundgroup, ref int numplaying);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_SoundGroup_SetUserData        (IntPtr soundgroup, IntPtr userdata);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_SoundGroup_GetUserData        (IntPtr soundgroup, ref IntPtr userdata);
+        [DllImport(VERSION.dll)]
+        private static extern RESULT FMOD_SoundGroup_GetMemoryInfo      (IntPtr soundgroup, uint memorybits, uint event_memorybits, ref uint memoryused, ref MEMORY_USAGE_DETAILS memoryused_details);
+        #endregion
+
+        #region wrapperinternal
+
+        private IntPtr soundgroupraw;
+
+        public void setRaw(IntPtr soundgroup)
+        {
+            soundgroupraw = new IntPtr();
+
+            soundgroupraw = soundgroup;
+        }
+
+        public IntPtr getRaw()
+        {
+            return soundgroupraw;
         }
 
         #endregion
@@ -3662,15 +4807,47 @@ namespace FMOD
 
             return result;             
         }
-                     
 
-        public RESULT addInput                  (DSP target)
+
+        public RESULT addInput(DSP target, ref DSPConnection connection)
         {
-            return FMOD_DSP_AddInput(dspraw, target.getRaw());
+            RESULT result = RESULT.OK;
+            IntPtr dspconnectionraw = new IntPtr();
+            DSPConnection dspconnectionnew = null;
+
+            try
+            {
+                result = FMOD_DSP_AddInput(dspraw, target.getRaw(), ref dspconnectionraw);
+            }
+            catch
+            {
+                result = RESULT.ERR_INVALID_PARAM;
+            }
+            if (result != RESULT.OK)
+            {
+                return result;
+            }
+
+            if (connection == null)
+            {
+                dspconnectionnew = new DSPConnection();
+                dspconnectionnew.setRaw(dspconnectionraw);
+                connection = dspconnectionnew;
+            }
+            else
+            {
+                connection.setRaw(dspconnectionraw);
+            }
+
+            return result;  
         }
         public RESULT disconnectFrom            (DSP target)
         {
             return FMOD_DSP_DisconnectFrom(dspraw, target.getRaw());
+        }
+        public RESULT disconnectAll             (bool inputs, bool outputs)
+        {
+            return FMOD_DSP_DisconnectAll(dspraw, (inputs ? 1 : 0), (outputs ? 1 : 0));
         }
         public RESULT remove                    ()
         {
@@ -3684,15 +4861,17 @@ namespace FMOD
         {
             return FMOD_DSP_GetNumOutputs(dspraw, ref numoutputs);
         }
-        public RESULT getInput                  (int index, ref DSP input)
+        public RESULT getInput                  (int index, ref DSP input, ref DSPConnection inputconnection)
         {
             RESULT result      = RESULT.OK;
             IntPtr dsprawnew   = new IntPtr();
             DSP    dspnew      = null;
+            IntPtr dspconnectionraw = new IntPtr();
+            DSPConnection dspconnectionnew = null;
 
             try
             {
-                result = FMOD_DSP_GetInput(dspraw, index, ref dsprawnew);
+                result = FMOD_DSP_GetInput(dspraw, index, ref dsprawnew, ref dspconnectionraw);
             }
             catch
             {
@@ -3714,17 +4893,30 @@ namespace FMOD
                 input.setRaw(dsprawnew);
             }
 
+            if (inputconnection == null)
+            {
+                dspconnectionnew = new DSPConnection();
+                dspconnectionnew.setRaw(dspconnectionraw);
+                inputconnection = dspconnectionnew;
+            }
+            else
+            {
+                inputconnection.setRaw(dspconnectionraw);
+            }
+
             return result; 
         }
-        public RESULT getOutput                 (int index, ref DSP output)
+        public RESULT getOutput                 (int index, ref DSP output, ref DSPConnection outputconnection)
         {
             RESULT result      = RESULT.OK;
             IntPtr dsprawnew   = new IntPtr();
             DSP    dspnew      = null;
+            IntPtr dspconnectionraw = new IntPtr();
+            DSPConnection dspconnectionnew = null;
 
             try
             {
-                result = FMOD_DSP_GetOutput(dspraw, index, ref dsprawnew);
+                result = FMOD_DSP_GetOutput(dspraw, index, ref dsprawnew, ref dspconnectionraw);
             }
             catch
             {
@@ -3746,71 +4938,102 @@ namespace FMOD
                 output.setRaw(dsprawnew);
             }
 
+            if (outputconnection == null)
+            {
+                dspconnectionnew = new DSPConnection();
+                dspconnectionnew.setRaw(dspconnectionraw);
+                outputconnection = dspconnectionnew;
+            }
+            else
+            {
+                outputconnection.setRaw(dspconnectionraw);
+            }
+
             return result; 
         }
-        public RESULT setInputMix               (int index, float volume)
-        {
-            return FMOD_DSP_SetInputMix(dspraw, index, volume);
-        }
-        public RESULT getInputMix               (int index, ref float volume)
-        {
-            return FMOD_DSP_GetInputMix(dspraw, index, ref volume);
-        }
-        public RESULT setInputLevels            (int index, SPEAKER speaker, float[] levels, int numlevels)
-        {
-            return FMOD_DSP_SetInputLevels(dspraw, index, speaker, levels, numlevels);
-        }
-        public RESULT getInputLevels            (int index, SPEAKER speaker, float[] levels, int numlevels)
-        {
-            return FMOD_DSP_GetInputLevels(dspraw, index, speaker, levels, numlevels);
-        }
+
         public RESULT setActive                 (bool active)
         {
-            return FMOD_DSP_SetActive(dspraw, active);
+            return FMOD_DSP_SetActive(dspraw, (active ? 1 : 0));
         }
         public RESULT getActive                 (ref bool active)
         {
-            return FMOD_DSP_GetActive(dspraw, ref active);
+            RESULT result;
+            int a = 0;
+
+            result = FMOD_DSP_GetActive(dspraw, ref a);
+
+            active = (a != 0);
+
+            return result;
         }
         public RESULT setBypass                 (bool bypass)
         {
-            return FMOD_DSP_SetBypass(dspraw, bypass);
+            return FMOD_DSP_SetBypass(dspraw, (bypass? 1 : 0));
         }
         public RESULT getBypass                 (ref bool bypass)
         {
-            return FMOD_DSP_GetBypass(dspraw, ref bypass);
+            RESULT result;
+            int b = 0;
+
+            result = FMOD_DSP_GetBypass(dspraw, ref b);
+
+            bypass = (b != 0);
+
+            return result;
         }
+
+        public RESULT setSpeakerActive                 (SPEAKER speaker, bool active)
+        {
+            return FMOD_DSP_SetSpeakerActive(dspraw, speaker, (active ? 1 : 0));
+        }
+        public RESULT getSpeakerActive                 (SPEAKER speaker, ref bool active)
+        {
+            RESULT result;
+            int a = 0;
+
+            result = FMOD_DSP_GetSpeakerActive(dspraw, speaker, ref a);
+
+            active = (a != 0);
+
+            return result;
+        }
+
         public RESULT reset                     ()
         {
             return FMOD_DSP_Reset(dspraw);
         }
 
                      
-        public RESULT setParameter              (int index, float val)
+        public RESULT setParameter              (int index, float value)
         {
-            return FMOD_DSP_SetParameter(dspraw, index, val);
+            return FMOD_DSP_SetParameter(dspraw, index, value);
         }
-        public RESULT getParameter              (int index, ref float val, StringBuilder valuestr, int valuestrlen)
+        public RESULT getParameter              (int index, ref float value, StringBuilder valuestr, int valuestrlen)
         {
-            return FMOD_DSP_GetParameter(dspraw, index, ref val, valuestr, valuestrlen);
+            return FMOD_DSP_GetParameter(dspraw, index, ref value, valuestr, valuestrlen);
         }
         public RESULT getNumParameters          (ref int numparams)
         {
             return FMOD_DSP_GetNumParameters(dspraw, ref numparams);
         }
-        public RESULT getParameterInfo          (int index, StringBuilder name, StringBuilder label, StringBuilder description, int descriptionlen, ref float min, ref float max)
+        public RESULT getParameterInfo          (int index, ref IntPtr name, ref IntPtr label, StringBuilder description, int descriptionlen, ref float min, ref float max)
         {
-            return FMOD_DSP_GetParameterInfo(dspraw, index, name, label, description, descriptionlen, ref min, ref max);
+            return FMOD_DSP_GetParameterInfo(dspraw, index, ref name, ref label, description, descriptionlen, ref min, ref max);
         }
         public RESULT showConfigDialog          (IntPtr hwnd, bool show)
         {
-            return FMOD_DSP_ShowConfigDialog          (dspraw, hwnd, show);
+            return FMOD_DSP_ShowConfigDialog          (dspraw, hwnd, (show ? 1 : 0));
         }
 
 
-        public RESULT getInfo                   (StringBuilder name, ref uint version, ref int channels, ref int configwidth, ref int configheight)
+        public RESULT getInfo                   (ref IntPtr name, ref uint version, ref int channels, ref int configwidth, ref int configheight)
         {
-            return FMOD_DSP_GetInfo(dspraw, name, ref version, ref channels, ref configwidth, ref configheight);
+            return FMOD_DSP_GetInfo(dspraw, ref name, ref version, ref channels, ref configwidth, ref configheight);
+        }
+        public RESULT getType                   (ref DSP_TYPE type)
+        {
+            return FMOD_DSP_GetType(dspraw, ref type);
         }
         public RESULT setDefaults               (float frequency, float volume, float pan, int priority)
         {
@@ -3831,7 +5054,10 @@ namespace FMOD
             return FMOD_DSP_GetUserData(dspraw, ref userdata);
         }
 
-
+        public RESULT getMemoryInfo(uint memorybits, uint event_memorybits, ref uint memoryused, ref MEMORY_USAGE_DETAILS memoryused_details)
+        {
+            return FMOD_DSP_GetMemoryInfo(dspraw, memorybits, event_memorybits, ref memoryused, ref memoryused_details);
+        }
 
         #region importfunctions
 
@@ -3840,9 +5066,11 @@ namespace FMOD
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_DSP_GetSystemObject           (IntPtr dsp, ref IntPtr system);
         [DllImport (VERSION.dll)]                   
-        private static extern RESULT FMOD_DSP_AddInput                  (IntPtr dsp, IntPtr target);
+        private static extern RESULT FMOD_DSP_AddInput                  (IntPtr dsp, IntPtr target, ref IntPtr connection);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_DSP_DisconnectFrom            (IntPtr dsp, IntPtr target);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_DSP_DisconnectAll             (IntPtr dsp, int inputs, int outputs);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_DSP_Remove                    (IntPtr dsp);
         [DllImport (VERSION.dll)]
@@ -3850,39 +5078,37 @@ namespace FMOD
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_DSP_GetNumOutputs             (IntPtr dsp, ref int numoutputs);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_DSP_GetInput                  (IntPtr dsp, int index, ref IntPtr input);
+        private static extern RESULT FMOD_DSP_GetInput                  (IntPtr dsp, int index, ref IntPtr input, ref IntPtr inputconnection);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_DSP_GetOutput                 (IntPtr dsp, int index, ref IntPtr output);
+        private static extern RESULT FMOD_DSP_GetOutput                 (IntPtr dsp, int index, ref IntPtr output, ref IntPtr outputconnection);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_DSP_SetInputMix               (IntPtr dsp, int index, float volume);
+        private static extern RESULT FMOD_DSP_SetActive                 (IntPtr dsp, int active);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_DSP_GetInputMix               (IntPtr dsp, int index, ref float volume);
+        private static extern RESULT FMOD_DSP_GetActive                 (IntPtr dsp, ref int active);    
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_DSP_SetActive                 (IntPtr dsp, bool active);
+        private static extern RESULT FMOD_DSP_SetBypass                 (IntPtr dsp, int bypass);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_DSP_GetActive                 (IntPtr dsp, ref bool active);
+        private static extern RESULT FMOD_DSP_GetBypass                 (IntPtr dsp, ref int bypass);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_DSP_SetInputLevels            (IntPtr dsp, int index, SPEAKER speaker, float[] levels, int numlevels);
+        private static extern RESULT FMOD_DSP_SetSpeakerActive          (IntPtr dsp, SPEAKER speaker, int active);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_DSP_GetInputLevels            (IntPtr dsp, int index, SPEAKER speaker, float[] levels, int numlevels);        
-        [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_DSP_SetBypass                 (IntPtr dsp, bool bypass);
-        [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_DSP_GetBypass                 (IntPtr dsp, ref bool bypass);
+        private static extern RESULT FMOD_DSP_GetSpeakerActive          (IntPtr dsp, SPEAKER speaker, ref int active);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_DSP_Reset                     (IntPtr dsp);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_DSP_SetParameter              (IntPtr dsp, int index, float val);
+        private static extern RESULT FMOD_DSP_SetParameter              (IntPtr dsp, int index, float value);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_DSP_GetParameter              (IntPtr dsp, int index, ref float val, StringBuilder valuestr, int valuestrlen);
+        private static extern RESULT FMOD_DSP_GetParameter              (IntPtr dsp, int index, ref float value, StringBuilder valuestr, int valuestrlen);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_DSP_GetNumParameters          (IntPtr dsp, ref int numparams);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_DSP_GetParameterInfo          (IntPtr dsp, int index, StringBuilder name, StringBuilder label, StringBuilder description, int descriptionlen, ref float min, ref float max);
+        private static extern RESULT FMOD_DSP_GetParameterInfo          (IntPtr dsp, int index, ref IntPtr name, ref IntPtr label, StringBuilder description, int descriptionlen, ref float min, ref float max);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_DSP_ShowConfigDialog          (IntPtr dsp, IntPtr hwnd, bool show);
+        private static extern RESULT FMOD_DSP_ShowConfigDialog          (IntPtr dsp, IntPtr hwnd, int show);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_DSP_GetInfo                   (IntPtr dsp, StringBuilder name, ref uint version, ref int channels, ref int configwidth, ref int configheight);
+        private static extern RESULT FMOD_DSP_GetInfo                   (IntPtr dsp, ref IntPtr name, ref uint version, ref int channels, ref int configwidth, ref int configheight);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_DSP_GetType                   (IntPtr dsp, ref DSP_TYPE type);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_DSP_SetDefaults               (IntPtr dsp, float frequency, float volume, float pan, int priority);
         [DllImport (VERSION.dll)]
@@ -3891,7 +5117,8 @@ namespace FMOD
         private static extern RESULT FMOD_DSP_SetUserData               (IntPtr dsp, IntPtr userdata);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_DSP_GetUserData               (IntPtr dsp, ref IntPtr userdata);
-
+        [DllImport(VERSION.dll)]
+        private static extern RESULT FMOD_DSP_GetMemoryInfo             (IntPtr dsp, uint memorybits, uint event_memorybits, ref uint memoryused, ref MEMORY_USAGE_DETAILS memoryused_details);
         #endregion
 
         #region wrapperinternal
@@ -3915,6 +5142,146 @@ namespace FMOD
 
 
     /*
+        'DSPConnection' API
+    */
+    public class DSPConnection
+    {
+        public RESULT getInput              (ref DSP input)
+        {
+            RESULT result = RESULT.OK;
+            IntPtr dspraw = new IntPtr();
+            DSP    dspnew = null;
+
+            try
+            {
+                result = FMOD_DSPConnection_GetInput(dspconnectionraw, ref dspraw);
+            }
+            catch
+            {
+                result = RESULT.ERR_INVALID_PARAM;
+            }
+            if (result != RESULT.OK)
+            {
+                return result;
+            }
+
+            if (input == null)
+            {
+                dspnew = new DSP();
+                dspnew.setRaw(dspraw);
+                input = dspnew;
+            }
+            else
+            {
+                input.setRaw(dspraw);
+            }
+
+            return result;
+        }
+        public RESULT getOutput             (ref DSP output)
+        {
+            RESULT result = RESULT.OK;
+            IntPtr dspraw = new IntPtr();
+            DSP dspnew = null;
+
+            try
+            {
+                result = FMOD_DSPConnection_GetOutput(dspconnectionraw, ref dspraw);
+            }
+            catch
+            {
+                result = RESULT.ERR_INVALID_PARAM;
+            }
+            if (result != RESULT.OK)
+            {
+                return result;
+            }
+
+            if (output == null)
+            {
+                dspnew = new DSP();
+                dspnew.setRaw(dspraw);
+                output = dspnew;
+            }
+            else
+            {
+                output.setRaw(dspraw);
+            }
+
+            return result;
+        }
+        public RESULT setMix                (float volume)
+        {
+            return FMOD_DSPConnection_SetMix(dspconnectionraw, volume);
+        }
+        public RESULT getMix                (ref float volume)
+        {
+            return FMOD_DSPConnection_GetMix(dspconnectionraw, ref volume);
+        }
+        public RESULT setLevels             (SPEAKER speaker, float[] levels, int numlevels)
+        {
+            return FMOD_DSPConnection_SetLevels(dspconnectionraw, speaker, levels, numlevels);
+        }
+        public RESULT getLevels             (SPEAKER speaker, float[] levels, int numlevels)
+        {
+            return FMOD_DSPConnection_GetLevels(dspconnectionraw, speaker, levels, numlevels);
+        }
+        public RESULT setUserData(IntPtr userdata)
+        {
+            return FMOD_DSPConnection_SetUserData(dspconnectionraw, userdata);
+        }
+        public RESULT getUserData(ref IntPtr userdata)
+        {
+            return FMOD_DSPConnection_GetUserData(dspconnectionraw, ref userdata);
+        }
+
+        public RESULT getMemoryInfo(uint memorybits, uint event_memorybits, ref uint memoryused, ref MEMORY_USAGE_DETAILS memoryused_details)
+        {
+            return FMOD_DSPConnection_GetMemoryInfo(dspconnectionraw, memorybits, event_memorybits, ref memoryused, ref memoryused_details);
+        }
+
+        #region importfunctions
+
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_DSPConnection_GetInput        (IntPtr dspconnection, ref IntPtr input);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_DSPConnection_GetOutput       (IntPtr dspconnection, ref IntPtr output);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_DSPConnection_SetMix          (IntPtr dspconnection, float volume);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_DSPConnection_GetMix          (IntPtr dspconnection, ref float volume);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_DSPConnection_SetLevels       (IntPtr dspconnection, SPEAKER speaker, float[] levels, int numlevels);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_DSPConnection_GetLevels       (IntPtr dspconnection, SPEAKER speaker, [MarshalAs(UnmanagedType.LPArray)]float[] levels, int numlevels);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_DSPConnection_SetUserData     (IntPtr dspconnection, IntPtr userdata);
+        [DllImport (VERSION.dll)]
+        private static extern RESULT FMOD_DSPConnection_GetUserData     (IntPtr dspconnection, ref IntPtr userdata);
+        [DllImport(VERSION.dll)]
+        private static extern RESULT FMOD_DSPConnection_GetMemoryInfo   (IntPtr dspconnection, uint memorybits, uint event_memorybits, ref uint memoryused, ref MEMORY_USAGE_DETAILS memoryused_details);
+        #endregion
+
+        #region wrapperinternal
+
+        private IntPtr dspconnectionraw;
+
+        public void setRaw(IntPtr dspconnection)
+        {
+            dspconnectionraw = new IntPtr();
+
+            dspconnectionraw = dspconnection;
+        }
+
+        public IntPtr getRaw()
+        {
+            return dspconnectionraw;
+        }
+
+        #endregion
+    }
+
+    /*
         'Geometry' API
     */
     public class Geometry
@@ -3923,70 +5290,84 @@ namespace FMOD
         {
             return FMOD_Geometry_Release(geometryraw);
         }       
-        public RESULT addPolygon			(float directOcclusion, float reverbOcclusion, bool doubleSided, int numVertices, ref VECTOR vertices, ref int polygonIndex)
+        public RESULT addPolygon            (float directocclusion, float reverbocclusion, bool doublesided, int numvertices, VECTOR[] vertices, ref int polygonindex)
         {
-            return FMOD_Geometry_AddPolygon(geometryraw, directOcclusion, reverbOcclusion, doubleSided, numVertices, ref vertices, ref polygonIndex);
+            return FMOD_Geometry_AddPolygon(geometryraw, directocclusion, reverbocclusion, (doublesided ? 1 : 0), numvertices, vertices, ref polygonindex);
         }
 
 
-        public RESULT getNumPolygons		(ref int numPolygons)
+        public RESULT getNumPolygons        (ref int numpolygons)
         {
-            return FMOD_Geometry_GetNumPolygons(geometryraw, ref numPolygons);
+            return FMOD_Geometry_GetNumPolygons(geometryraw, ref numpolygons);
         }
-        public RESULT getMaxPolygons		(ref int maxPolygons, ref int maxVertices)
+        public RESULT getMaxPolygons        (ref int maxpolygons, ref int maxvertices)
         {
-            return FMOD_Geometry_GetMaxPolygons(geometryraw, ref maxPolygons, ref maxVertices);
+            return FMOD_Geometry_GetMaxPolygons(geometryraw, ref maxpolygons, ref maxvertices);
         }
-        public RESULT getPolygonNumVertices	(int polygonIndex, ref int numVertices)
+        public RESULT getPolygonNumVertices (int index, ref int numvertices)
         {
-            return FMOD_Geometry_GetPolygonNumVertices(geometryraw, polygonIndex, ref numVertices);
+            return FMOD_Geometry_GetPolygonNumVertices(geometryraw, index, ref numvertices);
         }
-        public RESULT setPolygonVertex		(int polygonIndex, int vertexIndex, ref VECTOR vertex)
+        public RESULT setPolygonVertex      (int index, int vertexindex, ref VECTOR vertex)
         {
-            return FMOD_Geometry_SetPolygonVertex(geometryraw, polygonIndex, vertexIndex, ref vertex);
+            return FMOD_Geometry_SetPolygonVertex(geometryraw, index, vertexindex, ref vertex);
         }
-        public RESULT getPolygonVertex		(int polygonIndex, int vertexIndex, ref VECTOR vertex)
+        public RESULT getPolygonVertex      (int index, int vertexindex, ref VECTOR vertex)
         {
-            return FMOD_Geometry_GetPolygonVertex(geometryraw, polygonIndex, vertexIndex, ref vertex);
+            return FMOD_Geometry_GetPolygonVertex(geometryraw, index, vertexindex, ref vertex);
         }
-        public RESULT setPolygonAttributes	(int polygonIndex, float directOcclusion, float reverbOcclusion, bool doubleSided)
+        public RESULT setPolygonAttributes  (int index, float directocclusion, float reverbocclusion, bool doublesided)
         {
-            return FMOD_Geometry_SetPolygonAttributes(geometryraw, polygonIndex, directOcclusion, reverbOcclusion, doubleSided);
+            return FMOD_Geometry_SetPolygonAttributes(geometryraw, index, directocclusion, reverbocclusion, (doublesided ? 1 : 0));
         }
-        public RESULT getPolygonAttributes	(int polygonIndex, ref float directOcclusion, ref float reverbOcclusion, ref bool doubleSided)
+        public RESULT getPolygonAttributes  (int index, ref float directocclusion, ref float reverbocclusion, ref bool doublesided)
         {
-            return FMOD_Geometry_GetPolygonAttributes(geometryraw, polygonIndex, ref directOcclusion, ref reverbOcclusion, ref doubleSided);
+            RESULT result;
+            int ds = 0;
+
+            result = FMOD_Geometry_GetPolygonAttributes(geometryraw, index, ref directocclusion, ref reverbocclusion, ref ds);
+
+            doublesided = (ds != 0);
+
+            return result;
         }
 
         public RESULT setActive             (bool active)
         {
-            return FMOD_Geometry_SetActive  (geometryraw, active);
+            return FMOD_Geometry_SetActive  (geometryraw, (active ? 1 : 0));
         }
         public RESULT getActive             (ref bool active)
         {
-            return FMOD_Geometry_GetActive  (geometryraw, ref active);
+            RESULT result;
+            int a = 0;
+
+            result = FMOD_Geometry_GetActive  (geometryraw, ref a);
+
+            active = (a != 0);
+
+            return result;
         }
-        public RESULT setRotation			(ref VECTOR forward, ref VECTOR up)
+        public RESULT setRotation           (ref VECTOR forward, ref VECTOR up)
         {
             return FMOD_Geometry_SetRotation(geometryraw, ref forward, ref up);
         }
-        public RESULT getRotation			(ref VECTOR forward, ref VECTOR up)
+        public RESULT getRotation           (ref VECTOR forward, ref VECTOR up)
         {
             return FMOD_Geometry_GetRotation(geometryraw, ref forward, ref up);
         }
-        public RESULT setPosition			(ref VECTOR position)
+        public RESULT setPosition           (ref VECTOR position)
         {
             return FMOD_Geometry_SetPosition(geometryraw, ref position);
         }
-        public RESULT getPosition			(ref VECTOR position)
+        public RESULT getPosition           (ref VECTOR position)
         {
             return FMOD_Geometry_GetPosition(geometryraw, ref position);
         }
-        public RESULT setScale				(ref VECTOR scale)
+        public RESULT setScale              (ref VECTOR scale)
         {
             return FMOD_Geometry_SetScale(geometryraw, ref scale);
         }
-        public RESULT getScale				(ref VECTOR scale)
+        public RESULT getScale              (ref VECTOR scale)
         {
             return FMOD_Geometry_GetScale(geometryraw, ref scale);
         }
@@ -4005,34 +5386,37 @@ namespace FMOD
             return FMOD_Geometry_GetUserData(geometryraw, ref userdata);
         }
 
-
+        public RESULT getMemoryInfo(uint memorybits, uint event_memorybits, ref uint memoryused, ref MEMORY_USAGE_DETAILS memoryused_details)
+        {
+            return FMOD_Geometry_GetMemoryInfo(geometryraw, memorybits, event_memorybits, ref memoryused, ref memoryused_details);
+        }
 
         #region importfunctions
 
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_Geometry_Release   (IntPtr geometry);
+        private static extern RESULT FMOD_Geometry_Release              (IntPtr geometry);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_Geometry_AddPolygon           (IntPtr geometry, float directOcclusion, float reverbOcclusion, bool doubleSided, int numVertices, ref VECTOR vertices, ref int polygonIndex);
+        private static extern RESULT FMOD_Geometry_AddPolygon           (IntPtr geometry, float directocclusion, float reverbocclusion, int doublesided, int numvertices, VECTOR[] vertices, ref int polygonindex);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_Geometry_GetNumPolygons       (IntPtr geometry, ref int numPolygons);
+        private static extern RESULT FMOD_Geometry_GetNumPolygons       (IntPtr geometry, ref int numpolygons);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_Geometry_GetMaxPolygons       (IntPtr geometry, ref int maxPolygons, ref int maxVertices);
+        private static extern RESULT FMOD_Geometry_GetMaxPolygons       (IntPtr geometry, ref int maxpolygons, ref int maxvertices);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_Geometry_GetPolygonNumVertices(IntPtr geometry, int polygonIndex, ref int numVertices);
+        private static extern RESULT FMOD_Geometry_GetPolygonNumVertices(IntPtr geometry, int index, ref int numvertices);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_Geometry_SetPolygonVertex     (IntPtr geometry, int polygonIndex, int vertexIndex, ref VECTOR vertex);
+        private static extern RESULT FMOD_Geometry_SetPolygonVertex     (IntPtr geometry, int index, int vertexindex, ref VECTOR vertex);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_Geometry_GetPolygonVertex     (IntPtr geometry, int polygonIndex, int vertexIndex, ref VECTOR vertex);
+        private static extern RESULT FMOD_Geometry_GetPolygonVertex     (IntPtr geometry, int index, int vertexindex, ref VECTOR vertex);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_Geometry_SetPolygonAttributes (IntPtr geometry, int polygonIndex, float directOcclusion, float reverbOcclusion, bool doubleSided);
+        private static extern RESULT FMOD_Geometry_SetPolygonAttributes (IntPtr geometry, int index, float directocclusion, float reverbocclusion, int doublesided);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_Geometry_GetPolygonAttributes (IntPtr geometry, int polygonIndex, ref float directOcclusion, ref float reverbOcclusion, ref bool doubleSided);
+        private static extern RESULT FMOD_Geometry_GetPolygonAttributes (IntPtr geometry, int index, ref float directocclusion, ref float reverbocclusion, ref int doublesided);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_Geometry_Flush                (IntPtr geometry);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_Geometry_SetActive                    (IntPtr gemoetry, bool active);
+        private static extern RESULT FMOD_Geometry_SetActive            (IntPtr geometry, int active);
         [DllImport (VERSION.dll)]
-        private static extern RESULT FMOD_Geometry_GetActive                    (IntPtr gemoetry, ref bool active);
+        private static extern RESULT FMOD_Geometry_GetActive            (IntPtr geometry, ref int active);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_Geometry_SetRotation          (IntPtr geometry, ref VECTOR forward, ref VECTOR up);
         [DllImport (VERSION.dll)]
@@ -4051,7 +5435,8 @@ namespace FMOD
         private static extern RESULT FMOD_Geometry_SetUserData          (IntPtr geometry, IntPtr userdata);
         [DllImport (VERSION.dll)]
         private static extern RESULT FMOD_Geometry_GetUserData          (IntPtr geometry, ref IntPtr userdata);
-
+        [DllImport(VERSION.dll)]
+        private static extern RESULT FMOD_Geometry_GetMemoryInfo        (IntPtr geometry, uint memorybits, uint event_memorybits, ref uint memoryused, ref MEMORY_USAGE_DETAILS memoryused_details);
         #endregion
 
         #region wrapperinternal
@@ -4068,6 +5453,108 @@ namespace FMOD
         public IntPtr getRaw()
         {
             return geometryraw;
+        }
+
+        #endregion
+    }
+
+    /*
+        'Reverb' API
+    */
+    public class Reverb
+    {
+
+        public RESULT release()
+        {
+            return FMOD_Reverb_Release(reverbraw);
+        }
+
+        // Reverb manipulation.
+        public RESULT set3DAttributes(ref VECTOR position, float mindistance, float maxdistance)
+        {
+            return FMOD_Reverb_Set3DAttributes(reverbraw, ref position, mindistance, maxdistance);
+        }
+        public RESULT get3DAttributes(ref VECTOR position, ref float mindistance, ref float maxdistance)
+        {
+            return FMOD_Reverb_Get3DAttributes(reverbraw, ref position, ref mindistance, ref maxdistance);
+        }
+        public RESULT setProperties(ref REVERB_PROPERTIES properties)
+        {
+            return FMOD_Reverb_SetProperties(reverbraw, ref properties);
+        }
+        public RESULT getProperties(ref REVERB_PROPERTIES properties)
+        {
+            return FMOD_Reverb_GetProperties(reverbraw, ref properties);
+        }
+        public RESULT setActive(bool active)
+        {
+            return FMOD_Reverb_SetActive(reverbraw, (active ? 1 : 0));
+        }
+        public RESULT getActive(ref bool active)
+        {
+            RESULT result;
+            int a = 0;
+
+            result = FMOD_Reverb_GetActive(reverbraw, ref a);
+
+            active = (a != 0);
+
+            return result;
+        }
+
+        // Userdata set/get.
+        public RESULT setUserData(IntPtr userdata)
+        {
+            return FMOD_Reverb_SetUserData(reverbraw, userdata);
+        }
+        public RESULT getUserData(ref IntPtr userdata)
+        {
+            return FMOD_Reverb_GetUserData(reverbraw, ref userdata);
+        }
+
+        public RESULT getMemoryInfo(uint memorybits, uint event_memorybits, ref uint memoryused, ref MEMORY_USAGE_DETAILS memoryused_details)
+        {
+            return FMOD_Reverb_GetMemoryInfo(reverbraw, memorybits, event_memorybits, ref memoryused, ref memoryused_details);
+        }
+
+        #region importfunctions
+
+        [DllImport(VERSION.dll)]
+        private static extern RESULT FMOD_Reverb_Release(IntPtr reverb);
+        [DllImport(VERSION.dll)]
+        private static extern RESULT FMOD_Reverb_Set3DAttributes(IntPtr reverb, ref VECTOR position, float mindistance, float maxdistance);
+        [DllImport(VERSION.dll)]
+        private static extern RESULT FMOD_Reverb_Get3DAttributes(IntPtr reverb, ref VECTOR position, ref float mindistance, ref float maxdistance);
+        [DllImport(VERSION.dll)]
+        private static extern RESULT FMOD_Reverb_SetProperties(IntPtr reverb, ref REVERB_PROPERTIES properties);
+        [DllImport(VERSION.dll)]
+        private static extern RESULT FMOD_Reverb_GetProperties(IntPtr reverb, ref REVERB_PROPERTIES properties);
+        [DllImport(VERSION.dll)]
+        private static extern RESULT FMOD_Reverb_SetActive(IntPtr reverb, int active);
+        [DllImport(VERSION.dll)]
+        private static extern RESULT FMOD_Reverb_GetActive(IntPtr reverb, ref int active);
+        [DllImport(VERSION.dll)]
+        private static extern RESULT FMOD_Reverb_SetUserData(IntPtr reverb, IntPtr userdata);
+        [DllImport(VERSION.dll)]
+        private static extern RESULT FMOD_Reverb_GetUserData(IntPtr reverb, ref IntPtr userdata);
+        [DllImport(VERSION.dll)]
+        private static extern RESULT FMOD_Reverb_GetMemoryInfo(IntPtr reverb, uint memorybits, uint event_memorybits, ref uint memoryused, ref MEMORY_USAGE_DETAILS memoryused_details);
+        #endregion
+
+        #region wrapperinternal
+
+        private IntPtr reverbraw;
+
+        public void setRaw(IntPtr rev)
+        {
+            reverbraw = new IntPtr();
+
+            reverbraw = rev;
+        }
+
+        public IntPtr getRaw()
+        {
+            return reverbraw;
         }
 
         #endregion

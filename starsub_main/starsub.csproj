@@ -126,6 +126,7 @@
     <Compile Include="fmod_errors.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="fmod_memoryinfo.cs" />
     <Compile Include="FormMain.cs">
       <SubType>Form</SubType>
     </Compile>

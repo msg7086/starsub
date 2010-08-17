@@ -92,6 +92,7 @@ namespace starsub
 			var line = listView1.SelectedItems[0];
 			if (line.SubItems[1].Text == "META")
 				return;
+			audioPanel1.Seek(Convert.ToInt32(MyTimeParse(line.SubItems[1].Text).TotalMilliseconds));
 		}
 
 		private void listView1_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
@@ -105,28 +106,40 @@ namespace starsub
 			EndTimeBox.Text = line.SubItems[2].Text;
 			DialogTextBox.Text = line.Text;
 			ListViewItem LastLine = null, NextLine = null;
-			if (listView1.SelectedIndices[0] > 1)
+			if (listView1.SelectedIndices[0] > 0)
 				LastLine = listView1.Items[listView1.SelectedIndices[0] - 1];
 			if (listView1.SelectedIndices[0] < listView1.Items.Count - 1)
 				NextLine = listView1.Items[listView1.SelectedIndices[0] + 1];
 			audioPanel1.SetSubtitleLines(
 				LastLine == null || LastLine.SubItems[1].Text == "META" ? null : new SubtitleLine
 				{
-					StartTime = TimeSpan.Parse(LastLine.SubItems[1].Text),
-					EndTime = TimeSpan.Parse(LastLine.SubItems[2].Text),
+					StartTime = MyTimeParse(LastLine.SubItems[1].Text),
+					EndTime = MyTimeParse(LastLine.SubItems[2].Text),
 					DialogText = StripTags(LastLine.Text)
 				}, new SubtitleLine
 				{
-					StartTime = TimeSpan.Parse(line.SubItems[1].Text),
-					EndTime = TimeSpan.Parse(line.SubItems[2].Text),
+					StartTime = MyTimeParse(line.SubItems[1].Text),
+					EndTime = MyTimeParse(line.SubItems[2].Text),
 					DialogText = StripTags(line.Text)
 				}, NextLine == null || NextLine.SubItems[1].Text == "META" ? null : new SubtitleLine
 				{
-					StartTime = TimeSpan.Parse(NextLine.SubItems[1].Text),
-					EndTime = TimeSpan.Parse(NextLine.SubItems[2].Text),
+					StartTime = MyTimeParse(NextLine.SubItems[1].Text),
+					EndTime = MyTimeParse(NextLine.SubItems[2].Text),
 					DialogText = StripTags(NextLine.Text)
 				}
 			);
+		}
+
+		private TimeSpan MyTimeParse(string TimeStr)
+		{
+			try
+			{
+				return TimeSpan.Parse(TimeStr);
+			}
+			catch (Exception)
+			{
+				return TimeSpan.Zero;
+			}
 		}
 
 		private string StripTags(string subtitle)
@@ -134,21 +147,53 @@ namespace starsub
 			return Regex.Replace(subtitle, @"\{[^\}]*\}", "★");
 		}
 
+		/// <summary>
+		/// Write to CURRENT Line Start Time. Write to LAST Line End Time if empty. Jump to NEXT line.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void writeStartTimeToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if (listView1.SelectedItems.Count != 1)
 				return;
 			var line = listView1.SelectedItems[0];
 			line.SubItems[1].Text = StartTimeBox.Text = audioPanel1.GetMouseTimeText();
+
+			ListViewItem lastline = null;
+			if (listView1.SelectedIndices[0] >= 1)
+			{
+				lastline = listView1.Items[listView1.SelectedIndices[0] - 1];
+				if (lastline.SubItems[1].Text != "META" && lastline.SubItems[2].Text == "META")
+					lastline.SubItems[2].Text = audioPanel1.GetMouseTimeText();
+			}
+			listView1.Items[listView1.SelectedIndices[0] + 1].Selected = true;
 			audioPanel1.RefreshWave();
 		}
 
+		/// <summary>
+		/// Write to LAST Line End Time if CURRENT Line Start Time is empty, else, Write to THIS Line End Time and JUMP.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void writeEndTimeToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if (listView1.SelectedItems.Count != 1)
 				return;
 			var line = listView1.SelectedItems[0];
-			line.SubItems[2].Text = EndTimeBox.Text = audioPanel1.GetMouseTimeText();
+			if (line.SubItems[1].Text != "META")
+			{
+				line.SubItems[2].Text = EndTimeBox.Text = audioPanel1.GetMouseTimeText();
+				listView1.Items[listView1.SelectedIndices[0] + 1].Selected = true;
+			}
+			else
+			{
+				ListViewItem lastline = null;
+				if (listView1.SelectedIndices[0] >= 1)
+				{
+					lastline = listView1.Items[listView1.SelectedIndices[0] - 1];
+					lastline.SubItems[2].Text = audioPanel1.GetMouseTimeText();
+				}
+			}
 			audioPanel1.RefreshWave();
 		}
 
@@ -156,7 +201,7 @@ namespace starsub
 		{
 			if (listView1.SelectedItems.Count != 1)
 				return;
-			ListViewItem line = null
+			ListViewItem line = null;
 			if (listView1.SelectedIndices[0] < 1)
 				return;
 			line = listView1.Items[listView1.SelectedIndices[0] - 1];
@@ -164,6 +209,27 @@ namespace starsub
 			line.SubItems[2].Text = EndTimeBox.Text = audioPanel1.GetMouseTimeText();
 			audioPanel1.RefreshWave();
 
+		}
+
+		private void DialogTextBox_TextChanged(object sender, EventArgs e)
+		{
+			if (listView1.SelectedItems.Count != 1)
+				return;
+			listView1.SelectedItems[0].Text = DialogTextBox.Text;
+		}
+
+		private void StartTimeBox_TextChanged(object sender, EventArgs e)
+		{
+			if (listView1.SelectedItems.Count != 1)
+				return;
+			listView1.SelectedItems[0].SubItems[1].Text = StartTimeBox.Text;
+		}
+
+		private void EndTimeBox_TextChanged(object sender, EventArgs e)
+		{
+			if (listView1.SelectedItems.Count != 1)
+				return;
+			listView1.SelectedItems[0].SubItems[2].Text = EndTimeBox.Text;
 		}
 	}
 }
