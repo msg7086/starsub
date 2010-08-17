@@ -3,6 +3,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace starsub
 {
@@ -199,6 +200,17 @@ namespace starsub
 			this.Last = Last;
 			this.Current = Current;
 			this.Next = Next;
+			WaveDisplay.Refresh();
+		}
+
+		public string GetMouseTimeText()
+		{
+			var MS = MousePointMS;
+			return string.Format("{0:00}:{1:00}:{2:00}.{3:00}", MS / 3600000, MS % 3600000 / 60000, MS % 60000 / 1000, MS % 1000 / 10);
+		}
+
+		public void RefreshWave()
+		{
 			WaveDisplay.Refresh();
 		}
 	}
