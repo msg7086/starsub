@@ -118,12 +118,17 @@ namespace starsub
 			postodraw = Convert.ToUInt32(RightTimeMS);
 			g.DrawString(GetTimeText(postodraw), MyFont, Brushes.White, WaveDisplay.Width - 100, WaveDisplay.Height - 25);
 
+
+			g.DrawString(GetTimeText(PlayPointMS), MyFont, Brushes.White, 100, WaveDisplay.Height - 25);
+
+			if(Current != null)
+				g.DrawString(Current.DialogText, MyCJKFont, Brushes.White, 200, WaveDisplay.Height - 25);
 			// Draw Last/Curr/Next Subtitle Line Pseudo Line
 			foreach (var sl in new SubtitleLine[] { Last, Current, Next })
 				if (sl != null)
 				{
 					Brush LineBrush = sl == Current ? Brushes.BlueViolet : Brushes.Yellow;
-					if (sl.StartTime.TotalMilliseconds > LeftTimeMS && sl.StartTime.TotalMilliseconds < RightTimeMS)
+					if (sl.StartTime != TimeSpan.Zero && sl.StartTime.TotalMilliseconds > LeftTimeMS && sl.StartTime.TotalMilliseconds < RightTimeMS)
 					{
 						xx = Convert.ToSingle((sl.StartTime.TotalMilliseconds - LeftTimeMS) * XScale * SlicePerSecond / 1000);
 						g.DrawLine(WritePen, xx, waveheight * 2 / 5, xx, waveheight);
@@ -132,7 +137,7 @@ namespace starsub
 						g.DrawString(GetTimeText(Convert.ToUInt32(sl.StartTime.TotalMilliseconds)), MyFont, Brushes.White, xx, WaveDisplay.Height - 100);
 						g.DrawString(sl.DialogText, MyCJKFont, LineBrush, xx, halfheight);
 					}
-					if (sl.EndTime.TotalMilliseconds > LeftTimeMS && sl.EndTime.TotalMilliseconds < RightTimeMS)
+					if (sl.EndTime != TimeSpan.Zero && sl.EndTime.TotalMilliseconds > LeftTimeMS && sl.EndTime.TotalMilliseconds < RightTimeMS)
 					{
 						xx = Convert.ToSingle((sl.EndTime.TotalMilliseconds - LeftTimeMS) * XScale * SlicePerSecond / 1000);
 						g.DrawLine(WritePen, xx, waveheight * 2 / 5, xx, waveheight);

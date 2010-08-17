@@ -36,6 +36,9 @@
 			this.controlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.playPauseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+			this.writeStartTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.writeEndTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.writeLastEndTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.OpenAudioDialog = new System.Windows.Forms.OpenFileDialog();
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
 			this.listView1 = new System.Windows.Forms.ListView();
@@ -47,9 +50,6 @@
 			this.StartTimeBox = new System.Windows.Forms.MaskedTextBox();
 			this.EndTimeBox = new System.Windows.Forms.MaskedTextBox();
 			this.OpenSubDialog = new System.Windows.Forms.OpenFileDialog();
-			this.writeStartTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.writeEndTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.writeLastEndTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.audioPanel1 = new starsub.AudioPanel();
 			this.menuStrip1.SuspendLayout();
 			this.splitContainer1.Panel1.SuspendLayout();
@@ -125,6 +125,30 @@
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
 			this.toolStripSeparator2.Size = new System.Drawing.Size(203, 6);
 			// 
+			// writeStartTimeToolStripMenuItem
+			// 
+			this.writeStartTimeToolStripMenuItem.Name = "writeStartTimeToolStripMenuItem";
+			this.writeStartTimeToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F2;
+			this.writeStartTimeToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+			this.writeStartTimeToolStripMenuItem.Text = "Write Start Time";
+			this.writeStartTimeToolStripMenuItem.Click += new System.EventHandler(this.writeStartTimeToolStripMenuItem_Click);
+			// 
+			// writeEndTimeToolStripMenuItem
+			// 
+			this.writeEndTimeToolStripMenuItem.Name = "writeEndTimeToolStripMenuItem";
+			this.writeEndTimeToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
+			this.writeEndTimeToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+			this.writeEndTimeToolStripMenuItem.Text = "Write End Time";
+			this.writeEndTimeToolStripMenuItem.Click += new System.EventHandler(this.writeEndTimeToolStripMenuItem_Click);
+			// 
+			// writeLastEndTimeToolStripMenuItem
+			// 
+			this.writeLastEndTimeToolStripMenuItem.Name = "writeLastEndTimeToolStripMenuItem";
+			this.writeLastEndTimeToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
+			this.writeLastEndTimeToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+			this.writeLastEndTimeToolStripMenuItem.Text = "Write Last End Time";
+			this.writeLastEndTimeToolStripMenuItem.Click += new System.EventHandler(this.writeLastEndTimeToolStripMenuItem_Click);
+			// 
 			// OpenAudioDialog
 			// 
 			this.OpenAudioDialog.Filter = "Audio files|*.mp3;*.wav;*.ogg|All files|*.*";
@@ -152,6 +176,7 @@
 			// 
 			// listView1
 			// 
+			this.listView1.AllowColumnReorder = true;
 			this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader3,
             this.columnHeader1,
@@ -162,6 +187,7 @@
 			this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
 			this.listView1.HideSelection = false;
 			this.listView1.Location = new System.Drawing.Point(0, 30);
+			this.listView1.MultiSelect = false;
 			this.listView1.Name = "listView1";
 			this.listView1.Size = new System.Drawing.Size(692, 254);
 			this.listView1.TabIndex = 0;
@@ -191,8 +217,8 @@
 			// panel1
 			// 
 			this.panel1.Controls.Add(this.DialogTextBox);
-			this.panel1.Controls.Add(this.StartTimeBox);
 			this.panel1.Controls.Add(this.EndTimeBox);
+			this.panel1.Controls.Add(this.StartTimeBox);
 			this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
 			this.panel1.Font = new System.Drawing.Font("Lucida Console", 12F);
 			this.panel1.Location = new System.Drawing.Point(0, 0);
@@ -208,56 +234,35 @@
 			this.DialogTextBox.Name = "DialogTextBox";
 			this.DialogTextBox.Size = new System.Drawing.Size(446, 23);
 			this.DialogTextBox.TabIndex = 2;
+			this.DialogTextBox.TextChanged += new System.EventHandler(this.DialogTextBox_TextChanged);
 			// 
 			// StartTimeBox
 			// 
 			this.StartTimeBox.Dock = System.Windows.Forms.DockStyle.Left;
 			this.StartTimeBox.InsertKeyMode = System.Windows.Forms.InsertKeyMode.Overwrite;
-			this.StartTimeBox.Location = new System.Drawing.Point(123, 3);
+			this.StartTimeBox.Location = new System.Drawing.Point(3, 3);
 			this.StartTimeBox.Mask = "0:90:00.00";
 			this.StartTimeBox.Name = "StartTimeBox";
 			this.StartTimeBox.Size = new System.Drawing.Size(120, 23);
 			this.StartTimeBox.TabIndex = 0;
 			this.StartTimeBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.StartTimeBox.TextChanged += new System.EventHandler(this.StartTimeBox_TextChanged);
 			// 
 			// EndTimeBox
 			// 
 			this.EndTimeBox.Dock = System.Windows.Forms.DockStyle.Left;
 			this.EndTimeBox.InsertKeyMode = System.Windows.Forms.InsertKeyMode.Overwrite;
-			this.EndTimeBox.Location = new System.Drawing.Point(3, 3);
+			this.EndTimeBox.Location = new System.Drawing.Point(123, 3);
 			this.EndTimeBox.Mask = "0:90:00.00";
 			this.EndTimeBox.Name = "EndTimeBox";
 			this.EndTimeBox.Size = new System.Drawing.Size(120, 23);
 			this.EndTimeBox.TabIndex = 1;
 			this.EndTimeBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.EndTimeBox.TextChanged += new System.EventHandler(this.EndTimeBox_TextChanged);
 			// 
 			// OpenSubDialog
 			// 
 			this.OpenSubDialog.Filter = "Subtitle files|*.ass;*.ssa|All files|*.*";
-			// 
-			// writeStartTimeToolStripMenuItem
-			// 
-			this.writeStartTimeToolStripMenuItem.Name = "writeStartTimeToolStripMenuItem";
-			this.writeStartTimeToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F2;
-			this.writeStartTimeToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
-			this.writeStartTimeToolStripMenuItem.Text = "Write Start Time";
-			this.writeStartTimeToolStripMenuItem.Click += new System.EventHandler(this.writeStartTimeToolStripMenuItem_Click);
-			// 
-			// writeEndTimeToolStripMenuItem
-			// 
-			this.writeEndTimeToolStripMenuItem.Name = "writeEndTimeToolStripMenuItem";
-			this.writeEndTimeToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
-			this.writeEndTimeToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
-			this.writeEndTimeToolStripMenuItem.Text = "Write End Time";
-			this.writeEndTimeToolStripMenuItem.Click += new System.EventHandler(this.writeEndTimeToolStripMenuItem_Click);
-			// 
-			// writeLastEndTimeToolStripMenuItem
-			// 
-			this.writeLastEndTimeToolStripMenuItem.Name = "writeLastEndTimeToolStripMenuItem";
-			this.writeLastEndTimeToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
-			this.writeLastEndTimeToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
-			this.writeLastEndTimeToolStripMenuItem.Text = "Write Last End Time";
-			this.writeLastEndTimeToolStripMenuItem.Click += new System.EventHandler(this.writeLastEndTimeToolStripMenuItem_Click);
 			// 
 			// audioPanel1
 			// 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using System.IO;
 
 namespace starsub
 {
@@ -28,7 +29,7 @@ namespace starsub
 				Application.Exit();
 			}
 
-			result = system.init(32, FMOD.INITFLAG.NORMAL, (IntPtr)null);
+			result = system.init(32, FMOD.INITFLAGS.NORMAL, (IntPtr)null);
 			ERRCHECK(result);
 		}
 		private void ERRCHECK(FMOD.RESULT result)
