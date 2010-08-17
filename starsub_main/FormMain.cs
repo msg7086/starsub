@@ -110,7 +110,7 @@ namespace starsub
 			if (listView1.SelectedIndices[0] < listView1.Items.Count - 1)
 				NextLine = listView1.Items[listView1.SelectedIndices[0] + 1];
 			audioPanel1.SetSubtitleLines(
-				LastLine == null ? null : new SubtitleLine
+				LastLine == null || LastLine.SubItems[1].Text == "META" ? null : new SubtitleLine
 				{
 					StartTime = TimeSpan.Parse(LastLine.SubItems[1].Text),
 					EndTime = TimeSpan.Parse(LastLine.SubItems[2].Text),
@@ -120,7 +120,7 @@ namespace starsub
 					StartTime = TimeSpan.Parse(line.SubItems[1].Text),
 					EndTime = TimeSpan.Parse(line.SubItems[2].Text),
 					DialogText = StripTags(line.Text)
-				}, NextLine == null ? null : new SubtitleLine
+				}, NextLine == null || NextLine.SubItems[1].Text == "META" ? null : new SubtitleLine
 				{
 					StartTime = TimeSpan.Parse(NextLine.SubItems[1].Text),
 					EndTime = TimeSpan.Parse(NextLine.SubItems[2].Text),
@@ -132,6 +132,38 @@ namespace starsub
 		private string StripTags(string subtitle)
 		{
 			return Regex.Replace(subtitle, @"\{[^\}]*\}", "★");
+		}
+
+		private void writeStartTimeToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (listView1.SelectedItems.Count != 1)
+				return;
+			var line = listView1.SelectedItems[0];
+			line.SubItems[1].Text = StartTimeBox.Text = audioPanel1.GetMouseTimeText();
+			audioPanel1.RefreshWave();
+		}
+
+		private void writeEndTimeToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (listView1.SelectedItems.Count != 1)
+				return;
+			var line = listView1.SelectedItems[0];
+			line.SubItems[2].Text = EndTimeBox.Text = audioPanel1.GetMouseTimeText();
+			audioPanel1.RefreshWave();
+		}
+
+		private void writeLastEndTimeToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (listView1.SelectedItems.Count != 1)
+				return;
+			ListViewItem line = null
+			if (listView1.SelectedIndices[0] < 1)
+				return;
+			line = listView1.Items[listView1.SelectedIndices[0] - 1];
+
+			line.SubItems[2].Text = EndTimeBox.Text = audioPanel1.GetMouseTimeText();
+			audioPanel1.RefreshWave();
+
 		}
 	}
 }
