@@ -24,6 +24,8 @@ namespace starsub
 		private uint SliceCount = 0;
 		private Pen WaveFormPen = new Pen(Color.FromArgb(0x78, 0xc8, 0xa0));
 		private Pen WritePen = new Pen(Color.White);
+		private Font MyFont = new Font("Tahoma", 14);
+		private Font MyCJKFont = new Font("Microsoft Yahei", 14, FontStyle.Bold);
 		private uint MousePointMS = 0, PlayPointMS = 0;
 		private int MaxPeakValue = 0;
 
@@ -60,7 +62,8 @@ namespace starsub
 			int i;
 
 			// Draw Background WaveForm
-			var halfheight = WaveDisplay.Height / 2;
+			var waveheight = WaveDisplay.Height - 100;
+			var halfheight = waveheight / 2;
 			var LeftOffset = Convert.ToInt32(SecondBar.Value * SlicePerSecond);
 			for (i = 0; i < WaveDisplay.Width; i++)
 			{
@@ -80,7 +83,7 @@ namespace starsub
 					if (LinePos.Contains(i))
 					{
 						float x = (i - LeftOffset) * XScale;
-						g.DrawLine(WritePen, x, 0, x, WaveDisplay.Height);
+						g.DrawLine(WritePen, x, 0, x, waveheight);
 					}
 				}
 
@@ -88,7 +91,7 @@ namespace starsub
 			if (MousePointMS >= LeftTimeMS || MousePointMS < RightTimeMS)
 			{
 				float x = (MousePointMS - LeftTimeMS) * XScale * SlicePerSecond / 1000;
-				g.DrawLine(WritePen, x, 0, x, WaveDisplay.Height);
+				g.DrawLine(WritePen, x, 0, x, waveheight);
 			}
 
 			// Draw Playing Point Line
@@ -97,7 +100,7 @@ namespace starsub
 				if (PlayPointMS >= LeftTimeMS && PlayPointMS < RightTimeMS - 1000)
 				{
 					float x = (PlayPointMS - LeftTimeMS) * XScale * SlicePerSecond / 1000;
-					g.DrawLine(WritePen, x, WaveDisplay.Height / 5, x, WaveDisplay.Height * 4 / 5);
+					g.DrawLine(WritePen, x, waveheight / 5, x, waveheight * 4 / 5);
 				}
 				else if (PlayPointMS < SecondBar.Value * 1000)
 					SecondBar.Value--;
@@ -108,25 +111,40 @@ namespace starsub
 
 			// Print Current Time Position
 			uint postodraw = Convert.ToUInt32(LeftTimeMS);
-			g.DrawString(GetTimeText(postodraw), new Font("Tahoma", 14), Brushes.White, 0, WaveDisplay.Height - 30);
+			g.DrawString(GetTimeText(postodraw), MyFont, Brushes.White, 0, WaveDisplay.Height - 25);
 			postodraw = MousePointMS;
 			float xx = (MousePointMS - LeftTimeMS) * XScale * SlicePerSecond / 1000;
-			g.DrawString(GetTimeText(postodraw), new Font("Tahoma", 14), Brushes.White, xx, WaveDisplay.Height - 60);
+			g.DrawString(GetTimeText(postodraw), MyFont, Brushes.White, xx, WaveDisplay.Height - 50);
 			postodraw = Convert.ToUInt32(RightTimeMS);
-			g.DrawString(GetTimeText(postodraw), new Font("Tahoma", 14), Brushes.White, WaveDisplay.Width - 100, WaveDisplay.Height - 30);
+			g.DrawString(GetTimeText(postodraw), MyFont, Brushes.White, WaveDisplay.Width - 100, WaveDisplay.Height - 25);
 
 			// Draw Last/Curr/Next Subtitle Line Pseudo Line
-			if (Current != null)
-			{
-				if (Current.StartTime.TotalMilliseconds > LeftTimeMS && Current.StartTime.TotalMilliseconds < RightTimeMS)
+			foreach (var sl in new SubtitleLine[] { Last, Current, Next })
+				if (sl != null)
 				{
-					xx = Convert.ToSingle((Current.StartTime.TotalMilliseconds - LeftTimeMS) * XScale * SlicePerSecond / 1000);
-					g.DrawLine(WritePen, xx, WaveDisplay.Height * 2 / 5, xx, WaveDisplay.Height * 3 / 5);
-					g.DrawLine(WritePen, xx, WaveDisplay.Height * 2 / 5, xx + 2, WaveDisplay.Height * 2 / 5 - 10);
-					g.DrawLine(WritePen, xx, WaveDisplay.Height * 3 / 5, xx + 2, WaveDisplay.Height * 3 / 5 + 10);
-					g.DrawString(GetTimeText(Convert.ToUInt32(Current.StartTime.TotalMilliseconds)), new Font("Tahoma", 14), Brushes.White, xx, WaveDisplay.Height - 60);
+					Brush LineBrush = sl == Current ? Brushes.BlueViolet : Brushes.Yellow;
+					if (sl.StartTime.TotalMilliseconds > LeftTimeMS && sl.StartTime.TotalMilliseconds < RightTimeMS)
+					{
+						xx = Convert.ToSingle((sl.StartTime.TotalMilliseconds - LeftTimeMS) * XScale * SlicePerSecond / 1000);
+						g.DrawLine(WritePen, xx, waveheight * 2 / 5, xx, waveheight);
+						g.DrawLine(WritePen, xx, waveheight * 2 / 5, xx + 5, waveheight * 2 / 5 - 20);
+						g.DrawLine(WritePen, xx, waveheight * 3 / 5, xx + 5, waveheight * 3 / 5 + 20);
+						g.DrawString(GetTimeText(Convert.ToUInt32(sl.StartTime.TotalMilliseconds)), MyFont, Brushes.White, xx, WaveDisplay.Height - 100);
+						g.DrawString(sl.DialogText, MyCJKFont, LineBrush, xx, halfheight);
+					}
+					if (sl.EndTime.TotalMilliseconds > LeftTimeMS && sl.EndTime.TotalMilliseconds < RightTimeMS)
+					{
+						xx = Convert.ToSingle((sl.EndTime.TotalMilliseconds - LeftTimeMS) * XScale * SlicePerSecond / 1000);
+						g.DrawLine(WritePen, xx, waveheight * 2 / 5, xx, waveheight);
+						g.DrawLine(WritePen, xx, waveheight * 2 / 5, xx - 5, waveheight * 2 / 5 - 20);
+						g.DrawLine(WritePen, xx, waveheight * 3 / 5, xx - 5, waveheight * 3 / 5 + 20);
+						if (xx > 75)
+							xx -= 75;
+						else
+							xx = 0;
+						g.DrawString(GetTimeText(Convert.ToUInt32(sl.EndTime.TotalMilliseconds)), MyFont, Brushes.White, xx, WaveDisplay.Height - 75);
+					}
 				}
-			}
 		}
 
 		private void WaveDisplay_MouseUp(object sender, MouseEventArgs e)
@@ -175,14 +193,14 @@ namespace starsub
 		private void WaveDisplay_Resize(object sender, EventArgs e)
 		{
 			if (MyYScale > 0)
-				YScale = Convert.ToInt32(MaxPeakValue / (WaveDisplay.Height - 30) * 2 / MyYScale);
+				YScale = Convert.ToInt32(MaxPeakValue / (WaveDisplay.Height - 130) * 2 / MyYScale);
 
 		}
 
 		private void YTrackBar_ValueChanged(object sender, EventArgs e)
 		{
 			MyYScale = YTrackBar.Value * YTrackBar.Value * YTrackBar.Value / 1000f;
-			YScale = Convert.ToInt32(MaxPeakValue / (WaveDisplay.Height - 30) * 2 / MyYScale);
+			YScale = Convert.ToInt32(MaxPeakValue / (WaveDisplay.Height - 130) * 2 / MyYScale);
 			label1.Text = string.Format("X: {0:0.00}{1}Y: {2:0.00}", XScale, Environment.NewLine, MyYScale);
 			WaveDisplay.Refresh();
 		}

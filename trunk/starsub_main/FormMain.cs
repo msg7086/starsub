@@ -104,12 +104,34 @@ namespace starsub
 			StartTimeBox.Text = line.SubItems[1].Text;
 			EndTimeBox.Text = line.SubItems[2].Text;
 			DialogTextBox.Text = line.Text;
-			audioPanel1.SetSubtitleLines(null, new SubtitleLine
-			{
-				StartTime = TimeSpan.Parse(line.SubItems[1].Text),
-				EndTime = TimeSpan.Parse(line.SubItems[2].Text),
-				DialogText = line.Text
-			}, null);
+			ListViewItem LastLine = null, NextLine = null;
+			if (listView1.SelectedIndices[0] > 1)
+				LastLine = listView1.Items[listView1.SelectedIndices[0] - 1];
+			if (listView1.SelectedIndices[0] < listView1.Items.Count - 1)
+				NextLine = listView1.Items[listView1.SelectedIndices[0] + 1];
+			audioPanel1.SetSubtitleLines(
+				LastLine == null ? null : new SubtitleLine
+				{
+					StartTime = TimeSpan.Parse(LastLine.SubItems[1].Text),
+					EndTime = TimeSpan.Parse(LastLine.SubItems[2].Text),
+					DialogText = StripTags(LastLine.Text)
+				}, new SubtitleLine
+				{
+					StartTime = TimeSpan.Parse(line.SubItems[1].Text),
+					EndTime = TimeSpan.Parse(line.SubItems[2].Text),
+					DialogText = StripTags(line.Text)
+				}, NextLine == null ? null : new SubtitleLine
+				{
+					StartTime = TimeSpan.Parse(NextLine.SubItems[1].Text),
+					EndTime = TimeSpan.Parse(NextLine.SubItems[2].Text),
+					DialogText = StripTags(NextLine.Text)
+				}
+			);
+		}
+
+		private string StripTags(string subtitle)
+		{
+			return Regex.Replace(subtitle, @"\{[^\}]*\}", "★");
 		}
 	}
 }
