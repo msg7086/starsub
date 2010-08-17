@@ -116,15 +116,15 @@ namespace starsub
 			g.DrawString(GetTimeText(postodraw), new Font("Tahoma", 14), Brushes.White, WaveDisplay.Width - 100, WaveDisplay.Height - 30);
 
 			// Draw Last/Curr/Next Subtitle Line Pseudo Line
-			if (Last != null)
+			if (Current != null)
 			{
-				if(Last.StartTime.TotalMilliseconds > LeftTimeMS && Last.StartTime.TotalMilliseconds < RightTimeMS)
+				if (Current.StartTime.TotalMilliseconds > LeftTimeMS && Current.StartTime.TotalMilliseconds < RightTimeMS)
 				{
-					xx = Convert.ToSingle((Last.StartTime.TotalMilliseconds - LeftTimeMS) * XScale * SlicePerSecond / 1000);
+					xx = Convert.ToSingle((Current.StartTime.TotalMilliseconds - LeftTimeMS) * XScale * SlicePerSecond / 1000);
 					g.DrawLine(WritePen, xx, WaveDisplay.Height * 2 / 5, xx, WaveDisplay.Height * 3 / 5);
 					g.DrawLine(WritePen, xx, WaveDisplay.Height * 2 / 5, xx + 2, WaveDisplay.Height * 2 / 5 - 10);
 					g.DrawLine(WritePen, xx, WaveDisplay.Height * 3 / 5, xx + 2, WaveDisplay.Height * 3 / 5 + 10);
-					g.DrawString(GetTimeText(Convert.ToUInt32(Last.StartTime.TotalMilliseconds)), new Font("Tahoma", 14), Brushes.White, xx, WaveDisplay.Height - 60);
+					g.DrawString(GetTimeText(Convert.ToUInt32(Current.StartTime.TotalMilliseconds)), new Font("Tahoma", 14), Brushes.White, xx, WaveDisplay.Height - 60);
 				}
 			}
 		}
