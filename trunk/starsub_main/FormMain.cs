@@ -87,6 +87,11 @@ namespace starsub
 
 		private void listView1_DoubleClick(object sender, EventArgs e)
 		{
+			if (listView1.SelectedItems.Count != 1)
+				return;
+			var line = listView1.SelectedItems[0];
+			if (line.SubItems[1].Text == "META")
+				return;
 		}
 
 		private void listView1_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
@@ -99,6 +104,12 @@ namespace starsub
 			StartTimeBox.Text = line.SubItems[1].Text;
 			EndTimeBox.Text = line.SubItems[2].Text;
 			DialogTextBox.Text = line.Text;
+			audioPanel1.SetSubtitleLines(null, new SubtitleLine
+			{
+				StartTime = TimeSpan.Parse(line.SubItems[1].Text),
+				EndTime = TimeSpan.Parse(line.SubItems[2].Text),
+				DialogText = line.Text
+			}, null);
 		}
 	}
 }

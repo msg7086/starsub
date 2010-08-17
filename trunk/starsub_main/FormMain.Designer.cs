@@ -37,6 +37,7 @@
 			this.playPauseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.OpenAudioDialog = new System.Windows.Forms.OpenFileDialog();
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+			this.audioPanel1 = new starsub.AudioPanel();
 			this.listView1 = new System.Windows.Forms.ListView();
 			this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
 			this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
@@ -46,7 +47,6 @@
 			this.StartTimeBox = new System.Windows.Forms.MaskedTextBox();
 			this.EndTimeBox = new System.Windows.Forms.MaskedTextBox();
 			this.OpenSubDialog = new System.Windows.Forms.OpenFileDialog();
-			this.audioPanel1 = new starsub.AudioPanel();
 			this.menuStrip1.SuspendLayout();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
@@ -137,6 +137,16 @@
 			this.splitContainer1.SplitterDistance = 200;
 			this.splitContainer1.TabIndex = 4;
 			// 
+			// audioPanel1
+			// 
+			this.audioPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.audioPanel1.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+			this.audioPanel1.Location = new System.Drawing.Point(0, 0);
+			this.audioPanel1.Name = "audioPanel1";
+			this.audioPanel1.Size = new System.Drawing.Size(692, 200);
+			this.audioPanel1.TabIndex = 0;
+			this.audioPanel1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FormMain_KeyPress);
+			// 
 			// listView1
 			// 
 			this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
@@ -221,16 +231,6 @@
 			// OpenSubDialog
 			// 
 			this.OpenSubDialog.Filter = "Subtitle files|*.ass;*.ssa|All files|*.*";
-			// 
-			// audioPanel1
-			// 
-			this.audioPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.audioPanel1.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-			this.audioPanel1.Location = new System.Drawing.Point(0, 0);
-			this.audioPanel1.Name = "audioPanel1";
-			this.audioPanel1.Size = new System.Drawing.Size(692, 200);
-			this.audioPanel1.TabIndex = 0;
-			this.audioPanel1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FormMain_KeyPress);
 			// 
 			// FormMain
 			// 
