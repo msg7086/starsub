@@ -41,16 +41,17 @@
 			this.writeLastEndTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.OpenAudioDialog = new System.Windows.Forms.OpenFileDialog();
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+			this.audioPanel1 = new starsub.AudioPanel();
 			this.listView1 = new System.Windows.Forms.ListView();
 			this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
 			this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
 			this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.DialogTextBox = new System.Windows.Forms.TextBox();
-			this.StartTimeBox = new System.Windows.Forms.MaskedTextBox();
 			this.EndTimeBox = new System.Windows.Forms.MaskedTextBox();
+			this.StartTimeBox = new System.Windows.Forms.MaskedTextBox();
 			this.OpenSubDialog = new System.Windows.Forms.OpenFileDialog();
-			this.audioPanel1 = new starsub.AudioPanel();
+			this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStrip1.SuspendLayout();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
@@ -76,7 +77,8 @@
 			this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openAudioToolStripMenuItem,
             this.openSubtitleToolStripMenuItem,
-            this.toolStripSeparator1});
+            this.toolStripSeparator1,
+            this.saveToolStripMenuItem});
 			this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
 			this.fileToolStripMenuItem.Size = new System.Drawing.Size(36, 20);
 			this.fileToolStripMenuItem.Text = "&File";
@@ -85,16 +87,17 @@
 			// 
 			this.openAudioToolStripMenuItem.Name = "openAudioToolStripMenuItem";
 			this.openAudioToolStripMenuItem.ShortcutKeyDisplayString = "";
-			this.openAudioToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-			this.openAudioToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+			this.openAudioToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
+			this.openAudioToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
 			this.openAudioToolStripMenuItem.Text = "Open &Audio...";
 			this.openAudioToolStripMenuItem.Click += new System.EventHandler(this.openAudioToolStripMenuItem_Click);
 			// 
 			// openSubtitleToolStripMenuItem
 			// 
 			this.openSubtitleToolStripMenuItem.Name = "openSubtitleToolStripMenuItem";
-			this.openSubtitleToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
-			this.openSubtitleToolStripMenuItem.Text = "Open &Subtitle...";
+			this.openSubtitleToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+			this.openSubtitleToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
+			this.openSubtitleToolStripMenuItem.Text = "Open Su&btitle...";
 			this.openSubtitleToolStripMenuItem.Click += new System.EventHandler(this.openSubtitleToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator1
@@ -174,6 +177,16 @@
 			this.splitContainer1.SplitterDistance = 250;
 			this.splitContainer1.TabIndex = 4;
 			// 
+			// audioPanel1
+			// 
+			this.audioPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.audioPanel1.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+			this.audioPanel1.Location = new System.Drawing.Point(0, 0);
+			this.audioPanel1.Name = "audioPanel1";
+			this.audioPanel1.Size = new System.Drawing.Size(692, 250);
+			this.audioPanel1.TabIndex = 0;
+			this.audioPanel1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FormMain_KeyPress);
+			// 
 			// listView1
 			// 
 			this.listView1.AllowColumnReorder = true;
@@ -236,18 +249,6 @@
 			this.DialogTextBox.TabIndex = 2;
 			this.DialogTextBox.TextChanged += new System.EventHandler(this.DialogTextBox_TextChanged);
 			// 
-			// StartTimeBox
-			// 
-			this.StartTimeBox.Dock = System.Windows.Forms.DockStyle.Left;
-			this.StartTimeBox.InsertKeyMode = System.Windows.Forms.InsertKeyMode.Overwrite;
-			this.StartTimeBox.Location = new System.Drawing.Point(3, 3);
-			this.StartTimeBox.Mask = "0:90:00.00";
-			this.StartTimeBox.Name = "StartTimeBox";
-			this.StartTimeBox.Size = new System.Drawing.Size(120, 23);
-			this.StartTimeBox.TabIndex = 0;
-			this.StartTimeBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.StartTimeBox.TextChanged += new System.EventHandler(this.StartTimeBox_TextChanged);
-			// 
 			// EndTimeBox
 			// 
 			this.EndTimeBox.Dock = System.Windows.Forms.DockStyle.Left;
@@ -260,19 +261,29 @@
 			this.EndTimeBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.EndTimeBox.TextChanged += new System.EventHandler(this.EndTimeBox_TextChanged);
 			// 
+			// StartTimeBox
+			// 
+			this.StartTimeBox.Dock = System.Windows.Forms.DockStyle.Left;
+			this.StartTimeBox.InsertKeyMode = System.Windows.Forms.InsertKeyMode.Overwrite;
+			this.StartTimeBox.Location = new System.Drawing.Point(3, 3);
+			this.StartTimeBox.Mask = "0:90:00.00";
+			this.StartTimeBox.Name = "StartTimeBox";
+			this.StartTimeBox.Size = new System.Drawing.Size(120, 23);
+			this.StartTimeBox.TabIndex = 0;
+			this.StartTimeBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.StartTimeBox.TextChanged += new System.EventHandler(this.StartTimeBox_TextChanged);
+			// 
 			// OpenSubDialog
 			// 
 			this.OpenSubDialog.Filter = "Subtitle files|*.ass;*.ssa|All files|*.*";
 			// 
-			// audioPanel1
+			// saveToolStripMenuItem
 			// 
-			this.audioPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.audioPanel1.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-			this.audioPanel1.Location = new System.Drawing.Point(0, 0);
-			this.audioPanel1.Name = "audioPanel1";
-			this.audioPanel1.Size = new System.Drawing.Size(692, 250);
-			this.audioPanel1.TabIndex = 0;
-			this.audioPanel1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FormMain_KeyPress);
+			this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+			this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+			this.saveToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
+			this.saveToolStripMenuItem.Text = "&Save Subtitle";
+			this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
 			// 
 			// FormMain
 			// 
@@ -325,5 +336,6 @@
 				private System.Windows.Forms.ToolStripMenuItem writeStartTimeToolStripMenuItem;
 				private System.Windows.Forms.ToolStripMenuItem writeEndTimeToolStripMenuItem;
 				private System.Windows.Forms.ToolStripMenuItem writeLastEndTimeToolStripMenuItem;
+				private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
 	}
 }

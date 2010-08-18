@@ -85,6 +85,29 @@ namespace starsub
 			SubtitleModified = false;
 		}
 
+		private void SaveSub(string Filename)
+		{
+			StringBuilder sb = new StringBuilder(listView1.Items.Count * 50);
+			foreach (ListViewItem lvi in listView1.Items)
+			{
+				var StartTime = lvi.SubItems[1].Text;
+				var EndTime = lvi.SubItems[2].Text;
+				var DialogText = lvi.Text;
+				if (StartTime == "META")
+				{
+					sb.AppendLine(DialogText);
+				}
+				else
+				{
+					if (EndTime == "META")
+						EndTime = "0:00:00.00";
+					sb.AppendFormat("Dialogue: 0,{0},{1},Default,,0000,0000,0000,,{2}", StartTime, EndTime, DialogText);
+					sb.AppendLine();
+				}
+			}
+			File.WriteAllText(Filename, sb.ToString(), Encoding.UTF8);
+		}
+
 		private void listView1_DoubleClick(object sender, EventArgs e)
 		{
 			if (listView1.SelectedItems.Count != 1)
@@ -230,6 +253,11 @@ namespace starsub
 			if (listView1.SelectedItems.Count != 1)
 				return;
 			listView1.SelectedItems[0].SubItems[2].Text = EndTimeBox.Text;
+		}
+
+		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			SaveSub(SubtitleFilename);
 		}
 	}
 }
