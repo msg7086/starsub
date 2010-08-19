@@ -26,9 +26,7 @@ namespace starsub
 		{
 			if (AudioFileName != "")
 			{
-				sound.release();
-				peakdata = null;
-				weakdata = null;
+				CloseAudio();
 			}
 			SecondBar.Value = 0;
 			AudioFileName = Filename;

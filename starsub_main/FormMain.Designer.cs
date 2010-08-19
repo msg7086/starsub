@@ -33,6 +33,7 @@
 			this.openAudioToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.openSubtitleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.controlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.playPauseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -43,15 +44,14 @@
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
 			this.audioPanel1 = new starsub.AudioPanel();
 			this.listView1 = new System.Windows.Forms.ListView();
-			this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
-			this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
-			this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
+			this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.DialogTextBox = new System.Windows.Forms.TextBox();
 			this.EndTimeBox = new System.Windows.Forms.MaskedTextBox();
 			this.StartTimeBox = new System.Windows.Forms.MaskedTextBox();
 			this.OpenSubDialog = new System.Windows.Forms.OpenFileDialog();
-			this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStrip1.SuspendLayout();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
@@ -103,7 +103,15 @@
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(190, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(201, 6);
+			// 
+			// saveToolStripMenuItem
+			// 
+			this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+			this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+			this.saveToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
+			this.saveToolStripMenuItem.Text = "&Save Subtitle";
+			this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
 			// 
 			// controlToolStripMenuItem
 			// 
@@ -206,8 +214,8 @@
 			this.listView1.TabIndex = 0;
 			this.listView1.UseCompatibleStateImageBehavior = false;
 			this.listView1.View = System.Windows.Forms.View.Details;
-			this.listView1.DoubleClick += new System.EventHandler(this.listView1_DoubleClick);
 			this.listView1.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.listView1_ItemSelectionChanged);
+			this.listView1.DoubleClick += new System.EventHandler(this.listView1_DoubleClick);
 			this.listView1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FormMain_KeyPress);
 			// 
 			// columnHeader3
@@ -276,14 +284,6 @@
 			// OpenSubDialog
 			// 
 			this.OpenSubDialog.Filter = "Subtitle files|*.ass;*.ssa|All files|*.*";
-			// 
-			// saveToolStripMenuItem
-			// 
-			this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-			this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-			this.saveToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
-			this.saveToolStripMenuItem.Text = "&Save Subtitle";
-			this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
 			// 
 			// FormMain
 			// 
