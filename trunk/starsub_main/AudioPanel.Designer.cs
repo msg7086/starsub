@@ -53,14 +53,16 @@
 			this.WaveDisplay = new System.Windows.Forms.PictureBox();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.label1 = new System.Windows.Forms.Label();
 			this.YTrackBar = new System.Windows.Forms.TrackBar();
 			this.XTrackBar = new System.Windows.Forms.TrackBar();
-			this.label1 = new System.Windows.Forms.Label();
+			this.Volume = new System.Windows.Forms.TrackBar();
 			((System.ComponentModel.ISupportInitialize)(this.WaveDisplay)).BeginInit();
 			this.panel1.SuspendLayout();
 			this.groupBox1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.YTrackBar)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.XTrackBar)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.Volume)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// SecondBar
@@ -119,6 +121,7 @@
 			// 
 			// groupBox1
 			// 
+			this.groupBox1.Controls.Add(this.Volume);
 			this.groupBox1.Controls.Add(this.label1);
 			this.groupBox1.Controls.Add(this.YTrackBar);
 			this.groupBox1.Controls.Add(this.XTrackBar);
@@ -128,7 +131,16 @@
 			this.groupBox1.Size = new System.Drawing.Size(150, 300);
 			this.groupBox1.TabIndex = 16;
 			this.groupBox1.TabStop = false;
-			this.groupBox1.Text = "比例调整";
+			this.groupBox1.Text = "比例调整 音量";
+			// 
+			// label1
+			// 
+			this.label1.AutoSize = true;
+			this.label1.Location = new System.Drawing.Point(54, 18);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(11, 14);
+			this.label1.TabIndex = 2;
+			this.label1.Text = " ";
 			// 
 			// YTrackBar
 			// 
@@ -141,6 +153,7 @@
 			this.YTrackBar.Orientation = System.Windows.Forms.Orientation.Vertical;
 			this.YTrackBar.Size = new System.Drawing.Size(45, 234);
 			this.YTrackBar.TabIndex = 0;
+			this.YTrackBar.TabStop = false;
 			this.YTrackBar.TickStyle = System.Windows.Forms.TickStyle.Both;
 			this.YTrackBar.Value = 10;
 			this.YTrackBar.ValueChanged += new System.EventHandler(this.YTrackBar_ValueChanged);
@@ -156,18 +169,24 @@
 			this.XTrackBar.Name = "XTrackBar";
 			this.XTrackBar.Size = new System.Drawing.Size(144, 45);
 			this.XTrackBar.TabIndex = 1;
+			this.XTrackBar.TabStop = false;
 			this.XTrackBar.TickStyle = System.Windows.Forms.TickStyle.Both;
 			this.XTrackBar.Value = 10;
 			this.XTrackBar.ValueChanged += new System.EventHandler(this.XTrackBar_ValueChanged);
 			// 
-			// label1
+			// Volume
 			// 
-			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(54, 18);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(11, 14);
-			this.label1.TabIndex = 2;
-			this.label1.Text = " ";
+			this.Volume.Dock = System.Windows.Forms.DockStyle.Right;
+			this.Volume.LargeChange = 1;
+			this.Volume.Location = new System.Drawing.Point(102, 18);
+			this.Volume.Name = "Volume";
+			this.Volume.Orientation = System.Windows.Forms.Orientation.Vertical;
+			this.Volume.Size = new System.Drawing.Size(45, 234);
+			this.Volume.TabIndex = 3;
+			this.Volume.TickStyle = System.Windows.Forms.TickStyle.Both;
+			this.Volume.Value = 4;
+			this.Volume.ValueChanged += new System.EventHandler(this.Volume_ValueChanged);
+			this.Volume.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.All_KeyPress);
 			// 
 			// AudioPanel
 			// 
@@ -184,6 +203,7 @@
 			this.groupBox1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.YTrackBar)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.XTrackBar)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.Volume)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -199,5 +219,6 @@
 		private System.Windows.Forms.TrackBar XTrackBar;
 		private System.Windows.Forms.TrackBar YTrackBar;
 		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.TrackBar Volume;
 	}
 }
