@@ -1,5 +1,5 @@
 /* ============================================================================================= = */
-/* FMOD Ex - Error string header file. Copyright (c), Firelight Technologies Pty, Ltd. 2004-2010.  */
+/* FMOD Ex - Error string header file. Copyright (c), Firelight Technologies Pty, Ltd. 2004-2011.  */
 /*                                                                                                 */
 /* Use this header if you want to store or display a string version / english explanation of       */
 /* the FMOD error codes.                                                                           */
@@ -56,11 +56,9 @@ namespace FMOD
                 case FMOD.RESULT.ERR_INVALID_SPEAKER:        return "An invalid speaker was passed to this function based on the current speaker mode. ";
                 case FMOD.RESULT.ERR_INVALID_SYNCPOINT:      return "The syncpoint did not come from this sound handle.";
                 case FMOD.RESULT.ERR_INVALID_VECTOR:         return "The vectors passed in are not unit length, or perpendicular. ";
-                case FMOD.RESULT.ERR_IRX:                    return "PS2 only.  fmodex.irx failed to initialize.  This is most likely because you forgot to load it. ";
                 case FMOD.RESULT.ERR_MAXAUDIBLE:             return "Reached maximum audible playback count for this sound's soundgroup. ";
                 case FMOD.RESULT.ERR_MEMORY:                 return "Not enough memory or resources. ";
                 case FMOD.RESULT.ERR_MEMORY_CANTPOINT:       return "Can't use FMOD_OPENMEMORY_POINT on non PCM source data, or non mp3/xma/adpcm data if FMOD_CREATECOMPRESSEDSAMPLE was used. ";
-                case FMOD.RESULT.ERR_MEMORY_IOP:             return "PS2 only.  Not enough memory or resources on PlayStation 2 IOP ram. ";
                 case FMOD.RESULT.ERR_MEMORY_SRAM:            return "Not enough memory or resources on console sound ram. ";
                 case FMOD.RESULT.ERR_NEEDS2D:                return "Tried to call a command on a 3d sound when the command was meant for 2d sound. ";
                 case FMOD.RESULT.ERR_NEEDS3D:                return "Tried to call a command on a 2d sound when the command was meant for 3d sound. ";
