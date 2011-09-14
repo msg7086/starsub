@@ -297,7 +297,7 @@
 			this.MainMenuStrip = this.menuStrip1;
 			this.Name = "FormMain";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "FormMain";
+			this.Text = "StarrySub";
 			this.Load += new System.EventHandler(this.FormMain_Load);
 			this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FormMain_KeyPress);
 			this.menuStrip1.ResumeLayout(false);
