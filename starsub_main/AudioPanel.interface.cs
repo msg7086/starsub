@@ -155,6 +155,7 @@ namespace starsub
 
 			system.createStream(AudioFileName, FMOD.MODE.ACCURATETIME, ref sound);
 			system.playSound(FMOD.CHANNELINDEX.FREE, sound, true, ref channel);
+			Invoke(new MethodInvoker(() => channel.setVolume(Volume.Value / 10f)));
 
 			BuildPseudoLine();
 

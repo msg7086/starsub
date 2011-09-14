@@ -41,6 +41,9 @@ namespace starsub
 
 		bool SmoothMoving = false;
 
+		Image CachedImage = null;
+		CacheCondition Condition = new CacheCondition();
+
 		private void WaveDisplay_Paint(object sender, PaintEventArgs e)
 		{
 			if (peakdata == null)
@@ -57,25 +60,48 @@ namespace starsub
 					SecondBar.Value++;
 			}
 
-			Graphics g = e.Graphics;
-
+			Graphics g = null;
 			int i;
 
-			// Draw Background WaveForm
 			var waveheight = WaveDisplay.Height - 100;
 			var halfheight = waveheight / 2;
 			var LeftOffset = Convert.ToInt32(SecondBar.Value * SlicePerSecond);
-			for (i = 0; i < WaveDisplay.Width; i++)
+			if (CachedImage == null
+				|| Condition.Left != LeftTimeMS
+				|| Condition.Right != RightTimeMS
+				|| Condition.XScale != XScale
+				|| Condition.YScale != YScale)
 			{
-				var offset = LeftOffset + Convert.ToInt32(i / XScale);
-				if (offset >= SliceCount)
-					break;
-				g.DrawLine(WaveFormPen, i, halfheight + Convert.ToSingle(peakdata[offset] / YScale), i, halfheight + Convert.ToSingle(weakdata[offset] / YScale));
+				if (CachedImage != null)
+					CachedImage.Dispose();
+				var cachedimage = new Bitmap(WaveDisplay.Width, WaveDisplay.Height);
+				g = Graphics.FromImage(cachedimage);
+
+				// Draw Background WaveForm
+				for (i = 0; i < WaveDisplay.Width; i++)
+				{
+					var offset = LeftOffset + Convert.ToInt32(i / XScale);
+					if (offset >= SliceCount)
+						break;
+					g.DrawLine(WaveFormPen, i, halfheight + Convert.ToSingle(peakdata[offset] / YScale), i, halfheight + Convert.ToSingle(weakdata[offset] / YScale));
+				}
+
+				// Draw Middle WhiteLine
+				g.DrawLine(WritePen, 0, halfheight, WaveDisplay.Width, halfheight);
+
+				e.Graphics.DrawImageUnscaled(cachedimage, 0, 0);
+				g = e.Graphics;
+				CachedImage = cachedimage;
+				Condition.Left = LeftTimeMS;
+				Condition.Right = RightTimeMS;
+				Condition.XScale = XScale;
+				Condition.YScale = YScale;
 			}
-
-			// Draw Middle WhiteLine
-			g.DrawLine(WritePen, 0, halfheight, WaveDisplay.Width, halfheight);
-
+			else
+			{
+				g = e.Graphics;
+				g.DrawImageUnscaled(CachedImage, 0, 0);
+			}
 			// Draw Pseudo Line
 			if (LinePos != null)
 				for (i = LeftOffset; i < LeftOffset + Convert.ToInt32(WaveDisplay.Width / XScale); i++)
@@ -118,10 +144,9 @@ namespace starsub
 			postodraw = Convert.ToUInt32(RightTimeMS);
 			g.DrawString(GetTimeText(postodraw), MyFont, Brushes.White, WaveDisplay.Width - 100, WaveDisplay.Height - 25);
 
-
 			g.DrawString(GetTimeText(PlayPointMS), MyFont, Brushes.White, 100, WaveDisplay.Height - 25);
 
-			if(Current != null)
+			if (Current != null)
 				g.DrawString(Current.DialogText, MyCJKFont, Brushes.White, 200, WaveDisplay.Height - 25);
 			// Draw Last/Curr/Next Subtitle Line Pseudo Line
 			foreach (var sl in new SubtitleLine[] { Last, Current, Next })
@@ -222,5 +247,17 @@ namespace starsub
 			KeyPress(sender, e);
 		}
 
+		private void Volume_ValueChanged(object sender, EventArgs e)
+		{
+			if (channel != null)
+				channel.setVolume(Volume.Value / 10f);
+		}
+
+	}
+
+	public struct CacheCondition
+	{
+		public int Left, Right;
+		public float YScale, XScale;
 	}
 }
